@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name='mobile-web-app-capable' content="yes"/>
+    <meta name='apple-mobile-web-app-capable' content="yes"/>
+    <meta name="theme-color" id="theme-color" content="#f1f3f5" />
+    <meta name="description" content="Achievements">
+    <meta name="keywords" content="chess, lichess, achievements">
+    <meta name="author" content="lichievements">
+    <title>lichievements</title>
+    <link rel="stylesheet" type="text/css" href="./style.css" />
+    <link rel="icon" type="image/png" href="./icon.png">
+    <link rel="apple-touch-icon" href="./icon.png" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!--<script type="text/javascript" src="./script.js"></script>-->
+  </head>
+  <body>
+    <header>
+      <h1>li<span style="color:#888">chievements</span></h1>
+    </header>
+    
+    <div class="input-button-container">
+      <input type="text" class="rounded-input" id="username" placeholder="Enter a lichess username...">
+      <button class="rounded-button" onclick="getUserData();">GO</button>
+    </div>
+    
+    <div id="achievements-container"></div>
+    <script src="achievements.js"></script>
+      
+    <!-- Footer -->
+    
+    <div class="footer">
+      <a href="https://github.com/"><span class="footer-icon fa-brands fa-github"></span></a><span id="theme-btn" class="footer-icon fa-solid fa-moon"></span>
+    </div>
+    
+    <!-- Scripts -->
+    
+    <script>
+      //gets the button by ID from your HTML element
+      const themeBtn = document.getElementById("theme-btn");
+      //when you click that button
+      themeBtn.onclick = () => {
+        //the default class "fa-moon" switches to "fa-sun" on toggle
+        themeBtn.classList.toggle("fa-sun");
+        themeBtn.classList.toggle("fa-moon");
+        //after the switch on toggle, if your button contains "fa-sun" class
+        if (themeBtn.classList.contains("fa-sun")) {
+          //onclicking themeBtn, the changeTheme styling will be applied to the body of your HTML
+          document.body.classList.add("darkTheme");
+          document.documentElement.style.setProperty('--colorBodyBG', '#000000'); // dark background
+          document.documentElement.style.setProperty('--colorFont', '#d8dadc'); // dark-theme font
+          document.getElementById('theme-color').setAttribute('content', '#000000');
+          document.documentElement.style.setProperty('--colorInputButton', '#222222'); // dark-theme input
+        } 
+        else {
+          // onclicking themeBtn, applied changeTheme styling will be removed
+          document.body.classList.remove("darkTheme");
+          document.documentElement.style.setProperty('--colorBodyBG', '#f1f3f5');
+          document.documentElement.style.setProperty('--colorFont', '#444444');
+          document.getElementById('theme-color').setAttribute('content', '#f1f3f5');
+          document.documentElement.style.setProperty('--colorInputButton', '#ffffff'); 
+        }
+      }
+    </script>
+    <script>
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        // Dark mode is enabled
+        console.log('Dark mode is enabled');
+        document.getElementById('theme-btn').click();
+      } 
+      else {
+        // Dark mode is not enabled
+        console.log('Dark mode is not enabled');
+      }
+    </script>
+    <script>
+      // watch for light/dark changes
+      // Function to handle theme change
+      function handleThemeChange(event) {
+        const themeBtn = document.getElementById("theme-btn");
+        if (event.matches) {
+          // Dark mode is enabled
+          // Change your website's theme to dark mode
+          if (themeBtn.classList.contains("fa-moon")) {
+            document.getElementById('theme-btn').click();
+          }
+        } 
+        else {
+          // Dark mode is disabled
+          // Change your website's theme to light mode
+          if (themeBtn.classList.contains("fa-sun")) {
+            document.getElementById('theme-btn').click();
+          }
+        }
+      }
+
+      // Create a media query listener
+      const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      darkModeQuery.addListener(handleThemeChange);
+
+      // Initial theme setup based on the user's preference
+      handleThemeChange(darkModeQuery);
+    </script>
+    <script>
+      document.getElementById('username').addEventListener('keyup', function(event) {
+        // Check if the key pressed is the Enter key
+        if (event.key === "Enter") {
+          // Prevent the form from being submitted if the input is inside a form
+          event.preventDefault();
+          // Call the getUserData function
+          getUserData();
+        }
+      });
+    </script>
+  </body>
+</html>

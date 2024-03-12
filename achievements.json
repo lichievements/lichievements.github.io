@@ -1,0 +1,79 @@
+{
+  "Win the game": [
+    {
+      "id": "queen-mate",
+      "title": "Queen mate",
+      "image": "unlocked.png"
+    },
+    {
+      "id": "rook-mate",
+      "title": "Rook mate",
+      "image": "unlocked.png"
+    },
+    {
+      "id": "bishop-mate",
+      "title": "Bishop mate",
+      "image": "unlocked.png"
+    },
+    {
+      "id": "knight-mate",
+      "title": "Knight mate",
+      "image": "unlocked.png"
+    },
+    {
+      "id": "short-castle-mate",
+      "title": "Short castle mate",
+      "image": "unlocked.png"
+    },
+    {
+      "id": "long-castle-mate",
+      "title": "Long castle mate",
+      "image": "unlocked.png"
+    }
+  ],
+  "Openings": [
+    {
+      "id": "opening-sicilian",
+      "title": "Play the Sicilian",
+      "image": "unlocked.png"
+    },
+    {
+      "id": "opening-french",
+      "title": "Play the French",
+      "image": "unlocked.png"
+    },
+    {
+      "id": "opening-pirc",
+      "title": "Play the Pirc",
+      "image": "unlocked.png"
+    },
+    {
+      "id": "opening-carokann",
+      "title": "Play the Caro-Kann",
+      "image": "unlocked.png"
+    },
+    {
+      "id": "opening-scandinavian",
+      "title": "Play the Scandinavian",
+      "image": "unlocked.png"
+    },
+    {
+      "id": "opening-grob",
+      "title": "Play the Grob",
+      "image": "unlocked.png"
+    }
+  ],
+  "Miscellaneous": [
+    {
+      "id": "play-games",
+      "title": "Play many games",
+      "image": "unlocked.png"
+    },
+    {
+      "id": "support-patron",
+      "title": "Be a patron",
+      "image": "unlocked.png"
+    }
+  ]
+}
+
