@@ -93,13 +93,13 @@ async function getUserData() {
     
     const userData = await responseUser.json();
     if (userData.patron) {
-        document.getElementById('support-patron').src = 'images/unlocked.png';
+        document.getElementById('support-patron').src = 'images/patron.png';
         console.log(`${username} is a patron of Lichess.`);
     }
     
     const totalNumberOfGames = gamesWhite.length + gamesBlack.length
     
-    for (let i = 1; i <= 1000; i=i*10) {
+    for (let i = 1; i <= 100000; i=i*10) {
         if (totalNumberOfGames >= i) {
             document.getElementById('play-games').src = 'images/play-'+i+'.png';
         }
