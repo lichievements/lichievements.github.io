@@ -251,6 +251,7 @@ a, img {
 .footer-icon {
   font-size: 24pt;
   min-width: 40px; 
+  cursor: pointer;
 }
 
 button span hr {
