@@ -6,6 +6,80 @@
   --transition-time: 0.4s;
 }
 
+@font-face {
+    font-family: 'Roboto';
+    src: url('./fonts/Roboto-100.ttf') format('truetype');
+    font-weight: 100;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Roboto';
+    src: url('./fonts/Roboto-100-Italic.ttf') format('truetype');
+    font-weight: 100;
+    font-style: italic;
+}
+@font-face {
+    font-family: 'Roboto';
+    src: url('./fonts/Roboto-300.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Roboto';
+    src: url('./fonts/Roboto-300-Italic.ttf') format('truetype');
+    font-weight: 300;
+    font-style: italic;
+}
+@font-face {
+    font-family: 'Roboto';
+    src: url('./fonts/Roboto-400.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Roboto';
+    src: url('./fonts/Roboto-400-Italic.ttf') format('truetype');
+    font-weight: 400;
+    font-style: italic;
+}
+@font-face {
+    font-family: 'Roboto';
+    src: url('/fonts/Roboto-500.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Roboto';
+    src: url('./fonts/Roboto-500-Italic.ttf') format('truetype');
+    font-weight: 500;
+    font-style: italic;
+}
+@font-face {
+    font-family: 'Roboto';
+    src: url('./fonts/Roboto-700.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Roboto';
+    src: url('./fonts/Roboto-700-Italic.ttf') format('truetype');
+    font-weight: 700;
+    font-style: italic;
+}
+@font-face {
+    font-family: 'Roboto';
+    src: url('./fonts/Roboto-900.ttf') format('truetype');
+    font-weight: 900;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Roboto';
+    src: url('./fonts/Roboto-900-Italic.ttf') format('truetype');
+    font-weight: 900;
+    font-style: italic;
+}
+
+
 body { 
   transition: background-color var(--transition-time);
 }
@@ -18,7 +92,7 @@ body {
   font-size: 18px;
   color: var(--colorFont);
   background-color: var(--colorBodyBG);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Roboto', sans-serif;
   padding: 0 10px;
 }
 
