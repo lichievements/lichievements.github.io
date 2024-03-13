@@ -57,6 +57,7 @@ async function getUserData() {
     for (let i = 0; i < ach.length; i++) {
         ach[i].src = 'images/locked.png';
     }
+    document.getElementById('summary').innerHTML = '';
 
     const username = document.getElementById('username').value;
 
