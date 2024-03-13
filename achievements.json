@@ -2,31 +2,37 @@
   "Win the game": [
     {
       "id": "queen-mate",
+      "title_locked": "Queen mate",
       "title": "Queen mate",
       "image": "unlocked.png"
     },
     {
       "id": "rook-mate",
+      "title_locked": "Rook mate",
       "title": "Rook mate",
       "image": "unlocked.png"
     },
     {
       "id": "bishop-mate",
+      "title_locked": "Bishop mate",
       "title": "Bishop mate",
       "image": "unlocked.png"
     },
     {
       "id": "knight-mate",
+      "title_locked": "Knight mate",
       "title": "Knight mate",
       "image": "unlocked.png"
     },
     {
       "id": "short-castle-mate",
+      "title_locked": "???",
       "title": "Short castle mate",
       "image": "unlocked.png"
     },
     {
       "id": "long-castle-mate",
+      "title_locked": "???",
       "title": "Long castle mate",
       "image": "unlocked.png"
     }
@@ -34,31 +40,37 @@
   "Openings": [
     {
       "id": "opening-sicilian",
+      "title_locked": "Play the Sicilian",
       "title": "Play the Sicilian",
       "image": "unlocked.png"
     },
     {
       "id": "opening-french",
+      "title_locked": "Play the French",
       "title": "Play the French",
       "image": "unlocked.png"
     },
     {
       "id": "opening-pirc",
+      "title_locked": "Play the Pirc",
       "title": "Play the Pirc",
       "image": "unlocked.png"
     },
     {
       "id": "opening-carokann",
+      "title_locked": "Play the Caro-Kann",
       "title": "Play the Caro-Kann",
       "image": "unlocked.png"
     },
     {
       "id": "opening-scandinavian",
+      "title_locked": "Play the Scandinavian",
       "title": "Play the Scandinavian",
       "image": "unlocked.png"
     },
     {
       "id": "opening-grob",
+      "title_locked": "???",
       "title": "Play the Grob",
       "image": "unlocked.png"
     }
@@ -66,11 +78,13 @@
   "Miscellaneous": [
     {
       "id": "play-games",
+      "title_locked": "Play many games",
       "title": "Play many games",
       "image": "unlocked.png"
     },
     {
       "id": "support-patron",
+      "title_locked": "Be a patron",
       "title": "Be a patron",
       "image": "unlocked.png"
     }

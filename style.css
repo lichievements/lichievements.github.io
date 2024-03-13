@@ -122,9 +122,11 @@ input[type=text]:focus {
   background-color: var(--colorInputButton);
   border-radius: 0 50px 50px 0; /* top-left, top-right, bottom-right, bottom-left */
   padding: 10px 20px;
+  margin: 0;
   cursor: pointer; /* Changes the cursor to a pointer on hover */
   height: 50px;
   font-weight: 900;
+  border-left: var(--colorFont) 2px solid;
 }
 
 .achievement-image {

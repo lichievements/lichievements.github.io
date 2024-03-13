@@ -26,7 +26,7 @@ function displayAchievements(achievements) {
             
             // Create a span element
             const spanElement = document.createElement('span');
-            spanElement.textContent = achievement.title;
+            spanElement.textContent = achievement.title_locked;
             spanElement.classList.add('tooltiptext');
 
             // Append the img to the achievement div, and the div to the container
