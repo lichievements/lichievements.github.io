@@ -22,7 +22,7 @@
     </header>
     
     <div class="input-button-container">
-      <input type="text" class="rounded-input" id="username" placeholder="Enter a lichess username..."><button class="rounded-button" onclick="getUserData();">GO</button>
+      <input type="text" class="rounded-input" id="username" placeholder="Enter a lichess username..."><button class="rounded-button" onclick="checkAchievements();">GO</button>
     </div>
     
     <div id="achievements-container"></div>
@@ -111,7 +111,7 @@
           // Prevent the form from being submitted if the input is inside a form
           event.preventDefault();
           // Call the getUserData function
-          getUserData();
+          checkAchievements();
         }
       });
     </script>

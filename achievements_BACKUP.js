@@ -46,70 +46,61 @@ fetch('achievements.json')
     .catch(error => console.error('Error loading achievements data:', error));
 
 
-
-
-
-async function fetchUserData(username) {
-    
-    console.log("Starting with fetchUserData()...")
-    
-    const urls = [
-        `https://lichess.org/api/games/user/${username}?rated=true&color=white`,
-        `https://lichess.org/api/games/user/${username}?rated=true&color=black`,
-        `https://lichess.org/api/user/${username}`
-    ];
-
-    const fetchPromises = urls.map(url =>
-        fetch(url, { headers: { 'Accept': 'application/x-ndjson' } })
-    );
-
-    try {
-        const responses = await Promise.all(fetchPromises);
-        const [gamesWhiteText, gamesBlackText, userResponse] = await Promise.all(responses.map(res => res.text()));
-
-        const gamesWhite = gamesWhiteText.trim().split('\n').map(JSON.parse);
-        const gamesBlack = gamesBlackText.trim().split('\n').map(JSON.parse);
-        const userData = JSON.parse(userResponse); // Assuming the user API returns JSON, not NDJSON
-
-        return { gamesWhite, gamesBlack, userData };
-    } catch (error) {
-        console.error("Error fetching data:", error);
-        throw error; // Re-throw error for caller to handle if needed
-    }
+function checkAchievements() {
+    getUserData()
+    console.log("checkAchievements()")
 }
 
-function resetAchievements() {
+
+async function getUserData() {
+
+    // reset all achievements
     const ach = document.getElementsByClassName('achievement-image');
     //console.log(ach);
     for (let i = 0; i < ach.length; i++) {
         ach[i].src = 'images/locked.png';
     }
     document.getElementById('summary').innerHTML = '';
-}
-
-async function checkAchievements() {
-    resetAchievements(); // Reset achievements visuals and summary
 
     const username = document.getElementById('username').value;
-    try {
-        const { gamesWhite, gamesBlack, userData } = await fetchUserData(username);
-        // Now process the data for achievements
-        processAchievements(gamesWhite, gamesBlack, userData, username);
-        console.log("Achievements checked for", username);
-    } catch (error) {
-        console.error("Error checking achievements:", error);
-    }
-}
 
-function processAchievements(gamesWhite, gamesBlack, userData, username) {
-    console.log("processAchievements(..)")
-    //Check for patron:
+    const urlWhite = `https://lichess.org/api/games/user/${username}?rated=true&color=white`;
+    const urlBlack = `https://lichess.org/api/games/user/${username}?rated=true&color=black`;
+    const urlUser = `https://lichess.org/api/user/${username}`;
+
+    const responseWhite = await fetch(urlWhite, {
+        headers: {
+            'Accept': 'application/x-ndjson'
+        }
+    });
+    const responseBlack = await fetch(urlBlack, {
+        headers: {
+            'Accept': 'application/x-ndjson'
+        }
+    });
+    const responseUser = await fetch(urlUser, {
+        headers: {
+            'Accept': 'application/x-ndjson'
+        }
+    });
+
+    // The API returns games in NDJSON format
+    const textWhite = await responseWhite.text();
+    const gamesWhite = textWhite.trim().split('\n').map(JSON.parse);
+    
+    console.log("Found " + gamesWhite.length + " games as white")
+    
+    const textBlack = await responseBlack.text();
+    const gamesBlack = textBlack.trim().split('\n').map(JSON.parse);
+    
+    console.log("Found " + gamesBlack.length + " games as black")
+    
+    const userData = await responseUser.json();
     if (userData.patron) {
         document.getElementById('support-patron').src = 'images/patron.png';
         console.log(`${username} is a patron of Lichess.`);
     }
     
-    // Check number of rated games:
     const totalNumberOfGames = gamesWhite.length + gamesBlack.length
     
     for (let i = 1; i <= 100000; i=i*10) {
@@ -117,8 +108,7 @@ function processAchievements(gamesWhite, gamesBlack, userData, username) {
             document.getElementById('play-games').src = 'images/play-'+i+'.png';
         }
     }
-    
-    // Check for openings: 
+
     let found_opening_sicilian = false;
     let found_opening_french = false;
     let found_opening_pirc = false;
@@ -218,7 +208,6 @@ function processAchievements(gamesWhite, gamesBlack, userData, username) {
         
     });
     
-    // Check for mates:
     let found_queen_mate = false;
     let found_rook_mate = false;
     let found_bishop_mate = false;
@@ -304,7 +293,7 @@ function processAchievements(gamesWhite, gamesBlack, userData, username) {
         
     });
     
-    // Summarize: 
+    // Summarize how many achievements are unlocked in div#summary
     var numAchTotal = document.querySelectorAll('img').length;;
     var numAchUnlocked = document.querySelectorAll('img:not([src="images/locked.png"])').length;
 
@@ -314,14 +303,3 @@ function processAchievements(gamesWhite, gamesBlack, userData, username) {
     document.getElementById('summary').appendChild(spanSummary);
     
 }
-
-
-
-
-
-
-
-
-
-
-

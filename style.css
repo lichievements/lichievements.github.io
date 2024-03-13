@@ -108,11 +108,11 @@ input[type=text] {
   color: var(--colorFont);
   border-radius: 50px 0 0 50px; /* top-left, top-right, bottom-right, bottom-left */
   margin-right: 0;
+  font-weight: 300;
 }
     
 input[type=text]:focus {
   outline: none;
-  font-weight: 100;
 }
 
 .input-button-container {
