@@ -289,5 +289,13 @@ async function getUserData() {
         
     });
     
-        
+    // Summarize how many achievements are unlocked in div#summary
+    var numAchTotal = document.querySelectorAll('img').length;;
+    var numAchUnlocked = document.querySelectorAll('img:not([src="images/locked.png"])').length;
+
+    
+    var spanSummary = document.createElement('span');
+    spanSummary.textContent = "Unlocked: " + numAchUnlocked + "/" + numAchTotal;
+    document.getElementById('summary').appendChild(spanSummary);
+    
 }

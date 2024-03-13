@@ -118,7 +118,11 @@ body.darkTheme img.achievement-image {
   grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); /* Adjust minmax values as needed */
 }
 
-
+#summary {
+  text-align: center;
+  font-style: italic;
+  font-weight: 100;
+}
 
 
 h1,h2,h3 {
