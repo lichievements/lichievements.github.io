@@ -93,6 +93,12 @@
       "title_locked": "Be a patron",
       "title": "Be a patron",
       "image": "unlocked.png"
+    },
+    {
+      "id": "account-age",
+      "title_locked": "???",
+      "title": "Happy Birthday!",
+      "image": "unlocked.png"
     }
   ]
 }

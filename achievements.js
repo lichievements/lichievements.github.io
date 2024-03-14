@@ -109,6 +109,20 @@ function processAchievements(gamesWhite, gamesBlack, userData, username) {
         console.log(`${username} is a patron of Lichess.`);
     }
     
+    //Check for account age
+    const createdAtDate = new Date(userData.createdAt);
+    const currentDate = new Date();
+
+    const differenceInMilliseconds = currentDate - createdAtDate;
+    const differenceInYears = differenceInMilliseconds / (1000 * 60 * 60 * 24 * 365); // Convert milliseconds to years
+    const age = Math.floor(differenceInYears);
+    
+    if (age > 0) {
+        //document.getElementById('account-age').src = "images/age-${age.toString().padStart(2, '0')}.png";
+        document.getElementById('account-age').src = "images/birthday.png";
+        console.log("${username}'s account is ${age.toString().padStart(2, '0')} years old.");
+    }
+    
     // Check number of rated games:
     const totalNumberOfGames = gamesWhite.length + gamesBlack.length
     
@@ -273,8 +287,20 @@ function processAchievements(gamesWhite, gamesBlack, userData, username) {
             found_shortCastle_mate = true;
         }
         
+        // Check for short castle mate
+        if (!found_shortCastle_mate && game.winner == "white" && /O-O[^ ]*#/.test(game.moves)) {
+            document.getElementById('short-castle-mate').src = 'images/unlocked.png';
+            found_shortCastle_mate = true;
+        }
+        
         // Check for long castle mate
         if (!found_longCastle_mate && game.winner == "white" && /0-0-0[^ ]*#/.test(game.moves)) {
+            document.getElementById('long-castle-mate').src = 'images/unlocked.png';
+            found_longCastle_mate = true;
+        }
+        
+        // Check for long castle mate
+        if (!found_longCastle_mate && game.winner == "white" && /O-O-O[^ ]*#/.test(game.moves)) {
             document.getElementById('long-castle-mate').src = 'images/unlocked.png';
             found_longCastle_mate = true;
         }
@@ -312,8 +338,20 @@ function processAchievements(gamesWhite, gamesBlack, userData, username) {
             found_shortCastle_mate = true;
         }
         
+        // Check for short castle mate
+        if (!found_shortCastle_mate && game.winner == "black" && /O-O[^ ]*#/.test(game.moves)) {
+            document.getElementById('short-castle-mate').src = 'images/unlocked.png';
+            found_shortCastle_mate = true;
+        }
+        
         // Check for long castle mate
         if (!found_longCastle_mate && game.winner == "black" && /0-0-0[^ ]*#/.test(game.moves)) {
+            document.getElementById('long-castle-mate').src = 'images/unlocked.png';
+            found_longCastle_mate = true;
+        }
+        
+        // Check for long castle mate
+        if (!found_longCastle_mate && game.winner == "black" && /O-O-O[^ ]*#/.test(game.moves)) {
             document.getElementById('long-castle-mate').src = 'images/unlocked.png';
             found_longCastle_mate = true;
         }
