@@ -125,49 +125,58 @@ function processAchievements(gamesWhite, gamesBlack, userData, username) {
     let found_opening_carokann = false;
     let found_opening_scandinavian = false;
     let found_opening_grob = false;
+    let found_opening_bongcloud = false;
 
     gamesWhite.forEach(game => {
         
         // check for Sicilian 1. e4 c5
         if (!found_opening_sicilian && game.moves.startsWith('e4 c5')) {
-            document.getElementById('opening-sicilian').src = 'images/unlocked.png';
+            document.getElementById('opening-sicilian').src = 'images/opening-sicilian.png';
             console.log("found a Sicilian")
+            console.log()
             found_opening_sicilian = true;
         }
         
         // check for French 1. e4 e6
         if (!found_opening_french && game.moves.startsWith('e4 e6')) {
-            document.getElementById('opening-french').src = 'images/unlocked.png';
+            document.getElementById('opening-french').src = 'images/opening-french.png';
             console.log("found a French")
             found_opening_french = true;
         }
         
         // check for Pirc 1. e4 d6
         if (!found_opening_pirc && game.moves.startsWith('e4 d6')) {
-            document.getElementById('opening-pirc').src = 'images/unlocked.png';
+            document.getElementById('opening-pirc').src = 'images/opening-pirc.png';
             console.log("found a Pirc")
             found_opening_pirc = true;
         }
         
         // check for Caro-Kann 1. e4 c6
         if (!found_opening_carokann && game.moves.startsWith('e4 c6')) {
-            document.getElementById('opening-carokann').src = 'images/unlocked.png';
+            document.getElementById('opening-carokann').src = 'images/opening-carokann.png';
             console.log("found a Caro-Kann")
             found_opening_carokann = true;
         }
         
         // check for Scandinavian 1. e4 d5
         if (!found_opening_scandinavian && game.moves.startsWith('e4 d5')) {
-            document.getElementById('opening-scandinavian').src = 'images/unlocked.png';
+            document.getElementById('opening-scandinavian').src = 'images/opening-scandinavian.png';
             console.log("found a Scandinavian")
             found_opening_scandinavian = true;
         }
         
         // check for Grob 1. g4
         if (!found_opening_grob && game.moves.startsWith('g4')) {
-            document.getElementById('opening-grob').src = 'images/unlocked.png';
+            document.getElementById('opening-grob').src = 'images/opening-grob.png';
             console.log("found a Grob")
             found_opening_grob = true;
+        }
+        
+        // check for Bong Cloud 1. e4 e5 2. Ke2
+        if (!found_opening_grob && game.moves.startsWith('e4 e5 Ke2')) {
+            document.getElementById('opening-bongcloud').src = 'images/opening-bongcloud.png';
+            console.log("found a Bong Cloud")
+            found_opening_bongcloud = true;
         }
         
     });
@@ -176,44 +185,51 @@ function processAchievements(gamesWhite, gamesBlack, userData, username) {
         
         // check for Sicilian 1. e4 c5
         if (!found_opening_sicilian && game.moves.startsWith('e4 c5')) {
-            document.getElementById('opening-sicilian').src = 'images/unlocked.png';
+            document.getElementById('opening-sicilian').src = 'images/opening-sicilian.png';
             console.log("found a Sicilian")
             found_opening_sicilian = true;
         }
         
         // check for French 1. e4 e6
         if (!found_opening_french && game.moves.startsWith('e4 e6')) {
-            document.getElementById('opening-french').src = 'images/unlocked.png';
+            document.getElementById('opening-french').src = 'images/opening-french.png';
             console.log("found a French")
             found_opening_french = true;
         }
         
         // check for Pirc 1. e4 d6
         if (!found_opening_pirc && game.moves.startsWith('e4 d6')) {
-            document.getElementById('opening-pirc').src = 'images/unlocked.png';
+            document.getElementById('opening-pirc').src = 'images/opening-pirc.png';
             console.log("found a Pirc")
             found_opening_pirc = true;
         }
         
         // check for Caro-Kann 1. e4 c6
         if (!found_opening_carokann && game.moves.startsWith('e4 c6')) {
-            document.getElementById('opening-carokann').src = 'images/unlocked.png';
+            document.getElementById('opening-carokann').src = 'images/opening-carokann.png';
             console.log("found a Caro-Kann")
             found_opening_carokann = true;
         }
         
         // check for Scandinavian 1. e4 d5
         if (!found_opening_scandinavian && game.moves.startsWith('e4 d5')) {
-            document.getElementById('opening-scandinavian').src = 'images/unlocked.png';
+            document.getElementById('opening-scandinavian').src = 'images/opening-scandinavian.png';
             console.log("found a Scandinavian")
             found_opening_scandinavian = true;
         }
         
         // check for Grob 1. g4
         if (!found_opening_grob && game.moves.startsWith('g4')) {
-            document.getElementById('opening-grob').src = 'images/unlocked.png';
+            document.getElementById('opening-grob').src = 'images/opening-grob.png';
             console.log("found a Grob")
             found_opening_grob = true;
+        }
+        
+        // check for Bong Cloud 1. e4 e5 2. Ke2
+        if (!found_opening_grob && game.moves.startsWith('e4 e5 Ke2')) {
+            document.getElementById('opening-bongcloud').src = 'images/opening-bongcloud.png';
+            console.log("found a Bong Cloud")
+            found_opening_bongcloud = true;
         }
         
     });
