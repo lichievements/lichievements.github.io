@@ -27,6 +27,7 @@ function displayAchievements(achievements) {
             // Create a span element
             const spanElement = document.createElement('span');
             spanElement.textContent = achievement.title_locked;
+            spanElement.id = achievement.id + "-tooltip"
             spanElement.classList.add('tooltiptext');
 
             // Append the img to the achievement div, and the div to the container
@@ -120,6 +121,7 @@ function processAchievements(gamesWhite, gamesBlack, userData, username) {
     if (age > 0) {
         //document.getElementById('account-age').src = "images/age-${age.toString().padStart(2, '0')}.png";
         document.getElementById('account-age').src = "images/birthday.png";
+        document.getElementById('account-age-tooltip').innerHTML = "Happy Birthday!";
         console.log("${username}'s account is ${age.toString().padStart(2, '0')} years old.");
     }
     
