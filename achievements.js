@@ -374,7 +374,9 @@ function processAchievements(gamesWhite, gamesBlack, userData, username) {
 
 
 
-
+function showInfo() {
+    alert("Hello!\n\nThis website shows achievements that you can collect while playing chess on lichess.\n\nPlease be aware, though, that we are an independent entity and not officially affiliated with, endorsed by, or sponsored by lichess or any of its affiliates. Although the user data is fetched via the lichess API, the content on this website is created and managed independently.\n\nHappy collecting!");
+}
 
 
 
