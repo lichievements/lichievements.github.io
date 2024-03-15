@@ -63,29 +63,29 @@
     },
     {
       "id": "opening-french",
-      "title_locked": "Play the French",
-      "title": "Play the French",
+      "title_locked": "French",
+      "title": "French: 1. e4 e6",
       "image": "images/opening-french.png",
       "moves": "e4 e6"
     },
     {
       "id": "opening-pirc",
-      "title_locked": "Play the Pirc",
-      "title": "Play the Pirc",
+      "title_locked": "Pirc",
+      "title": "Pirc: 1. e4 d6",
       "image": "images/opening-pirc.png",
       "moves": "e4 d6"
     },
     {
       "id": "opening-carokann",
-      "title_locked": "Play the Caro-Kann",
-      "title": "Play the Caro-Kann",
+      "title_locked": "Caro-Kann",
+      "title": "Caro-Kann: 1. e4 c6",
       "image": "images/opening-carokann.png",
       "moves": "e4 c6"
     },
     {
       "id": "opening-scandinavian",
-      "title_locked": "Play the Scandinavian",
-      "title": "Play the Scandinavian",
+      "title_locked": "Scandinavian",
+      "title": "Scandinavian: 1. e4 d5",
       "image": "images/opening-scandinavian.png",
       "moves": "e4 d5"
     }
