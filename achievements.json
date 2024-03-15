@@ -83,13 +83,23 @@
       "image": "unlocked.png"
     }
   ],
-  "Miscellaneous": [
-    {
-      "id": "play-games",
+  "Play games": [
+  	{
+  		"id": "play-games",
       "title_locked": "Play many games",
       "title": "Play many games",
       "image": "unlocked.png"
-    },
+  	}
+  ],
+  "Play games: variants": [
+  	{
+  		"id": "variant-atomic",
+      "title_locked": "Play atomic",
+      "title": "Play atomic",
+      "image": "variant-atomic.png"
+  	}
+  ],
+  "Miscellaneous": [
     {
       "id": "support-patron",
       "title_locked": "Be a patron",
