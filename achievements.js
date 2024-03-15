@@ -238,7 +238,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
         
         counter += 1;
         
-        await sleep(10);
+        await sleep(1);
     }
     
     for (let i = 0; i < gamesBlack.length; i++) {
@@ -314,7 +314,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
         
         counter += 1;
         
-        await sleep(10);
+        await sleep(1);
     }
     
     loadDiv.innerHTML = 'Analyzing user data...';
