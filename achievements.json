@@ -96,14 +96,42 @@
       "title_locked": "Play many games",
       "title": "Play many games",
       "image": "images/unlocked.png"
-  	}
-  ],
-  "Play Games: Variants": [
+  	},
   	{
-  		"id": "variant-atomic",
-      "title_locked": "Play atomic",
-      "title": "Play atomic",
-      "image": "images/variant-atomic.png"
+  		"id": "play-ultraBullet",
+      "title_locked": "Play Ultrabullet",
+      "title": "Play Ultrabullet",
+      "image": "images/rated-ultrabullet.png"
+  	},
+  	{
+  		"id": "play-bullet",
+      "title_locked": "Play Bullet",
+      "title": "Play Bullet",
+      "image": "images/rated-bullet.png"
+  	},
+  	{
+  		"id": "play-blitz",
+      "title_locked": "Play Blitz",
+      "title": "Play Blitz",
+      "image": "images/rated-blitz.png"
+  	},
+  	{
+  		"id": "play-rapid",
+      "title_locked": "Play Rapid",
+      "title": "Play Rapid",
+      "image": "images/rated-rapid.png"
+  	},
+  	{
+  		"id": "play-classical",
+      "title_locked": "Play Classical",
+      "title": "Play Classical",
+      "image": "images/rated-classical.png"
+  	},
+  	{
+  		"id": "play-correspondence",
+      "title_locked": "Play Correspondence",
+      "title": "Play Correspondence",
+      "image": "images/rated-correspondence.png"
   	}
   ],
   "Miscellaneous": [
