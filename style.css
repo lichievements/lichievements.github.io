@@ -167,6 +167,10 @@ body.darkTheme img.achievement-image {
   animation: rotateAnimation 2s linear infinite;
 }
 
+#loading-div {
+  font-style: italic;
+}
+
 
 /* Container holding the image and the tooltip text */
 .tooltip {

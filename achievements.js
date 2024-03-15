@@ -88,30 +88,108 @@ function resetAchievements() {
     document.getElementById('summary').innerHTML = '';
 }
 
-async function checkAchievements() {
-    resetAchievements(); // Reset achievements visuals and summary
+async function checkAchievements() { // this function gets called by the input button
+    
+    // Reset achievements, reset summary at the bottom
+    resetAchievements(); 
     
     // Create hourglass
     loadDiv = document.getElementById("loading-div");
-    loadDiv.innerHTML = '<i id="hourglass" class="fa-regular fa-hourglass-half"></i>&ensp;<span style="font-style:italic;">Loading games...</span>'
+    loadDiv.innerHTML = '<i id="hourglass" class="fa-regular fa-hourglass-half"></i>&ensp;Loading games...'
 
     const username = document.getElementById('username').value;
+    let gamesWhite, gamesBlack, userData;
+    
     try {
-        const { gamesWhite, gamesBlack, userData } = await fetchUserData(username);
-        // Now process the data for achievements
-        processAchievements(gamesWhite, gamesBlack, userData, username);
-        console.log("Achievements checked for", username);
+        const data = await fetchUserData(username);
+        gamesWhite = data.gamesWhite;
+        gamesBlack = data.gamesBlack;
+        userData = data.userData;
     } catch (error) {
         console.error("Error checking achievements:", error);
     }
+    
+    // Now process the data for achievements
+    processAchievements(gamesWhite, gamesBlack, userData, username);
     
     // Delete hourglass
     loadDiv.innerHTML = '';
     
 }
 
-function processAchievements(gamesWhite, gamesBlack, userData, username) {
+async function processAchievements(gamesWhite, gamesBlack, userData, username) {
     console.log("processAchievements(..)")
+    
+    const numberOfGamesWhite = gamesWhite.length
+    const numberOfGamesBlack = gamesBlack.length
+    const numberOfGamesTotal = numberOfGamesWhite + numberOfGamesBlack
+    
+    // At the start, no achievement is unlocked
+    let found_opening_sicilian = false;
+    let found_opening_french = false;
+    let found_opening_pirc = false;
+    let found_opening_carokann = false;
+    let found_opening_scandinavian = false;
+    let found_opening_grob = false;
+    let found_opening_bongcloud = false;
+    let found_mate_queen = false;
+    let found_mate_rook = false;
+    let found_mate_bishop = false;
+    let found_mate_knight = false;
+    let found_mate_shortCastle = false;
+    let found_mate_longCastle = false;
+    
+    let counter = 1; // this lets the user know where we're at with analyzing the games
+    
+    for (let i = 0; i < gamesWhite.length; i++) {
+        const game = gamesWhite[i];
+    
+        loadDiv.innerHTML = 'Analyzing game ' + i + '/' + numberOfGamesTotal;
+    
+        // check for Grob 1. g4
+        if (!found_opening_grob && game.moves.startsWith('g4')) {
+            document.getElementById('opening-grob').src = 'images/opening-grob.png';
+            console.log("found a Grob");
+            found_opening_grob = true;
+        }
+        
+        // Check for queen mate
+        if (!found_mate_queen && game.winner == "white" && /Q[^ ]*#/.test(game.moves)) {
+            document.getElementById('queen-mate').src = 'images/unlocked.png';
+            found_mate_queen = true;
+        }
+        
+        counter += 1;
+        
+        await sleep(10);
+    }
+    
+    for (let i = 0; i < gamesBlack.length; i++) {
+        const game = gamesBlack[i];
+    
+        loadDiv.innerHTML = 'Analyzing game ' + i + '/' + numberOfGamesTotal;
+    
+        // check for Sicilian 1. e4 c5
+        if (!found_opening_sicilian && game.moves.startsWith('e4 c5')) {
+            document.getElementById('opening-sicilian').src = 'images/opening-sicilian.png';
+            console.log("found a Sicilian")
+            console.log()
+            found_opening_sicilian = true;
+        }
+        
+        // Check for queen mate
+        if (!found_mate_queen && game.winner == "black" && /Q[^ ]*#/.test(game.moves)) {
+            document.getElementById('queen-mate').src = 'images/unlocked.png';
+            found_mate_queen = true;
+        }
+        
+        counter += 1;
+        
+        await sleep(10);
+    }
+    
+    loadDiv.innerHTML = 'Analyzing user data...';
+    
     //Check for patron:
     if (userData.patron) {
         document.getElementById('support-patron').src = 'images/patron.png';
@@ -135,239 +213,13 @@ function processAchievements(gamesWhite, gamesBlack, userData, username) {
     }
     
     // Check number of rated games:
-    const totalNumberOfGames = gamesWhite.length + gamesBlack.length
-    
     for (let i = 1; i <= 100000; i=i*10) {
-        if (totalNumberOfGames >= i) {
+        if (numberOfGamesTotal >= i) {
             document.getElementById('play-games').src = 'images/play-'+i+'.png';
         }
     }
     
-    // Check for openings: 
-    let found_opening_sicilian = false;
-    let found_opening_french = false;
-    let found_opening_pirc = false;
-    let found_opening_carokann = false;
-    let found_opening_scandinavian = false;
-    let found_opening_grob = false;
-    let found_opening_bongcloud = false;
-
-    gamesWhite.forEach(game => {
-        
-        // check for Sicilian 1. e4 c5
-        if (!found_opening_sicilian && game.moves.startsWith('e4 c5')) {
-            document.getElementById('opening-sicilian').src = 'images/opening-sicilian.png';
-            console.log("found a Sicilian")
-            console.log()
-            found_opening_sicilian = true;
-        }
-        
-        // check for French 1. e4 e6
-        if (!found_opening_french && game.moves.startsWith('e4 e6')) {
-            document.getElementById('opening-french').src = 'images/opening-french.png';
-            console.log("found a French")
-            found_opening_french = true;
-        }
-        
-        // check for Pirc 1. e4 d6
-        if (!found_opening_pirc && game.moves.startsWith('e4 d6')) {
-            document.getElementById('opening-pirc').src = 'images/opening-pirc.png';
-            console.log("found a Pirc")
-            found_opening_pirc = true;
-        }
-        
-        // check for Caro-Kann 1. e4 c6
-        if (!found_opening_carokann && game.moves.startsWith('e4 c6')) {
-            document.getElementById('opening-carokann').src = 'images/opening-carokann.png';
-            console.log("found a Caro-Kann")
-            found_opening_carokann = true;
-        }
-        
-        // check for Scandinavian 1. e4 d5
-        if (!found_opening_scandinavian && game.moves.startsWith('e4 d5')) {
-            document.getElementById('opening-scandinavian').src = 'images/opening-scandinavian.png';
-            console.log("found a Scandinavian")
-            found_opening_scandinavian = true;
-        }
-        
-        // check for Grob 1. g4
-        if (!found_opening_grob && game.moves.startsWith('g4')) {
-            document.getElementById('opening-grob').src = 'images/opening-grob.png';
-            console.log("found a Grob")
-            found_opening_grob = true;
-        }
-        
-        // check for Bong Cloud 1. e4 e5 2. Ke2
-        if (!found_opening_grob && game.moves.startsWith('e4 e5 Ke2')) {
-            document.getElementById('opening-bongcloud').src = 'images/opening-bongcloud.png';
-            console.log("found a Bong Cloud")
-            found_opening_bongcloud = true;
-        }
-        
-    });
-    
-    gamesBlack.forEach(game => {
-        
-        // check for Sicilian 1. e4 c5
-        if (!found_opening_sicilian && game.moves.startsWith('e4 c5')) {
-            document.getElementById('opening-sicilian').src = 'images/opening-sicilian.png';
-            console.log("found a Sicilian")
-            found_opening_sicilian = true;
-        }
-        
-        // check for French 1. e4 e6
-        if (!found_opening_french && game.moves.startsWith('e4 e6')) {
-            document.getElementById('opening-french').src = 'images/opening-french.png';
-            console.log("found a French")
-            found_opening_french = true;
-        }
-        
-        // check for Pirc 1. e4 d6
-        if (!found_opening_pirc && game.moves.startsWith('e4 d6')) {
-            document.getElementById('opening-pirc').src = 'images/opening-pirc.png';
-            console.log("found a Pirc")
-            found_opening_pirc = true;
-        }
-        
-        // check for Caro-Kann 1. e4 c6
-        if (!found_opening_carokann && game.moves.startsWith('e4 c6')) {
-            document.getElementById('opening-carokann').src = 'images/opening-carokann.png';
-            console.log("found a Caro-Kann")
-            found_opening_carokann = true;
-        }
-        
-        // check for Scandinavian 1. e4 d5
-        if (!found_opening_scandinavian && game.moves.startsWith('e4 d5')) {
-            document.getElementById('opening-scandinavian').src = 'images/opening-scandinavian.png';
-            console.log("found a Scandinavian")
-            found_opening_scandinavian = true;
-        }
-        
-        // check for Grob 1. g4
-        if (!found_opening_grob && game.moves.startsWith('g4')) {
-            document.getElementById('opening-grob').src = 'images/opening-grob.png';
-            console.log("found a Grob")
-            found_opening_grob = true;
-        }
-        
-        // check for Bong Cloud 1. e4 e5 2. Ke2
-        if (!found_opening_grob && game.moves.startsWith('e4 e5 Ke2')) {
-            document.getElementById('opening-bongcloud').src = 'images/opening-bongcloud.png';
-            console.log("found a Bong Cloud")
-            found_opening_bongcloud = true;
-        }
-        
-    });
-    
-    // Check for mates:
-    let found_queen_mate = false;
-    let found_rook_mate = false;
-    let found_bishop_mate = false;
-    let found_knight_mate = false;
-    let found_shortCastle_mate = false;
-    let found_longCastle_mate = false;
-    gamesWhite.forEach(game => {
-        
-        // Check for queen mate
-        if (!found_queen_mate && game.winner == "white" && /Q[^ ]*#/.test(game.moves)) {
-            document.getElementById('queen-mate').src = 'images/unlocked.png';
-            found_queen_mate = true;
-        }
-        
-        // Check for rook mate
-        if (!found_rook_mate && game.winner == "white" && /R[^ ]*#/.test(game.moves)) {
-            document.getElementById('rook-mate').src = 'images/unlocked.png';
-            found_rook_mate = true;
-        }
-        
-        // Check for bishop mate
-        if (!found_bishop_mate && game.winner == "white" && /B[^ ]*#/.test(game.moves)) {
-            document.getElementById('bishop-mate').src = 'images/unlocked.png';
-            found_bishop_mate = true;
-        }
-        
-        // Check for knight mate
-        if (!found_knight_mate && game.winner == "white" && /N[^ ]*#/.test(game.moves)) {
-            document.getElementById('knight-mate').src = 'images/unlocked.png';
-            found_knight_mate = true;
-        }
-        
-        // Check for short castle mate
-        if (!found_shortCastle_mate && game.winner == "white" && /0-0[^ ]*#/.test(game.moves)) {
-            document.getElementById('short-castle-mate').src = 'images/unlocked.png';
-            found_shortCastle_mate = true;
-        }
-        
-        // Check for short castle mate
-        if (!found_shortCastle_mate && game.winner == "white" && /O-O[^ ]*#/.test(game.moves)) {
-            document.getElementById('short-castle-mate').src = 'images/unlocked.png';
-            found_shortCastle_mate = true;
-        }
-        
-        // Check for long castle mate
-        if (!found_longCastle_mate && game.winner == "white" && /0-0-0[^ ]*#/.test(game.moves)) {
-            document.getElementById('long-castle-mate').src = 'images/unlocked.png';
-            found_longCastle_mate = true;
-        }
-        
-        // Check for long castle mate
-        if (!found_longCastle_mate && game.winner == "white" && /O-O-O[^ ]*#/.test(game.moves)) {
-            document.getElementById('long-castle-mate').src = 'images/unlocked.png';
-            found_longCastle_mate = true;
-        }
-        
-    });
-    gamesBlack.forEach(game => {
-        
-        // Check for queen mate
-        if (!found_queen_mate && game.winner == "black" && /Q[^ ]*#/.test(game.moves)) {
-            document.getElementById('queen-mate').src = 'images/unlocked.png';
-            found_queen_mate = true;
-        }
-        
-        // Check for rook mate
-        if (!found_rook_mate && game.winner == "black" && /R[^ ]*#/.test(game.moves)) {
-            document.getElementById('rook-mate').src = 'images/unlocked.png';
-            found_rook_mate = true;
-        }
-        
-        // Check for bishop mate
-        if (!found_bishop_mate && game.winner == "black" && /B[^ ]*#/.test(game.moves)) {
-            document.getElementById('bishop-mate').src = 'images/unlocked.png';
-            found_bishop_mate = true;
-        }
-        
-        // Check for knight mate
-        if (!found_knight_mate && game.winner == "black" && /N[^ ]*#/.test(game.moves)) {
-            document.getElementById('knight-mate').src = 'images/unlocked.png';
-            found_knight_mate = true;
-        }
-        
-        // Check for short castle mate
-        if (!found_shortCastle_mate && game.winner == "black" && /0-0[^ ]*#/.test(game.moves)) {
-            document.getElementById('short-castle-mate').src = 'images/unlocked.png';
-            found_shortCastle_mate = true;
-        }
-        
-        // Check for short castle mate
-        if (!found_shortCastle_mate && game.winner == "black" && /O-O[^ ]*#/.test(game.moves)) {
-            document.getElementById('short-castle-mate').src = 'images/unlocked.png';
-            found_shortCastle_mate = true;
-        }
-        
-        // Check for long castle mate
-        if (!found_longCastle_mate && game.winner == "black" && /0-0-0[^ ]*#/.test(game.moves)) {
-            document.getElementById('long-castle-mate').src = 'images/unlocked.png';
-            found_longCastle_mate = true;
-        }
-        
-        // Check for long castle mate
-        if (!found_longCastle_mate && game.winner == "black" && /O-O-O[^ ]*#/.test(game.moves)) {
-            document.getElementById('long-castle-mate').src = 'images/unlocked.png';
-            found_longCastle_mate = true;
-        }
-        
-    });
+    loadDiv.innerHTML = '';
     
     // Summarize: 
     var numAchTotal = document.querySelectorAll('img').length;;
@@ -391,4 +243,6 @@ function showInfo() {
 
 
 
-
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}

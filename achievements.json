@@ -1,5 +1,5 @@
 {
-  "Win the game": [
+  "Win the Game": [
     {
       "id": "queen-mate",
       "title_locked": "Queen mate",
@@ -83,7 +83,7 @@
       "image": "unlocked.png"
     }
   ],
-  "Play games": [
+  "Play Games": [
   	{
   		"id": "play-games",
       "title_locked": "Play many games",
@@ -91,7 +91,7 @@
       "image": "unlocked.png"
   	}
   ],
-  "Play games: variants": [
+  "Play Games: Variants": [
   	{
   		"id": "variant-atomic",
       "title_locked": "Play atomic",
