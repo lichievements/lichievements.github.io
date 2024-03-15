@@ -107,6 +107,7 @@ function processAchievements(gamesWhite, gamesBlack, userData, username) {
     //Check for patron:
     if (userData.patron) {
         document.getElementById('support-patron').src = 'images/patron.png';
+        document.getElementById('support-patron').classList.add("goldshadow");
         console.log(`${username} is a patron of Lichess.`);
     }
     

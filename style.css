@@ -149,6 +149,12 @@ body.darkTheme img.achievement-image {
   filter: brightness(50%);
 }
 
+/* todo later... */
+/*.goldshadow {
+  box-shadow: 0 4px 8px 0 rgba(255, 215, 0, 0.2), 0 6px 20px 0 rgba(255, 215, 0, 0.19);
+}*/
+
+
 /* Container holding the image and the tooltip text */
 .tooltip {
   position: relative;
