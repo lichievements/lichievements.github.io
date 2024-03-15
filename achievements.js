@@ -38,11 +38,14 @@ function displayAchievements(achievements) {
     }
 }
 
+let achievementsJSON;
+
 // Load achievements data from data.json and then display achievements
 fetch('achievements.json')
     .then(response => response.json())
     .then(data => {
         displayAchievements(data);
+        achievementsJSON = data;
     })
     .catch(error => console.error('Error loading achievements data:', error));
 
@@ -81,10 +84,29 @@ async function fetchUserData(username) {
 
 function resetAchievements() {
     const ach = document.getElementsByClassName('achievement-image');
-    //console.log(ach);
+
     for (let i = 0; i < ach.length; i++) {
         ach[i].src = 'images/locked.png';
     }
+    
+    // reset tooltips
+    let resetTooltips = document.querySelectorAll('span.tooltiptext');
+    resetTooltips.forEach(span => {
+        let title;
+        let id = span.id.substring(0, span.id.length - 8);
+        
+        Object.keys(achievementsJSON).forEach(category => {
+            const items = achievementsJSON[category];
+            // Find the item in the category that matches the given id
+            const item = items.find(item => item.id === id);
+            if (item) {
+                title = item.title_locked;
+            }
+        });
+        
+        span.textContent = title;
+    });
+    
     document.getElementById('summary').innerHTML = '';
 }
 
@@ -125,39 +147,81 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
     const numberOfGamesTotal = numberOfGamesWhite + numberOfGamesBlack
     
     // At the start, no achievement is unlocked
-    let found_opening_sicilian = false;
-    let found_opening_french = false;
-    let found_opening_pirc = false;
-    let found_opening_carokann = false;
-    let found_opening_scandinavian = false;
-    let found_opening_grob = false;
-    let found_opening_bongcloud = false;
+    let objectAchievements = {};
+    
+    for (let i = 0; i < achievementsJSON["Openings: White"].length; i++) {
+        objectAchievements[achievementsJSON["Openings: White"][i].id] = false;
+    };
+    for (let i = 0; i < achievementsJSON["Openings: Black"].length; i++) {
+        objectAchievements[achievementsJSON["Openings: Black"][i].id] = false;
+    };
+
     let found_mate_queen = false;
     let found_mate_rook = false;
     let found_mate_bishop = false;
     let found_mate_knight = false;
-    let found_mate_shortCastle = false;
-    let found_mate_longCastle = false;
+    let found_mate_castle_short = false;
+    let found_mate_castle_long = false;
     
     let counter = 1; // this lets the user know where we're at with analyzing the games
     
     for (let i = 0; i < gamesWhite.length; i++) {
         const game = gamesWhite[i];
+        let color = "white";
     
         loadDiv.innerHTML = 'Analyzing game ' + i + '/' + numberOfGamesTotal;
     
-        // check for Grob 1. g4
-        if (!found_opening_grob && game.moves.startsWith('g4')) {
-            document.getElementById('opening-grob').src = 'images/opening-grob.png';
-            console.log("found a Grob");
-            found_opening_grob = true;
-        }
+        for (let i = 0; i < achievementsJSON["Openings: White"].length; i++) {
+            console.log(achievementsJSON["Openings: White"][i].id);
+            let achID = achievementsJSON["Openings: White"][i].id;
+            if (!objectAchievements[achievementsJSON["Openings: White"][i].id] && game.moves.startsWith(achievementsJSON["Openings: White"][i].moves)) {
+                document.getElementById(achID).src = achievementsJSON["Openings: White"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip').textContent = achievementsJSON["Openings: White"].find(item => item.id === achID).title;
+                objectAchievements[achievementsJSON["Openings: White"][i].id] = true
+            };
+        };
         
         // Check for queen mate
-        if (!found_mate_queen && game.winner == "white" && /Q[^ ]*#/.test(game.moves)) {
-            document.getElementById('queen-mate').src = 'images/unlocked.png';
+        if (!found_mate_queen && game.winner == color && /Q[^ ]*#/.test(game.moves)) {
+            document.getElementById('queen-mate').src = achievementsJSON["Win the Game"].find(item => item.id === 'queen-mate').image;
+            document.getElementById('queen-mate-tooltip').textContent = achievementsJSON["Win the Game"].find(item => item.id === 'queen-mate').title;
             found_mate_queen = true;
-        }
+        };
+        
+        // Check for rook mate
+        if (!found_mate_rook && game.winner == color && /R[^ ]*#/.test(game.moves)) {
+            document.getElementById('rook-mate').src = achievementsJSON["Win the Game"].find(item => item.id === 'rook-mate').image;
+            document.getElementById('rook-mate-tooltip').textContent = achievementsJSON["Win the Game"].find(item => item.id === 'rook-mate').title;
+            found_mate_rook = true;
+        };
+        
+        // Check for bishop mate
+        if (!found_mate_bishop && game.winner == color && /B[^ ]*#/.test(game.moves)) {
+            document.getElementById('bishop-mate').src = achievementsJSON["Win the Game"].find(item => item.id === 'bishop-mate').image;
+            document.getElementById('bishop-mate-tooltip').textContent = achievementsJSON["Win the Game"].find(item => item.id === 'bishop-mate').title;
+            found_mate_bishop = true;
+        };
+        
+        // Check for knight mate
+        if (!found_mate_knight && game.winner == color && /N[^ ]*#/.test(game.moves)) {
+            document.getElementById('knight-mate').src = achievementsJSON["Win the Game"].find(item => item.id === 'knight-mate').image;
+            document.getElementById('knight-mate-tooltip').textContent = achievementsJSON["Win the Game"].find(item => item.id === 'knight-mate').title;
+            found_mate_knight = true;
+        };
+        
+        // Check for short castle mate
+        if (!found_mate_castle_short && game.winner == color && /O-O[^ ]*#/.test(game.moves)) {
+            document.getElementById('short-castle-mate').src = achievementsJSON["Win the Game"].find(item => item.id === 'short-castle-mate').image;
+            document.getElementById('short-castle-mate-tooltip').textContent = achievementsJSON["Win the Game"].find(item => item.id === 'short-castle-mate').title;
+            found_mate_castle_short = true;
+        };
+        
+        // Check for long castle mate
+        if (!found_mate_castle_long && game.winner == color && /O-O[^ ]*#/.test(game.moves)) {
+            document.getElementById('long-castle-mate').src = achievementsJSON["Win the Game"].find(item => item.id === 'long-castle-mate').image;
+            document.getElementById('long-castle-mate-tooltip').textContent = achievementsJSON["Win the Game"].find(item => item.id === 'long-castle-mate').title;
+            found_mate_castle_long = true;
+        };
         
         counter += 1;
         
@@ -166,22 +230,61 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
     
     for (let i = 0; i < gamesBlack.length; i++) {
         const game = gamesBlack[i];
+        let color = "black";
     
         loadDiv.innerHTML = 'Analyzing game ' + i + '/' + numberOfGamesTotal;
     
-        // check for Sicilian 1. e4 c5
-        if (!found_opening_sicilian && game.moves.startsWith('e4 c5')) {
-            document.getElementById('opening-sicilian').src = 'images/opening-sicilian.png';
-            console.log("found a Sicilian")
-            console.log()
-            found_opening_sicilian = true;
-        }
+        for (let i = 0; i < achievementsJSON["Openings: Black"].length; i++) {
+            console.log(achievementsJSON["Openings: Black"][i].id);
+            let achID = achievementsJSON["Openings: Black"][i].id;
+            if (!objectAchievements[achievementsJSON["Openings: Black"][i].id] && game.moves.startsWith(achievementsJSON["Openings: Black"][i].moves)) {
+                document.getElementById(achID).src = achievementsJSON["Openings: Black"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip').textContent = achievementsJSON["Openings: Black"].find(item => item.id === achID).title;
+                objectAchievements[achievementsJSON["Openings: Black"][i].id] = true
+            };
+        };
         
         // Check for queen mate
-        if (!found_mate_queen && game.winner == "black" && /Q[^ ]*#/.test(game.moves)) {
-            document.getElementById('queen-mate').src = 'images/unlocked.png';
+        if (!found_mate_queen && game.winner == color && /Q[^ ]*#/.test(game.moves)) {
+            document.getElementById('queen-mate').src = achievementsJSON["Win the Game"].find(item => item.id === 'queen-mate').image;
+            document.getElementById('queen-mate-tooltip').textContent = achievementsJSON["Win the Game"].find(item => item.id === 'queen-mate').title;
             found_mate_queen = true;
-        }
+        };
+        
+        // Check for rook mate
+        if (!found_mate_queen && game.winner == color && /R[^ ]*#/.test(game.moves)) {
+            document.getElementById('rook-mate').src = achievementsJSON["Win the Game"].find(item => item.id === 'rook-mate').image;
+            document.getElementById('rook-mate-tooltip').textContent = achievementsJSON["Win the Game"].find(item => item.id === 'rook-mate').title;
+            found_mate_rook = true;
+        };
+        
+        // Check for bishop mate
+        if (!found_mate_bishop && game.winner == color && /B[^ ]*#/.test(game.moves)) {
+            document.getElementById('bishop-mate').src = achievementsJSON["Win the Game"].find(item => item.id === 'bishop-mate').image;
+            document.getElementById('bishop-mate-tooltip').textContent = achievementsJSON["Win the Game"].find(item => item.id === 'bishop-mate').title;
+            found_mate_bishop = true;
+        };
+        
+        // Check for knight mate
+        if (!found_mate_knight && game.winner == color && /N[^ ]*#/.test(game.moves)) {
+            document.getElementById('knight-mate').src = achievementsJSON["Win the Game"].find(item => item.id === 'knight-mate').image;
+            document.getElementById('knight-mate-tooltip').textContent = achievementsJSON["Win the Game"].find(item => item.id === 'knight-mate').title;
+            found_mate_knight = true;
+        };
+        
+        // Check for short castle mate
+        if (!found_mate_castle_short && game.winner == color && /O-O[^ ]*#/.test(game.moves)) {
+            document.getElementById('short-castle-mate').src = achievementsJSON["Win the Game"].find(item => item.id === 'short-castle-mate').image;
+            document.getElementById('short-castle-mate-tooltip').textContent = achievementsJSON["Win the Game"].find(item => item.id === 'short-castle-mate').title;
+            found_mate_castle_short = true;
+        };
+        
+        // Check for long castle mate
+        if (!found_mate_castle_long && game.winner == color && /O-O[^ ]*#/.test(game.moves)) {
+            document.getElementById('long-castle-mate').src = achievementsJSON["Win the Game"].find(item => item.id === 'long-castle-mate').image;
+            document.getElementById('long-castle-mate-tooltip').textContent = achievementsJSON["Win the Game"].find(item => item.id === 'long-castle-mate').title;
+            found_mate_castle_long = true;
+        };
         
         counter += 1;
         

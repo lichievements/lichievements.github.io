@@ -4,83 +4,90 @@
       "id": "queen-mate",
       "title_locked": "Queen mate",
       "title": "Queen mate",
-      "image": "unlocked.png"
+      "image": "images/mate-queen.png"
     },
     {
       "id": "rook-mate",
       "title_locked": "Rook mate",
       "title": "Rook mate",
-      "image": "unlocked.png"
+      "image": "images/mate-rook.png"
     },
     {
       "id": "bishop-mate",
       "title_locked": "Bishop mate",
       "title": "Bishop mate",
-      "image": "unlocked.png"
+      "image": "images/mate-bishop.png"
     },
     {
       "id": "knight-mate",
       "title_locked": "Knight mate",
       "title": "Knight mate",
-      "image": "unlocked.png"
+      "image": "images/mate-knight.png"
     },
     {
       "id": "short-castle-mate",
       "title_locked": "???",
       "title": "Short castle mate",
-      "image": "unlocked.png"
+      "image": "images/mate-castle-short.png"
     },
     {
       "id": "long-castle-mate",
       "title_locked": "???",
       "title": "Long castle mate",
-      "image": "unlocked.png"
+      "image": "images/mate-castle-long.png"
     }
   ],
   "Openings: White": [
     {
       "id": "opening-grob",
-      "title_locked": "???",
-      "title": "Play the Grob",
-      "image": "unlocked.png"
+      "title_locked": "Grob",
+      "title": "Grob: 1. g4",
+      "image": "images/opening-grob.png",
+      "moves": "g4"
     },
     {
       "id": "opening-bongcloud",
-      "title_locked": "???",
-      "title": "Play the Bong Cloud",
-      "image": "unlocked.png"
+      "title_locked": "Bong Cloud",
+      "title": "Bong Cloud: 1. e4 e5 2. Ke2",
+      "image": "images/opening-bongcloud.png",
+      "moves": "e4 e5 Ke2"
     }
   ],
   "Openings: Black": [
     {
       "id": "opening-sicilian",
-      "title_locked": "Play the Sicilian",
-      "title": "Play the Sicilian",
-      "image": "unlocked.png"
+      "title_locked": "Sicilian",
+      "title": "Sicilian: 1. e4 c5",
+      "image": "images/opening-sicilian.png",
+      "moves": "e4 c5"
     },
     {
       "id": "opening-french",
       "title_locked": "Play the French",
       "title": "Play the French",
-      "image": "unlocked.png"
+      "image": "images/opening-french.png",
+      "moves": "e4 e6"
     },
     {
       "id": "opening-pirc",
       "title_locked": "Play the Pirc",
       "title": "Play the Pirc",
-      "image": "unlocked.png"
+      "image": "images/opening-pirc.png",
+      "moves": "e4 d6"
     },
     {
       "id": "opening-carokann",
       "title_locked": "Play the Caro-Kann",
       "title": "Play the Caro-Kann",
-      "image": "unlocked.png"
+      "image": "images/opening-carokann.png",
+      "moves": "e4 c6"
     },
     {
       "id": "opening-scandinavian",
       "title_locked": "Play the Scandinavian",
       "title": "Play the Scandinavian",
-      "image": "unlocked.png"
+      "image": "images/opening-scandinavian.png",
+      "moves": "e4 d5"
     }
   ],
   "Play Games": [
@@ -88,7 +95,7 @@
   		"id": "play-games",
       "title_locked": "Play many games",
       "title": "Play many games",
-      "image": "unlocked.png"
+      "image": "images/unlocked.png"
   	}
   ],
   "Play Games: Variants": [
@@ -96,7 +103,7 @@
   		"id": "variant-atomic",
       "title_locked": "Play atomic",
       "title": "Play atomic",
-      "image": "variant-atomic.png"
+      "image": "images/variant-atomic.png"
   	}
   ],
   "Miscellaneous": [
@@ -104,13 +111,13 @@
       "id": "support-patron",
       "title_locked": "Be a patron",
       "title": "Be a patron",
-      "image": "unlocked.png"
+      "image": "images/patron.png"
     },
     {
       "id": "account-age",
       "title_locked": "???",
       "title": "Happy Birthday!",
-      "image": "unlocked.png"
+      "image": "images/birthday.png"
     }
   ]
 }
