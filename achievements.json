@@ -37,7 +37,21 @@
       "image": "unlocked.png"
     }
   ],
-  "Openings": [
+  "Openings: White": [
+    {
+      "id": "opening-grob",
+      "title_locked": "???",
+      "title": "Play the Grob",
+      "image": "unlocked.png"
+    },
+    {
+      "id": "opening-bongcloud",
+      "title_locked": "???",
+      "title": "Play the Bong Cloud",
+      "image": "unlocked.png"
+    }
+  ],
+  "Openings: Black": [
     {
       "id": "opening-sicilian",
       "title_locked": "Play the Sicilian",
@@ -66,18 +80,6 @@
       "id": "opening-scandinavian",
       "title_locked": "Play the Scandinavian",
       "title": "Play the Scandinavian",
-      "image": "unlocked.png"
-    },
-    {
-      "id": "opening-grob",
-      "title_locked": "???",
-      "title": "Play the Grob",
-      "image": "unlocked.png"
-    },
-    {
-      "id": "opening-bongcloud",
-      "title_locked": "???",
-      "title": "Play the Bong Cloud",
       "image": "unlocked.png"
     }
   ],
