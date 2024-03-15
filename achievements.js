@@ -90,6 +90,10 @@ function resetAchievements() {
 
 async function checkAchievements() {
     resetAchievements(); // Reset achievements visuals and summary
+    
+    // Create hourglass
+    loadDiv = document.getElementById("loading-div");
+    loadDiv.innerHTML = '<i id="hourglass" class="fa-regular fa-hourglass-half"></i>&ensp;<span style="font-style:italic;">Loading games...</span>'
 
     const username = document.getElementById('username').value;
     try {
@@ -100,6 +104,10 @@ async function checkAchievements() {
     } catch (error) {
         console.error("Error checking achievements:", error);
     }
+    
+    // Delete hourglass
+    loadDiv.innerHTML = '';
+    
 }
 
 function processAchievements(gamesWhite, gamesBlack, userData, username) {
