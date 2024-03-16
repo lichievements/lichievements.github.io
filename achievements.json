@@ -39,6 +39,55 @@
   ],
   "Openings: White": [
     {
+      "id": "opening-italian",
+      "title_locked": "Italian",
+      "title": "Italian: 1. e4 e5 2. Nf3 Nc6 3. Bc4",
+      "image": "images/opening-italian.png",
+      "moves": "e4 e5 Nf3 Nc6 Bc4"
+    },
+    {
+      "id": "opening-ruylopez",
+      "title_locked": "Ruy Lopez",
+      "title": "Ruy Lopez: 1. e4 e5 2. Nf3 Nc6 3. Bb5",
+      "image": "images/opening-ruylopez.png",
+      "moves": "e4 e5 Nf3 Nc6 Bb5"
+    },
+    {
+      "id": "opening-scotch",
+      "title_locked": "Scotch",
+      "title": "Scotch: 1. e4 e5 2. Nf3 Nc6 3. d4",
+      "image": "images/opening-scotch.png",
+      "moves": "e4 e5 Nf3 Nc6 d4"
+    },
+    {
+      "id": "opening-queensgambit",
+      "title_locked": "Queen's Gambit",
+      "title": "Queen's Gambit: 1. d4 d5 2. c4",
+      "image": "images/opening-queensgambit.png",
+      "moves": "d4 d5 c4"
+    },
+    {
+      "id": "opening-kingsgambit",
+      "title_locked": "King's Gambit",
+      "title": "King's Gambit: 1. e4 e5 2. f4",
+      "image": "images/opening-kingsgambit.png",
+      "moves": "e4 e5 f4"
+    },
+    {
+      "id": "opening-english",
+      "title_locked": "English",
+      "title": "English: 1. c4",
+      "image": "images/opening-english.png",
+      "moves": "c4"
+    },
+    {
+      "id": "opening-reti",
+      "title_locked": "Reti",
+      "title": "Reti: 1. Nf3",
+      "image": "images/opening-reti.png",
+      "moves": "Nf3"
+    },
+    {
       "id": "opening-grob",
       "title_locked": "Grob",
       "title": "Grob: 1. g4",
@@ -47,10 +96,17 @@
     },
     {
       "id": "opening-bongcloud",
-      "title_locked": "Bong Cloud",
+      "title_locked": "???",
       "title": "Bong Cloud: 1. e4 e5 2. Ke2",
       "image": "images/opening-bongcloud.png",
       "moves": "e4 e5 Ke2"
+    },
+    {
+      "id": "opening-huebschgambit",
+      "title_locked": "???",
+      "title": "Hübsch Gambit: 1. d4 d5 2. Nc3 Nf6 3. e4",
+      "image": "images/opening-huebschgambit.png",
+      "moves": "d4 d5 Nc3 Nf6 e4"
     }
   ],
   "Openings: Black": [
@@ -60,20 +116,6 @@
       "title": "Sicilian: 1. e4 c5",
       "image": "images/opening-sicilian.png",
       "moves": "e4 c5"
-    },
-    {
-      "id": "opening-french",
-      "title_locked": "French",
-      "title": "French: 1. e4 e6",
-      "image": "images/opening-french.png",
-      "moves": "e4 e6"
-    },
-    {
-      "id": "opening-pirc",
-      "title_locked": "Pirc",
-      "title": "Pirc: 1. e4 d6",
-      "image": "images/opening-pirc.png",
-      "moves": "e4 d6"
     },
     {
       "id": "opening-carokann",
@@ -88,6 +130,27 @@
       "title": "Scandinavian: 1. e4 d5",
       "image": "images/opening-scandinavian.png",
       "moves": "e4 d5"
+    },
+    {
+      "id": "opening-pirc",
+      "title_locked": "Pirc",
+      "title": "Pirc: 1. e4 d6",
+      "image": "images/opening-pirc.png",
+      "moves": "e4 d6"
+    },
+    {
+      "id": "opening-french",
+      "title_locked": "French",
+      "title": "French: 1. e4 e6",
+      "image": "images/opening-french.png",
+      "moves": "e4 e6"
+    },
+    {
+      "id": "opening-doublebongcloud",
+      "title_locked": "???",
+      "title": "Double Bong Cloud: 1. e4 e5 2. Ke2 Ke7",
+      "image": "images/opening-doublebongcloud.png",
+      "moves": "e4 e5 Ke2 Ke7"
     }
   ],
   "Play Games": [

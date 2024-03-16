@@ -115,13 +115,24 @@ def printOpening(name, moves):
     img.save("opening-" + name + ".png")
 
 # Finally we can print the opening images
+# WHITE
+printOpening("italian", "e4 e5 Nf3 Nc6 Bc4")
+printOpening("ruylopez", "e4 e5 Nf3 Nc6 Bb5")
+printOpening("scotch", "e4 e5 Nf3 Nc6 d4")
+printOpening("queensgambit", "d4 d5 c4")
+printOpening("kingsgambit", "e4 e5 f4")
+printOpening("english", "c4")
+printOpening("reti", "Nf3")
+printOpening("grob", "g4")
+printOpening("bongcloud", "e4 e5 Ke2")
+printOpening("huebschgambit", "d4 d5 Nc3 Nf6 e4")
+# BLACK
 printOpening("sicilian", "e4 c5")
 printOpening("carokann", "e4 c6")
 printOpening("scandinavian", "e4 d5")
 printOpening("pirc", "e4 d6")
 printOpening("french", "e4 e6")
-printOpening("grob", "g4")
-printOpening("bongcloud", "e4 e5 Ke2")
 printOpening("doublebongcloud", "e4 e5 Ke2 Ke7")
+
 
 
