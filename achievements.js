@@ -275,8 +275,8 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
             for (let i of possible_ends) {
                 if (game.winner == color && game.moves.includes(i)) {
                     achID = "en-passant-mate";
-                    document.getElementById(achID).src = achievementsJSON["Openings: White"].find(item => item.id === achID).image;
-                    document.getElementById(achID+'-tooltip').textContent = achievementsJSON["Openings: White"].find(item => item.id === achID).title;
+                    document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
+                    document.getElementById(achID+'-tooltip').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).title;
                 };
             };
             
@@ -430,8 +430,8 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
             for (let i of possible_ends) {
                 if (game.winner == color && game.moves.includes(i)) {
                     achID = "en-passant-mate";
-                    document.getElementById(achID).src = achievementsJSON["Openings: White"].find(item => item.id === achID).image;
-                    document.getElementById(achID+'-tooltip').textContent = achievementsJSON["Openings: White"].find(item => item.id === achID).title;
+                    document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
+                    document.getElementById(achID+'-tooltip').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).title;
                 };
             };
         
