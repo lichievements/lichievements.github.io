@@ -271,7 +271,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
             };
             
             // Check for en passant mate (as white)
-            let possible_ends = ["a5 bxa6#", "b5 axb6", "b5 cxb6", "c5 bxc6", "c5 dxc6", "d5 cxd6", "d5 exd6", "e5 dxe6", "e5 fxe6", "f5 exf6", "f5 gxf6", "g5 fxg6", "g5 hxg6", "h5 gxh6"];
+            let possible_ends = ["a5 bxa6#", "b5 axb6#", "b5 cxb6#", "c5 bxc6#", "c5 dxc6#", "d5 cxd6#", "d5 exd6#", "e5 dxe6#", "e5 fxe6#", "f5 exf6#", "f5 gxf6#", "g5 fxg6#", "g5 hxg6#", "h5 gxh6#"];
             for (let i of possible_ends) {
                 if (game.winner == color && game.moves.includes(i)) {
                     achID = "en-passant-mate";
@@ -426,7 +426,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
             };
             
             // Check for en passant mate (as black)
-            let possible_ends = ["a4 bxa3#", "b4 axb3", "b4 cxb3", "c4 bxc3", "c4 dxc3", "d4 cxd3", "d4 exd3", "e4 dxe3", "e4 fxe3", "f4 exf3", "f4 gxf3", "g4 fxg3", "g4 hxg3", "h4 gxh3"];
+            let possible_ends = ["a4 bxa3#", "b4 axb3#", "b4 cxb3#", "c4 bxc3#", "c4 dxc3#", "d4 cxd3#", "d4 exd3#", "e4 dxe3#", "e4 fxe3#", "f4 exf3#", "f4 gxf3#", "g4 fxg3#", "g4 hxg3#", "h4 gxh3#"];
             for (let i of possible_ends) {
                 if (game.winner == color && game.moves.includes(i)) {
                     achID = "en-passant-mate";
