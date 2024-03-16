@@ -272,6 +272,59 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
             
         };
         
+        if (game.variant != "standard") {
+            // Any variant 
+            
+            if (game.variant == "crazyhouse") {
+                achID = "variant-crazyhouse";
+                document.getElementById(achID).src = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip').textContent = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).title;
+            }
+            
+            if (game.variant == "chess960") {
+                achID = "variant-chess960";
+                document.getElementById(achID).src = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip').textContent = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).title;
+            }
+            
+            if (game.variant == "kingOfTheHill") {
+                achID = "variant-kingOfTheHill";
+                document.getElementById(achID).src = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip').textContent = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).title;
+            }
+            
+            if (game.variant == "threeCheck") {
+                achID = "variant-threeCheck";
+                document.getElementById(achID).src = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip').textContent = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).title;
+            }
+            
+            if (game.variant == "antichess") {
+                achID = "variant-antichess";
+                document.getElementById(achID).src = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip').textContent = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).title;
+            }
+            
+            if (game.variant == "atomic") {
+                achID = "variant-atomic";
+                document.getElementById(achID).src = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip').textContent = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).title;
+            }
+            
+            if (game.variant == "horde") {
+                achID = "variant-horde";
+                document.getElementById(achID).src = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip').textContent = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).title;
+            }
+            
+            if (game.variant == "racingKings") {
+                achID = "variant-racingKings";
+                document.getElementById(achID).src = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip').textContent = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).title;
+            }
+            
+        }
+        
         counter += 1;
         
         await sleep(1);
@@ -363,6 +416,59 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
             };
         
         };
+        
+        if (game.variant != "standard") {
+            // Any variant 
+            
+            if (game.variant == "crazyhouse") {
+                achID = "variant-crazyhouse";
+                document.getElementById(achID).src = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip').textContent = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).title;
+            }
+            
+            if (game.variant == "chess960") {
+                achID = "variant-chess960";
+                document.getElementById(achID).src = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip').textContent = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).title;
+            }
+            
+            if (game.variant == "kingOfTheHill") {
+                achID = "variant-kingOfTheHill";
+                document.getElementById(achID).src = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip').textContent = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).title;
+            }
+            
+            if (game.variant == "threeCheck") {
+                achID = "variant-threeCheck";
+                document.getElementById(achID).src = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip').textContent = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).title;
+            }
+            
+            if (game.variant == "antichess") {
+                achID = "variant-antichess";
+                document.getElementById(achID).src = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip').textContent = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).title;
+            }
+            
+            if (game.variant == "atomic") {
+                achID = "variant-atomic";
+                document.getElementById(achID).src = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip').textContent = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).title;
+            }
+            
+            if (game.variant == "horde") {
+                achID = "variant-horde";
+                document.getElementById(achID).src = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip').textContent = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).title;
+            }
+            
+            if (game.variant == "racingKings") {
+                achID = "variant-racingKings";
+                document.getElementById(achID).src = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip').textContent = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).title;
+            }
+            
+        }
         
         counter += 1;
         

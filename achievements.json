@@ -216,6 +216,56 @@
       "image": "images/rated-correspondence.png"
   	}
   ],
+  "Play Games: Variants": [
+  	{
+  		"id": "variant-crazyhouse",
+      "title_locked": "Play Crazyhouse",
+      "title": "Play Crazyhouse",
+      "image": "images/variant-crazyhouse.png"
+  	},
+  	{
+  		"id": "variant-chess960",
+      "title_locked": "Play Chess960",
+      "title": "Play Chess960",
+      "image": "images/variant-chess960.png"
+  	},
+  	{
+  		"id": "variant-kingOfTheHill",
+      "title_locked": "Play King of the Hill",
+      "title": "Play King of the Hill",
+      "image": "images/variant-kingOfTheHill.png"
+  	},
+  	{
+  		"id": "variant-threeCheck",
+      "title_locked": "Play Three-Check",
+      "title": "Play Three-Check",
+      "image": "images/variant-threeCheck.png"
+  	},
+  	{
+  		"id": "variant-antichess",
+      "title_locked": "Play Antichess",
+      "title": "Play Antichess",
+      "image": "images/variant-antichess.png"
+  	},
+  	{
+  		"id": "variant-atomic",
+      "title_locked": "Play Atomic",
+      "title": "Play Atomic",
+      "image": "images/variant-atomic.png"
+  	},
+  	{
+  		"id": "variant-horde",
+      "title_locked": "Play Horde",
+      "title": "Play Horde",
+      "image": "images/variant-horde.png"
+  	},
+  	{
+  		"id": "variant-racingKings",
+      "title_locked": "Play Racing Kings",
+      "title": "Play Racing Kings",
+      "image": "images/variant-racingKings.png"
+  	}
+  ],
   "Miscellaneous": [
     {
       "id": "support-patron",
