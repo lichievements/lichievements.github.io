@@ -171,6 +171,13 @@
       "moves": "e4 e6"
     },
     {
+      "id": "opening-indiandefense",
+      "title_locked": "Indian Defense",
+      "title": "French: 1. d4 Nf6",
+      "image": "images/opening-indiandefense.png",
+      "moves": "d4 Nf6"
+    },
+    {
       "id": "opening-doublebongcloud",
       "title_locked": "???",
       "title": "Double Bong Cloud: 1. e4 e5 2. Ke2 Ke7",

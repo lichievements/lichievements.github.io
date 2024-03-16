@@ -132,6 +132,7 @@ printOpening("carokann", "e4 c6")
 printOpening("scandinavian", "e4 d5")
 printOpening("pirc", "e4 d6")
 printOpening("french", "e4 e6")
+printOpening("indiandefense", "d4 Nf6")
 printOpening("doublebongcloud", "e4 e5 Ke2 Ke7")
 
 
