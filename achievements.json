@@ -37,6 +37,12 @@
       "image": "images/mate-castle-long.png"
     },
     {
+      "id": "en-passant-mate",
+      "title_locked": "???",
+      "title": "En passant mate",
+      "image": "images/mate-en-passant.png"
+    },
+    {
       "id": "flag-opponent",
       "title_locked": "Flag the opponent",
       "title": "Flag the opponent",
