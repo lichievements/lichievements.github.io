@@ -163,6 +163,11 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
     let found_mate_castle_short = false;
     let found_mate_castle_long = false;
     
+    let pacifist_win = false;
+    let flag_opponent = false;
+    
+    let firstMovesWhite = ["a3", "a4"];
+    
     let counter = 1; // this lets the user know where we're at with analyzing the games
     
     for (let i = 0; i < gamesWhite.length; i++) {
@@ -181,6 +186,37 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
                     objectAchievements[achievementsJSON["Openings: White"][i].id] = true
                 };
             };
+            
+            // eliminate those first moves that have been played, if the list is empty -> achievement
+            for (let move of firstMovesWhite) {
+                if (game.moves[0] === move) {
+                    let index = firstMovesWhite.indexOf(move);
+                    if (index !== -1) { // Check if the move is found in the array
+                        firstMovesWhite.splice(index, 1); // Remove the move from the array
+                    }
+                }
+            }
+            if (firstMovesWhite.length === 0) {
+                achID = "opening-allwhite";
+                document.getElementById(achID).src = achievementsJSON["Openings: White"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip').textContent = achievementsJSON["Openings: White"].find(item => item.id === achID).title;
+            }
+            
+            // check for pacifist win
+            if (!pacifist_win && !game.moves.includes("x") && game.winner == color) {
+                achID = "pacifist-win";
+                document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).title;
+                pacifist_win = true;
+            }
+            
+            // check for flag the opponent
+            if (!flag_opponent && !game.moves.includes("#") && game.winner == color) {
+                achID = "flag-opponent";
+                document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).title;
+                flag_opponent = true;
+            }
             
             let list_of_speeds = ["ultraBullet", "bullet", "blitz", "rapid", "classical", "correspondence"];
             
@@ -257,6 +293,22 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
                     objectAchievements[achievementsJSON["Openings: Black"][i].id] = true
                 };
             };
+            
+            // check for pacifist win
+            if (!pacifist_win && !game.moves.includes("x") && game.winner == color) {
+                achID = "pacifist-win";
+                document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).title;
+                pacifist_win = true;
+            }
+            
+            // check for flag the opponent
+            if (!flag_opponent && !game.moves.includes("#") && game.winner == color) {
+                achID = "flag-opponent";
+                document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).title;
+                flag_opponent = true;
+            }
             
             let list_of_speeds = ["ultraBullet", "bullet", "blitz", "rapid", "classical", "correspondence"];
             

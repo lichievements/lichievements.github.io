@@ -35,6 +35,18 @@
       "title_locked": "???",
       "title": "Long castle mate",
       "image": "images/mate-castle-long.png"
+    },
+    {
+      "id": "flag-opponent",
+      "title_locked": "Flag the opponent",
+      "title": "Flag the opponent",
+      "image": "images/flag-opponent.png"
+    },
+    {
+      "id": "pacifist-win",
+      "title_locked": "???",
+      "title": "Pacifist win",
+      "image": "images/pacifist.png"
     }
   ],
   "Openings: White": [
@@ -107,6 +119,13 @@
       "title": "Hübsch Gambit: 1. d4 d5 2. Nc3 Nf6 3. e4",
       "image": "images/opening-huebschgambit.png",
       "moves": "d4 d5 Nc3 Nf6 e4"
+    },
+    {
+      "id": "opening-allwhite",
+      "title_locked": "???",
+      "title": "All 20 first moves",
+      "image": "images/all-openings.png",
+      "moves": "xxxxx"
     }
   ],
   "Openings: Black": [
