@@ -503,19 +503,22 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
         document.getElementById('support-patron').classList.add("goldshadow");
         console.log(`${username} is a patron of Lichess.`);
     }
-    
+    //console.log("######");
+    //console.log(userData);
+    //console.log(userData.perfs);
+    //console.log(userData.perfs.streak);
     // Check puzzles
-    if (userData.perfs.streak.runs > 0) {
+    if (userData?.perfs?.streak?.runs > 0) {
         achID = "puzzle-streak";
         document.getElementById(achID).src = achievementsJSON["Puzzles"].find(item => item.id === achID).image;
         document.getElementById(achID+'-tooltip').textContent = achievementsJSON["Puzzles"].find(item => item.id === achID).title;
     }
-    if (userData.perfs.storm.runs > 0) {
+    if (userData?.perfs?.storm?.runs > 0) {
         achID = "puzzle-storm";
         document.getElementById(achID).src = achievementsJSON["Puzzles"].find(item => item.id === achID).image;
         document.getElementById(achID+'-tooltip').textContent = achievementsJSON["Puzzles"].find(item => item.id === achID).title;
     }
-    if (userData.perfs.racer.runs > 0) {
+    if (userData?.perfs?.racer?.runs > 0) {
         achID = "puzzle-racer";
         document.getElementById(achID).src = achievementsJSON["Puzzles"].find(item => item.id === achID).image;
         document.getElementById(achID+'-tooltip').textContent = achievementsJSON["Puzzles"].find(item => item.id === achID).title;
