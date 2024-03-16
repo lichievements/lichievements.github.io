@@ -484,6 +484,23 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
         console.log(`${username} is a patron of Lichess.`);
     }
     
+    // Check puzzles
+    if (userData.perfs.streak.runs > 0) {
+        achID = "puzzle-streak";
+        document.getElementById(achID).src = achievementsJSON["Puzzles"].find(item => item.id === achID).image;
+        document.getElementById(achID+'-tooltip').textContent = achievementsJSON["Puzzles"].find(item => item.id === achID).title;
+    }
+    if (userData.perfs.storm.runs > 0) {
+        achID = "puzzle-storm";
+        document.getElementById(achID).src = achievementsJSON["Puzzles"].find(item => item.id === achID).image;
+        document.getElementById(achID+'-tooltip').textContent = achievementsJSON["Puzzles"].find(item => item.id === achID).title;
+    }
+    if (userData.perfs.racer.runs > 0) {
+        achID = "puzzle-racer";
+        document.getElementById(achID).src = achievementsJSON["Puzzles"].find(item => item.id === achID).image;
+        document.getElementById(achID+'-tooltip').textContent = achievementsJSON["Puzzles"].find(item => item.id === achID).title;
+    }
+    
     //Check for account age
     const createdAtDate = new Date(userData.createdAt);
     const currentDate = new Date();

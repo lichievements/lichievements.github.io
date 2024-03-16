@@ -266,6 +266,26 @@
       "image": "images/variant-racingKings.png"
   	}
   ],
+  "Puzzles": [
+  	{
+  		"id": "puzzle-streak",
+      "title_locked": "Play Puzzle Streak",
+      "title": "Play Puzzle Streak",
+      "image": "images/puzzle-streak.png"
+  	},
+  	{
+  		"id": "puzzle-storm",
+      "title_locked": "Play Puzzle Storm",
+      "title": "Play Puzzle Storm",
+      "image": "images/puzzle-storm.png"
+  	},
+  	{
+  		"id": "puzzle-racer",
+      "title_locked": "Play Puzzle Racer",
+      "title": "Play Puzzle Racer",
+      "image": "images/puzzle-racer.png"
+  	}
+  ],
   "Miscellaneous": [
     {
       "id": "support-patron",
