@@ -51,10 +51,9 @@ fetch('achievements.json')
 
 
 
-
+let userNotFound;
 
 async function fetchUserData(username) {
-    
     console.log("Starting with fetchUserData()...")
     
     const urls = [
@@ -63,12 +62,23 @@ async function fetchUserData(username) {
         `https://lichess.org/api/user/${username}`
     ];
 
-    const fetchPromises = urls.map(url =>
-        fetch(url, { headers: { 'Accept': 'application/x-ndjson' } })
-    );
-
     try {
+        const fetchPromises = urls.map(url =>
+            fetch(url, { headers: { 'Accept': 'application/x-ndjson' } })
+        );
+
         const responses = await Promise.all(fetchPromises);
+
+        // Check if any of the responses have a 404 status code
+        userNotFound = responses.some(response => response.status === 404);
+        if (userNotFound) {
+            // Handle the case where the user does not exist
+            console.error("User does not exist.");
+            document.getElementById("loading-div").innerHTML = 'This user does not exist.';
+            return null; 
+        }
+
+        // Assuming all requests were successful, proceed to process the responses
         const [gamesWhiteText, gamesBlackText, userResponse] = await Promise.all(responses.map(res => res.text()));
 
         const gamesWhite = gamesWhiteText.trim().split('\n').map(JSON.parse);
@@ -78,9 +88,10 @@ async function fetchUserData(username) {
         return { gamesWhite, gamesBlack, userData };
     } catch (error) {
         console.error("Error fetching data:", error);
-        throw error; // Re-throw error for caller to handle if needed
+        throw error; 
     }
 }
+
 
 function resetAchievements() {
     const ach = document.getElementsByClassName('achievement-image');
@@ -136,6 +147,10 @@ async function checkAchievements() { // this function gets called by the input b
     
     // Delete hourglass
     loadDiv.innerHTML = '';
+    
+    if (userNotFound) {
+        document.getElementById("loading-div").innerHTML = 'This user does not exist.';
+    }
     
 }
 
