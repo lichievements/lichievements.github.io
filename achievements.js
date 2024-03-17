@@ -119,7 +119,7 @@ async function checkAchievements() { // this function gets called by the input b
     loadDiv = document.getElementById("loading-div");
     loadDiv.innerHTML = '<i id="hourglass" class="fa-regular fa-hourglass-half"></i>&ensp;Loading games...'
 
-    const username = document.getElementById('username').value;
+    const username = document.getElementById('username').value.trim(); // trim removes leading and trailing whitespace
     let gamesWhite, gamesBlack, userData;
     
     try {
