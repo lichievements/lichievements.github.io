@@ -539,6 +539,21 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
         document.getElementById(achID+'-tooltip').textContent = achievementsJSON["Puzzles"].find(item => item.id === achID).title;
     }
     
+    // Check playtime total and tv:
+    if (userData.playTime.total > 0) {
+        achID = "playtime";
+        document.getElementById(achID).src = achievementsJSON["Miscellaneous"].find(item => item.id === achID).image;
+        document.getElementById(achID+'-tooltip').textContent = achievementsJSON["Miscellaneous"].find(item => item.id === achID).title;
+    }
+    if (userData.playTime.tv > 0) {
+        achID = "tv";
+        document.getElementById(achID).src = achievementsJSON["Miscellaneous"].find(item => item.id === achID).image;
+        document.getElementById(achID+'-tooltip').textContent = achievementsJSON["Miscellaneous"].find(item => item.id === achID).title;
+    }
+    console.log(userData.playTime);
+    
+    
+    
     //Check for account age
     const createdAtDate = new Date(userData.createdAt);
     const currentDate = new Date();

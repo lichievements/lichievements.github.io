@@ -311,6 +311,18 @@
       "title_locked": "???",
       "title": "Happy Birthday!",
       "image": "images/birthday.png"
+    },
+    {
+      "id": "playtime",
+      "title_locked": "Play on Lichess",
+      "title": "Play on Lichess",
+      "image": "images/playtime.png"
+    },
+    {
+      "id": "tv",
+      "title_locked": "Watch Lichess TV",
+      "title": "Watch Lichess TV",
+      "image": "images/tv.png"
     }
   ]
 }
