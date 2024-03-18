@@ -79,9 +79,9 @@
     font-style: italic;
 }
 
-/** {
+* {
   border: 1px solid red; 
-}*/
+}
 
 body { 
   transition: background-color var(--transition-time);
@@ -174,6 +174,8 @@ body.darkTheme img.achievement-image {
 .achievement {
   position: relative;
   display: inline-block; /* Ensures the container fits the content */
+  height: 102px;
+  margin-bottom: 20px;
 }
 
 .tooltip {
@@ -193,20 +195,20 @@ body.darkTheme img.achievement-image {
   z-index: 1;
   bottom: 100%; /* Aligns the tooltip right above the image */
   left: 50%;
-  transform: translateX(-50%); /* Centers the tooltip */
+  transform: translateX(-50%) translateY(20px); /* Centers the tooltip */
   
   /* Optional: Adds a little spacing between the tooltip and the image */
   margin-bottom: 10px;
   
   /* Transition */
   opacity: 0; /* Start with the tooltip being transparent */
-  transition: visibility 0s, opacity 0.5s ease-in-out; /* Apply transition to visibility and opacity */
+  transition: visibility 0s, opacity 0.5s ease-in-out, transform 0.2s ease-in-out; /* Apply transition to visibility and opacity */
 }
 
 .achievement:hover .tooltip {
   visibility: visible; /* Shows the tooltip on hover */
   opacity: 1; /* Make the tooltip fully visible on hover */
-  transition-delay: 0s; /* Apply delay to the transition if needed */
+  transform: translateX(-50%) translateY(0);
 }
 
 .tooltip-text {
@@ -230,6 +232,7 @@ body.darkTheme img.achievement-image {
   align-items: center;
   justify-content: center;
   align-content: center;
+  line-height: 1;
 }
 
 #summary {
