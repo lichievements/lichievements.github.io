@@ -7,6 +7,7 @@ Collect achievements while playing chess on lichess!
 - Win the game (e.g., mate with a bishop, flag the opponent, ...)
 - Openings (as white and black)
 - Play a lot (rated games including variants)
+- Puzzles (streak, storm, racer)
 - Miscellaneous 
 
 ## Acknowledgements

@@ -243,7 +243,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
             }
             
             // check for flag the opponent
-            if (!flag_opponent && !game.moves.includes("#") && game.winner == color) {
+            if (!flag_opponent && game.status == "timeout" && !game.moves.includes("#") && game.winner == color) {
                 achID = "flag-opponent";
                 document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;
@@ -398,7 +398,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
             }
             
             // check for flag the opponent
-            if (!flag_opponent && !game.moves.includes("#") && game.winner == color) {
+            if (!flag_opponent && game.status == "timeout" && !game.moves.includes("#") && game.winner == color) {
                 achID = "flag-opponent";
                 document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;

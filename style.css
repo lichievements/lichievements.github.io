@@ -223,7 +223,6 @@ body.darkTheme img.achievement-image {
   margin-top: 3px;
 }
 
-
 .achievement-category {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
@@ -275,7 +274,6 @@ button:focus, button:active {
   -webkit-tap-highlight-color: transparent;
 }
 
-
 .footer {
   text-align: center;
   padding-top: 60px;
@@ -291,7 +289,6 @@ a, img {
   color: inherit;
   text-decoration: none;
 }
-
 
 .footer-icon {
   font-size: 24pt;
