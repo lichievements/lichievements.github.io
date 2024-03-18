@@ -79,9 +79,9 @@
     font-style: italic;
 }
 
-* {
+/** {
   border: 1px solid red; 
-}
+}*/
 
 body { 
   transition: background-color var(--transition-time);
