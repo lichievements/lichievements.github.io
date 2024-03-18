@@ -2,134 +2,134 @@
   "Win the Game": [
     {
       "id": "queen-mate",
-      "title_locked": "Queen mate",
-      "title": "Achieve a queen mate",
+      "title": "Queen mate",
+      "details": "Deliver checkmate with a queen",
       "image": "images/mate-queen.png"
     },
     {
       "id": "rook-mate",
-      "title_locked": "Rook mate",
       "title": "Rook mate",
+      "details": "Deliver checkmate with a rook",
       "image": "images/mate-rook.png"
     },
     {
       "id": "bishop-mate",
-      "title_locked": "Bishop mate",
       "title": "Bishop mate",
+      "details": "Deliver checkmate with a bishop",
       "image": "images/mate-bishop.png"
     },
     {
       "id": "knight-mate",
-      "title_locked": "Knight mate",
       "title": "Knight mate",
+      "details": "Deliver checkmate with a knight",
       "image": "images/mate-knight.png"
     },
     {
       "id": "short-castle-mate",
-      "title_locked": "???",
-      "title": "Short castle mate",
+      "title": "Oh-oh",
+      "details": "Deliver checkmate by short castling",
       "image": "images/mate-castle-short.png"
     },
     {
       "id": "long-castle-mate",
-      "title_locked": "???",
-      "title": "Long castle mate",
+      "title": "Oh-oh-oh",
+      "details": "Deliver checkmate by long castling",
       "image": "images/mate-castle-long.png"
     },
     {
       "id": "en-passant-mate",
-      "title_locked": "???",
-      "title": "En passant mate",
+      "title": "French mate",
+      "details": "Deliver checkmate by taking a pawn en passant",
       "image": "images/mate-en-passant.png"
     },
     {
       "id": "flag-opponent",
-      "title_locked": "Flag the opponent",
-      "title": "Flag the opponent",
+      "title": "Be quick",
+      "details": "Flag the opponent",
       "image": "images/flag-opponent.png"
     },
     {
       "id": "pacifist-win",
-      "title_locked": "???",
-      "title": "Pacifist win",
+      "title": "Pacifist",
+      "details": "Win the game without any capture on either side",
       "image": "images/pacifist.png"
     }
   ],
   "Openings: White": [
     {
       "id": "opening-italian",
-      "title_locked": "Italian",
-      "title": "Italian: 1. e4 e5 2. Nf3 Nc6 3. Bc4",
+      "title": "Italian",
+      "details": "1. e4 e5 2. Nf3 Nc6 3. Bc4",
       "image": "images/opening-italian.png",
       "moves": "e4 e5 Nf3 Nc6 Bc4"
     },
     {
       "id": "opening-ruylopez",
-      "title_locked": "Ruy Lopez",
-      "title": "Ruy Lopez: 1. e4 e5 2. Nf3 Nc6 3. Bb5",
+      "title": "Ruy Lopez",
+      "details": "1. e4 e5 2. Nf3 Nc6 3. Bb5",
       "image": "images/opening-ruylopez.png",
       "moves": "e4 e5 Nf3 Nc6 Bb5"
     },
     {
       "id": "opening-scotch",
-      "title_locked": "Scotch",
-      "title": "Scotch: 1. e4 e5 2. Nf3 Nc6 3. d4",
+      "title": "Scotch",
+      "details": "1. e4 e5 2. Nf3 Nc6 3. d4",
       "image": "images/opening-scotch.png",
       "moves": "e4 e5 Nf3 Nc6 d4"
     },
     {
       "id": "opening-queensgambit",
-      "title_locked": "Queen's Gambit",
-      "title": "Queen's Gambit: 1. d4 d5 2. c4",
+      "title": "Queen's Gambit",
+      "details": "1. d4 d5 2. c4",
       "image": "images/opening-queensgambit.png",
       "moves": "d4 d5 c4"
     },
     {
       "id": "opening-kingsgambit",
-      "title_locked": "King's Gambit",
-      "title": "King's Gambit: 1. e4 e5 2. f4",
+      "title": "King's Gambit",
+      "details": "1. e4 e5 2. f4",
       "image": "images/opening-kingsgambit.png",
       "moves": "e4 e5 f4"
     },
     {
       "id": "opening-english",
-      "title_locked": "English",
-      "title": "English: 1. c4",
+      "title": "English",
+      "details": "1. c4",
       "image": "images/opening-english.png",
       "moves": "c4"
     },
     {
       "id": "opening-reti",
-      "title_locked": "Reti",
-      "title": "Reti: 1. Nf3",
+      "title": "Reti",
+      "details": "1. Nf3",
       "image": "images/opening-reti.png",
       "moves": "Nf3"
     },
     {
       "id": "opening-grob",
-      "title_locked": "Grob",
-      "title": "Grob: 1. g4",
+      "title": "Grob",
+      "details": "1. g4",
       "image": "images/opening-grob.png",
       "moves": "g4"
     },
     {
       "id": "opening-bongcloud",
-      "title_locked": "???",
-      "title": "Bong Cloud: 1. e4 e5 2. Ke2",
+      "title": "Bong Cloud",
+      "details": "1. e4 e5 2. Ke2",
       "image": "images/opening-bongcloud.png",
       "moves": "e4 e5 Ke2"
     },
     {
       "id": "opening-huebschgambit",
-      "title_locked": "???",
-      "title": "Hübsch Gambit: 1. d4 d5 2. Nc3 Nf6 3. e4",
+      "title": "Hübsch Gambit",
+      "details": "1. d4 d5 2. Nc3 Nf6 3. e4",
       "image": "images/opening-huebschgambit.png",
       "moves": "d4 d5 Nc3 Nf6 e4"
     },
     {
       "id": "opening-allwhite",
-      "title_locked": "???",
-      "title": "All 20 first moves",
+      "title": "Encyclopedia",
+      "details": "Use all 20 possible first moves as White",
       "image": "images/all-openings.png",
       "moves": "xxxxx"
     }
@@ -137,50 +137,50 @@
   "Openings: Black": [
     {
       "id": "opening-sicilian",
-      "title_locked": "Sicilian",
-      "title": "Sicilian: 1. e4 c5",
+      "title": "Sicilian",
+      "details": "1. e4 c5",
       "image": "images/opening-sicilian.png",
       "moves": "e4 c5"
     },
     {
       "id": "opening-carokann",
-      "title_locked": "Caro-Kann",
-      "title": "Caro-Kann: 1. e4 c6",
+      "title": "Caro-Kann",
+      "details": "1. e4 c6",
       "image": "images/opening-carokann.png",
       "moves": "e4 c6"
     },
     {
       "id": "opening-scandinavian",
-      "title_locked": "Scandinavian",
-      "title": "Scandinavian: 1. e4 d5",
+      "title": "Scandinavian",
+      "details": "1. e4 d5",
       "image": "images/opening-scandinavian.png",
       "moves": "e4 d5"
     },
     {
       "id": "opening-pirc",
-      "title_locked": "Pirc",
-      "title": "Pirc: 1. e4 d6",
+      "title": "Pirc",
+      "details": "1. e4 d6",
       "image": "images/opening-pirc.png",
       "moves": "e4 d6"
     },
     {
       "id": "opening-french",
-      "title_locked": "French",
-      "title": "French: 1. e4 e6",
+      "title": "French",
+      "details": "1. e4 e6",
       "image": "images/opening-french.png",
       "moves": "e4 e6"
     },
     {
       "id": "opening-indiandefense",
-      "title_locked": "Indian Defense",
-      "title": "Indian Defense: 1. d4 Nf6",
+      "title": "Indian Defense",
+      "details": "1. d4 Nf6",
       "image": "images/opening-indiandefense.png",
       "moves": "d4 Nf6"
     },
     {
       "id": "opening-doublebongcloud",
-      "title_locked": "???",
-      "title": "Double Bong Cloud: 1. e4 e5 2. Ke2 Ke7",
+      "title": "Double Bong Cloud",
+      "details": "1. e4 e5 2. Ke2 Ke7",
       "image": "images/opening-doublebongcloud.png",
       "moves": "e4 e5 Ke2 Ke7"
     }
@@ -188,140 +188,140 @@
   "Play Games": [
   	{
   		"id": "play-games",
-      "title_locked": "Play many games",
       "title": "Play many games",
+      "details": "",
       "image": "images/unlocked.png"
   	},
   	{
   		"id": "play-ultraBullet",
-      "title_locked": "Play Ultrabullet",
-      "title": "Play Ultrabullet",
+      "title": "Ultrabullet",
+      "details": "Play an ultrabullet game",
       "image": "images/rated-ultrabullet.png"
   	},
   	{
   		"id": "play-bullet",
-      "title_locked": "Play Bullet",
-      "title": "Play Bullet",
+      "title": "Bullet",
+      "details": "Play a bullet game",
       "image": "images/rated-bullet.png"
   	},
   	{
   		"id": "play-blitz",
-      "title_locked": "Play Blitz",
-      "title": "Play Blitz",
+      "title": "Blitz",
+      "details": "Play a blitz game",
       "image": "images/rated-blitz.png"
   	},
   	{
   		"id": "play-rapid",
-      "title_locked": "Play Rapid",
-      "title": "Play Rapid",
+      "title": "Rapid",
+      "details": "Play a rapid game",
       "image": "images/rated-rapid.png"
   	},
   	{
   		"id": "play-classical",
-      "title_locked": "Play Classical",
-      "title": "Play Classical",
+      "title": "Classical",
+      "details": "Play a classical game",
       "image": "images/rated-classical.png"
   	},
   	{
   		"id": "play-correspondence",
-      "title_locked": "Play Correspondence",
-      "title": "Play Correspondence",
+      "title": "Correspondence",
+      "details": "Play a correspondence game",
       "image": "images/rated-correspondence.png"
   	}
   ],
   "Play Games: Variants": [
   	{
   		"id": "variant-crazyhouse",
-      "title_locked": "Play Crazyhouse",
-      "title": "Play Crazyhouse",
+      "title": "Crazyhouse",
+      "details": "Play a game of crazyhouse",
       "image": "images/variant-crazyhouse.png"
   	},
   	{
   		"id": "variant-chess960",
-      "title_locked": "Play Chess960",
-      "title": "Play Chess960",
+      "title": "Chess960",
+      "details": "Play a game of Chess960",
       "image": "images/variant-chess960.png"
   	},
   	{
   		"id": "variant-kingOfTheHill",
-      "title_locked": "Play King of the Hill",
-      "title": "Play King of the Hill",
+      "title": "King of the Hill",
+      "details": "Play a game of King of the Hill",
       "image": "images/variant-kingOfTheHill.png"
   	},
   	{
   		"id": "variant-threeCheck",
-      "title_locked": "Play Three-Check",
-      "title": "Play Three-Check",
+      "title": "Three-Check",
+      "details": "Play a game of Three-Check",
       "image": "images/variant-threeCheck.png"
   	},
   	{
   		"id": "variant-antichess",
-      "title_locked": "Play Antichess",
-      "title": "Play Antichess",
+      "title": "Antichess",
+      "details": "Play a game of Antichess",
       "image": "images/variant-antichess.png"
   	},
   	{
   		"id": "variant-atomic",
-      "title_locked": "Play Atomic",
-      "title": "Play Atomic",
+      "title": "Atomic",
+      "details": "Play a game of Atomic",
       "image": "images/variant-atomic.png"
   	},
   	{
   		"id": "variant-horde",
-      "title_locked": "Play Horde",
-      "title": "Play Horde",
+      "title": "Horde",
+      "details": "Play a game of Horde",
       "image": "images/variant-horde.png"
   	},
   	{
   		"id": "variant-racingKings",
-      "title_locked": "Play Racing Kings",
-      "title": "Play Racing Kings",
+      "title": "Racing Kings",
+      "details": "Play a game of Racing Kings",
       "image": "images/variant-racingKings.png"
   	}
   ],
   "Puzzles": [
   	{
   		"id": "puzzle-streak",
-      "title_locked": "Play Puzzle Streak",
       "title": "Play Puzzle Streak",
+      "details": "",
       "image": "images/puzzle-streak.png"
   	},
   	{
   		"id": "puzzle-storm",
-      "title_locked": "Play Puzzle Storm",
       "title": "Play Puzzle Storm",
+      "details": "",
       "image": "images/puzzle-storm.png"
   	},
   	{
   		"id": "puzzle-racer",
-      "title_locked": "Play Puzzle Racer",
       "title": "Play Puzzle Racer",
+      "details": "",
       "image": "images/puzzle-racer.png"
   	}
   ],
   "Miscellaneous": [
     {
       "id": "support-patron",
-      "title_locked": "Be a patron",
-      "title": "Be a patron",
+      "title": "Thank you!",
+      "details": "Become a patron on lichess",
       "image": "images/patron.png"
     },
     {
       "id": "account-age",
-      "title_locked": "???",
       "title": "Happy Birthday!",
+      "details": "",
       "image": "images/birthday.png"
     },
     {
       "id": "playtime",
-      "title_locked": "Play on Lichess",
       "title": "Play on Lichess",
+      "details": "",
       "image": "images/playtime.png"
     },
     {
       "id": "tv",
-      "title_locked": "Watch Lichess TV",
       "title": "Watch Lichess TV",
+      "details": "",
       "image": "images/tv.png"
     }
   ]
