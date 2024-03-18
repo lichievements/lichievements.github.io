@@ -137,8 +137,6 @@ input[type=text]:focus {
   width: 100px;
   height: 100px;
   border-radius: 10px;
-  /*margin-right: 10px;*/
-  /*box-shadow: 0 8px 0 #ccc;*/
   transition: all .2s ease-in-out;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
@@ -173,52 +171,63 @@ body.darkTheme img.achievement-image {
   font-style: italic;
 }
 
-/* Container holding the image and the tooltip text */
-.tooltip {
+.achievement {
   position: relative;
-  display: inline-block;
-  text-align: center; /* Ensure this is centered */
+  display: inline-block; /* Ensures the container fits the content */
 }
 
-/* Hide the tooltip text by default */
-.tooltip .tooltiptext {
+.tooltip {
   visibility: hidden;
-  background-color: var(--colorInputButton);
-  color: var(--colorFont);
-  font-weight: 300;
+  width: 108px;
+  background-color: black;
+  color: white;
   text-align: center;
-  border-radius: 4px;
-  padding: 4px 8px;
-  line-height: 1.3;
-  /*border: 1px solid var(--colorFont);*/
+  padding: 5px 0;
+  border-radius: 6px;
+  line-height: 1;
   
+  /* Positioning */
   position: absolute;
   z-index: 1;
-  bottom: 110%; /* Adjust based on your needs */
+  bottom: 100%; /* Aligns the tooltip right above the image */
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-50%); /* Centers the tooltip */
   
-  /* Ensure width or max-width is set for better control */
-  white-space: nowrap; /* Prevents the text from wrapping */
-  width: auto; /* Adjust if necessary */
-  max-width: 200px; /* Adjust based on your content needs */
+  /* Optional: Adds a little spacing between the tooltip and the image */
+  margin-bottom: 8px;
   
-  opacity: 0;
-  transition: opacity 0.6s;
+  /* Transition */
+  opacity: 0; /* Start with the tooltip being transparent */
+  transition: visibility 0s, opacity 0.5s ease-in-out; /* Apply transition to visibility and opacity */
 }
 
+.achievement:hover .tooltip {
+  visibility: visible; /* Shows the tooltip on hover */
+  opacity: 1; /* Make the tooltip fully visible on hover */
+  transition-delay: 0s; /* Apply delay to the transition if needed */
+}
 
+.tooltip-text {
+  display: block; /* Ensures each span takes up the full width of the tooltip */
+}
 
-/* Show the tooltip text when you hover over the tooltip container */
-.tooltip:hover .tooltiptext {
-  visibility: visible;
-  opacity: 1;
+.tooltip-title {
+  font-weight: 400;
+  margin-bottom: 4px;
+}
+
+.tooltip-details {
+  font-weight: 300;
 }
 
 
 .achievement-category {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); 
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  justify-items: center; 
+  align-items: center;
+  justify-content: center;
+  align-content: center;
 }
 
 #summary {

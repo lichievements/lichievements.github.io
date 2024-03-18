@@ -16,7 +16,6 @@ function displayAchievements(achievements) {
             // Create a div for each achievement
             const achievementDiv = document.createElement('div');
             achievementDiv.classList.add('achievement');
-            achievementDiv.classList.add('tooltip');
 
             // Create an img element for the achievement image
             const imgElement = document.createElement('img');
@@ -24,15 +23,29 @@ function displayAchievements(achievements) {
             imgElement.classList.add('achievement-image');
             imgElement.id = achievement.id;
             
-            // Create a span element
+            // Create a div for both spans below
+            const tooltipDiv = document.createElement('div');
+            tooltipDiv.classList.add('tooltip');
+            
+            // Create a span element for the title
             const spanElement = document.createElement('span');
             spanElement.textContent = achievement.title_locked;
-            spanElement.id = achievement.id + "-tooltip"
-            spanElement.classList.add('tooltiptext');
+            spanElement.id = achievement.id + "-tooltip-title"
+            spanElement.classList.add('tooltip-text');
+            spanElement.classList.add('tooltip-title');
+
+            // Create a span element for the details
+            const spanElement2 = document.createElement('span');
+            spanElement2.textContent = achievement.title;
+            spanElement2.id = achievement.id + "-tooltip-details"
+            spanElement2.classList.add('tooltip-text');
+            spanElement2.classList.add('tooltip-details');
 
             // Append the img to the achievement div, and the div to the container
             achievementDiv.appendChild(imgElement);
-            achievementDiv.appendChild(spanElement);
+            tooltipDiv.appendChild(spanElement);
+            tooltipDiv.appendChild(spanElement2);
+            achievementDiv.appendChild(tooltipDiv);
             achivement_category.appendChild(achievementDiv);
         });
     }
