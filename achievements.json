@@ -131,13 +131,6 @@
       "details": "1. d4 d5 2. Nc3 Nf6 3. e4",
       "image": "images/opening-huebschgambit.png",
       "moves": "d4 d5 Nc3 Nf6 e4"
-    },
-    {
-      "id": "opening-allwhite",
-      "title": "Encyclopedia",
-      "details": "Use all 20 possible first moves as White",
-      "image": "images/all-openings.png",
-      "moves": "xxxxx"
     }
   ],
   "Openings: Black": [
@@ -190,6 +183,20 @@
       "image": "images/opening-doublebongcloud.png",
       "moves": "e4 e5 Ke2 Ke7"
     }
+  ],
+  "Openings: Collections": [
+    {
+      "id": "openings-allwhite",
+      "title": "Encyclopedia",
+      "details": "Use all 20 possible first moves as White",
+      "image": "images/openings-all20.png"
+    },
+  	{
+  		"id": "openings-eu",
+      "title": "EU",
+      "details": "Play an opening for each EU member state",
+      "image": "images/openings-eu.png"
+  	}
   ],
   "Play Games": [
   	{

@@ -198,7 +198,35 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
     let pacifist_win = false;
     let flag_opponent = false;
     
-    let firstMovesWhite = ["a3", "a4"];
+    let firstMovesWhite = ["a3", "a4", "b3", "b4", "c3", "c4", "d3", "d4", "e3", "e4", "f3", "f4", "g3", "g4", "h3", "h4", "Na3", "Nc3", "Nf3", "Nh3"];
+    let openingsEU = ["e4 e5 Nc3",                    // AT Vienna Game
+                      "e4 c5 Nf3 f5",                 // BE Sicilian Defense: Brussels Gambit
+                      "e4 e5 Nf3 Nc6 Bb5 a5",         // BG Ruy Lopez: Bulgarian Variation
+                      "e4 e6 d4 Nf6",                 // CY French Defense: Mediterranean Defense
+                      "e4 d6 d4 Nf6 Nc3 c6",          // CZ Czech Defense
+                      "e4 e5 Nf3 Nc6 Bb5 Nf6",        // DE Ruy Lopez: Berlin Defense
+                      "e4 e5 d4 exd4 c3",             // DK Danish_Gambit
+                      "d4 d5 c4 Bf5",                 // EE Queens_Gambit_Declined_Baltic_Defense
+                      "e4 e5 Nf3 Nc6 Bb5",            // ES Ruy_Lopez (Spanish Game)
+                      "e4 c6 d4 d5 Nd2 dxe4 Nxe4 h6", // FI Caro-Kann_Defense_Finnish_Variation
+                      "e4 e6",                        // FR French Defense
+                      "e4 b6",                        // GR Greek Defense (aka Owen's Defense)
+                      "e4 c5 Nf3 d6 d4 cxd4 Nxd4 Nf6 Nc3 a6 g3", // HR Sicilian_Defense_Najdorf_Variation_Zagreb_Variation
+                      "g3",                           // HU Hungarian_Opening
+                      "e4 e5 Nf3 Nc6 Nxe5",           // IE Irish_Gambit
+                      "e4 e5 Nf3 Nc6 Bc4",            // IT Italian Game
+                      "d4 Nc6 c4 e5 d5 Nce7",         // LT Mikenas_Defense_Lithuanian_Variation
+                      "e4 e5 Nf3 Nc6 Bb5 Nf6 O-O Bc5 c3 O-O d4 Bb6", // LU Ruy_Lopez_Classical_Defense_Benelux_Variation
+                      "e4 e5 Nf3 f5",                 // LV Latvian_Gambit
+                      "d4 Nf6 g4 Nxg4 f3 Nf6 e4",     // MT Indian_Defense_Gibbins-Weidenhagen_Gambit_Maltese_Falcon
+                      "d4 f5",                        // NL Dutch_Defense
+                      "d4 b5",                        // PL Polish_Defense
+                      "e4 e5 Bb5",                    // PT Portuguese_Opening
+                      "e4 c5 b4 cxb4 a3 d5 exd5 Qxd5 Nf3 e5 Bb2 Nc6 c4 Qe6", // RO Sicilian_Defense_Wing_Gambit_Romanian_Defense
+                      "d4 d5 c4 e6 Nc3 c5 cxd5 exd5 Nf3 Nc6 g3 c4", // SE Tarrasch_Defense_Swedish_Variation
+                      "d4 Nf6 c4 c6",                 // SI Slav_Indian
+                      "d4 d5 c4 c6",                  // SK Slav_Defense
+                      ];
     
     let counter = 1; // this lets the user know where we're at with analyzing the games
     
@@ -255,9 +283,24 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
                 }
             }
             if (firstMovesWhite.length === 0) {
-                achID = "opening-allwhite";
-                document.getElementById(achID).src = achievementsJSON["Openings: White"].find(item => item.id === achID).image;
-                document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Openings: White"].find(item => item.id === achID).details;
+                achID = "openings-allwhite";
+                document.getElementById(achID).src = achievementsJSON["Openings: Collections"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Openings: Collections"].find(item => item.id === achID).details;
+            }
+            
+            // eliminate openings from openings-eu
+            for (let move of openingsEU) {
+                if (game.moves.startsWith(move)) {
+                    let index = openingsEU.indexOf(move);
+                    if (index !== -1) { // Check if the move is found in the array
+                        openingsEU.splice(index, 1); // Remove the move from the array
+                    }
+                }
+            }
+            if (openingsEU.length === 0) {
+                achID = "openings-eu";
+                document.getElementById(achID).src = achievementsJSON["Openings: Collections"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Openings: Collections"].find(item => item.id === achID).details;
             }
             
             // check for pacifist win
@@ -437,6 +480,21 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
                     document.getElementById(achID).src = achievementsJSON["Play Games"].find(item => item.id === achID).image;
                     document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Play Games"].find(item => item.id === achID).details;
                 }
+            }
+            
+            // eliminate openings from openings-eu
+            for (let move of openingsEU) {
+                if (game.moves.startsWith(move)) {
+                    let index = openingsEU.indexOf(move);
+                    if (index !== -1) { // Check if the move is found in the array
+                        openingsEU.splice(index, 1); // Remove the move from the array
+                    }
+                }
+            }
+            if (openingsEU.length === 0) {
+                achID = "openings-eu";
+                document.getElementById(achID).src = achievementsJSON["Openings: Collections"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Openings: Collections"].find(item => item.id === achID).details;
             }
             
             // check for pacifist win
