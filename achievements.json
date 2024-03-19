@@ -53,6 +53,12 @@
       "title": "Pacifist",
       "details": "Checkmate the opponent without any capture on either side during the game",
       "image": "images/pacifist.png"
+    },
+    {
+      "id": "underachiever",
+      "title": "Underachiever",
+      "details": "Checkmate the opponent after you underpromote a pawn",
+      "image": "images/underachiever.png"
     }
   ],
   "Openings: White": [
@@ -227,6 +233,12 @@
       "title": "Correspondence",
       "details": "Play a correspondence game",
       "image": "images/rated-correspondence.png"
+  	},
+  	{
+  		"id": "queen-party",
+      "title": "Queen Party",
+      "details": "Have more than one queen on the board",
+      "image": "images/queen-party.png"
   	}
   ],
   "Play Games: Variants": [

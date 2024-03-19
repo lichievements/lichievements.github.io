@@ -205,6 +205,10 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
     for (let i = 0; i < gamesWhite.length; i++) {
         const game = gamesWhite[i];
         let color = "white";
+        let movesWhiteArray = game.moves.split(" ").filter((element, index) => index % 2 === 0);
+        let movesBlackArray = game.moves.split(" ").filter((element, index) => index % 2 === 1);
+        let movesWhiteString = movesWhiteArray.join(" ");
+        let movesBlackString = movesBlackArray.join(" ");
         
         loadDiv.innerHTML = 'Analyzing game ' + i + '/' + numberOfGamesTotal;
         
@@ -219,9 +223,31 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
                 };
             };
             
+            // underachiever
+            if (game.winner == color && game.status == "mate" && (movesWhiteString.includes("=R") || movesWhiteString.includes("=B") || movesWhiteString.includes("=N"))) {
+                achID = "underachiever";
+                document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;
+            }
+            
+            // queen party
+            if (movesWhiteString.includes("=Q")) {
+                let regex = new RegExp("=Q", 'g');
+                let promotions = movesWhiteString.match(regex) || [];
+                let promotionsN = promotions.length;
+                regex = new RegExp("xQ", 'g');
+                let captures = movesBlackString.match(regex) || [];
+                let capturesN = captures.length;
+                if (promotionsN > capturesN) {
+                    achID = "queen-party";
+                    document.getElementById(achID).src = achievementsJSON["Play Games"].find(item => item.id === achID).image;
+                    document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Play Games"].find(item => item.id === achID).details;
+                }
+            }
+            
             // eliminate those first moves that have been played, if the list is empty -> achievement
             for (let move of firstMovesWhite) {
-                if (game.moves[0] === move) {
+                if (movesWhiteArray[0] === move) {
                     let index = firstMovesWhite.indexOf(move);
                     if (index !== -1) { // Check if the move is found in the array
                         firstMovesWhite.splice(index, 1); // Remove the move from the array
@@ -375,6 +401,8 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
     for (let i = 0; i < gamesBlack.length; i++) {
         const game = gamesBlack[i];
         let color = "black";
+        let movesWhite = game.moves.split(" ").filter((element, index) => index % 2 === 0).join(" ");
+        let movesBlack = game.moves.split(" ").filter((element, index) => index % 2 === 1).join(" ");
         
         loadDiv.innerHTML = 'Analyzing game ' + (i + numberOfGamesWhite) + '/' + numberOfGamesTotal;
         
@@ -388,6 +416,28 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
                     objectAchievements[achievementsJSON["Openings: Black"][i].id] = true
                 };
             };
+            
+            // underachiever
+            if (game.winner == color && game.status == "mate" && (movesBlackString.includes("=R") || movesBlackString.includes("=B") || movesBlackString.includes("=N"))) {
+                achID = "underachiever";
+                document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;
+            }
+            
+            // queen party
+            if (movesBlackString.includes("=Q")) {
+                let regex = new RegExp("=Q", 'g');
+                let promotions = movesBlackString.match(regex) || [];
+                let promotionsN = promotions.length;
+                regex = new RegExp("xQ", 'g');
+                let captures = movesWhiteString.match(regex) || [];
+                let capturesN = captures.length;
+                if (promotionsN > capturesN) {
+                    achID = "queen-party";
+                    document.getElementById(achID).src = achievementsJSON["Play Games"].find(item => item.id === achID).image;
+                    document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Play Games"].find(item => item.id === achID).details;
+                }
+            }
             
             // check for pacifist win
             if (!pacifist_win && !game.moves.includes("x") && game.winner == color) {
