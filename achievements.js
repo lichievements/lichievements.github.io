@@ -444,8 +444,10 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
     for (let i = 0; i < gamesBlack.length; i++) {
         const game = gamesBlack[i];
         let color = "black";
-        let movesWhite = game.moves.split(" ").filter((element, index) => index % 2 === 0).join(" ");
-        let movesBlack = game.moves.split(" ").filter((element, index) => index % 2 === 1).join(" ");
+        let movesWhiteArray = game.moves.split(" ").filter((element, index) => index % 2 === 0);
+        let movesBlackArray = game.moves.split(" ").filter((element, index) => index % 2 === 1);
+        let movesWhiteString = movesWhiteArray.join(" ");
+        let movesBlackString = movesBlackArray.join(" ");
         
         loadDiv.innerHTML = 'Analyzing game ' + (i + numberOfGamesWhite) + '/' + numberOfGamesTotal;
         
@@ -675,7 +677,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
         document.getElementById(achID).src = achievementsJSON["Miscellaneous"].find(item => item.id === achID).image;
         document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Miscellaneous"].find(item => item.id === achID).details;
     }
-    console.log(userData.playTime);
+    // console.log(userData.playTime);
     
     
     
@@ -690,7 +692,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
     if (age > 0) {
         //document.getElementById('account-age').src = "images/age-${age.toString().padStart(2, '0')}.png";
         document.getElementById('account-age').src = "images/birthday.png";
-        document.getElementById('account-age-tooltip-details').innerHTML = "Happy Birthday!";
+        document.getElementById('account-age-tooltip-details').textContent = "";
     }
     
     // Check number of rated games:
