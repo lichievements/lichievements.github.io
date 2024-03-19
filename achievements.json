@@ -51,7 +51,7 @@
     {
       "id": "pacifist-win",
       "title": "Pacifist",
-      "details": "Win the game without any capture on either side",
+      "details": "Checkmate the opponent without any capture on either side during the game",
       "image": "images/pacifist.png"
     }
   ],

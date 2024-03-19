@@ -235,7 +235,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
             }
             
             // check for pacifist win
-            if (!pacifist_win && !game.moves.includes("x") && game.winner == color) {
+            if (!pacifist_win && !game.moves.includes("x") && game.winner == color && game.status == "mate") {
                 achID = "pacifist-win";
                 document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;
