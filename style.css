@@ -187,7 +187,7 @@ body.darkTheme img.achievement-image {
   padding: 5px 0;
   border-radius: 6px;
   border: 1px solid #888;
-  border-bottom: 3px solid #888;
+  border-bottom: 4px solid #888;
   line-height: 1.1;
   
   /* Positioning */
@@ -202,7 +202,7 @@ body.darkTheme img.achievement-image {
   
   /* Transition */
   opacity: 0; /* Start with the tooltip being transparent */
-  transition: visibility 0s, opacity 0.5s ease-in-out, transform 0.2s ease-in-out; /* Apply transition to visibility and opacity */
+  transition: visibility 0s, opacity 0.3s ease-in-out, transform 0.2s ease-in-out; /* Apply transition to visibility and opacity */
 }
 
 .achievement:hover .tooltip {
@@ -213,16 +213,20 @@ body.darkTheme img.achievement-image {
 
 .tooltip-text {
   display: block; /* Ensures each span takes up the full width of the tooltip */
+  padding-left: 2px;
+  padding-right: 2px;
 }
 
 .tooltip-title {
   font-weight: 400;
   margin-bottom: 3px;
+  font-size: 14px;
 }
 
 .tooltip-details {
   font-weight: 300;
   margin-top: 3px;
+  font-size: 12px;
 }
 
 .achievement-category {
