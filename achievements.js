@@ -250,6 +250,12 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
                            "e4_c6_d4_d5_Nc3_dxe4_Nxe4_Nf6_Ng5_h6_Nxf7" // Caro-Kann Defense: Alien Gambit
                            ];
     
+    let openingsBeverages = ["d4 Nf6 c4 c5 d5 b5 cxb5 a6 Nc3 axb5 e4 b4 Nb5 d6 Bc4", // Benko Gambit: Nescafe Frappe Attack
+                             "g4 g5 f4", // Grob Opening: Double Grob: Coca-Cola Gambit
+                             "e4 e5 Nf3 Nc6 d4 exd4 Bc4", // Scotch Game: Scotch Gambit 
+                             "Nf3 Na6 e4 Nh6" // Zukertort Opening: Drunken Cavalry Variation
+                            ];
+    
     let counter = 1; // this lets the user know where we're at with analyzing the games
     
     for (let i = 0; i < gamesWhite.length; i++) {
@@ -361,8 +367,23 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
                     }
                 }
             }
-            if (openingsScary.length === 0) {
+            if (openingsFantasy.length === 0) {
                 achID = "openings-fantasy";
+                document.getElementById(achID).src = achievementsJSON["Openings: Collections"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Openings: Collections"].find(item => item.id === achID).details;
+            }
+            
+            // eliminate openings from openings-beverages
+            for (let move of openingsBeverages) {
+                if (game.moves.startsWith(move)) {
+                    let index = openingsBeverages.indexOf(move);
+                    if (index !== -1) { // Check if the move is found in the array
+                        openingsBeverages.splice(index, 1); // Remove the move from the array
+                    }
+                }
+            }
+            if (openingsBeverages.length === 0) {
+                achID = "openings-beverages";
                 document.getElementById(achID).src = achievementsJSON["Openings: Collections"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Openings: Collections"].find(item => item.id === achID).details;
             }
@@ -601,8 +622,23 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
                     }
                 }
             }
-            if (openingsScary.length === 0) {
+            if (openingsFantasy.length === 0) {
                 achID = "openings-fantasy";
+                document.getElementById(achID).src = achievementsJSON["Openings: Collections"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Openings: Collections"].find(item => item.id === achID).details;
+            }
+            
+            // eliminate openings from openings-beverages
+            for (let move of openingsBeverages) {
+                if (game.moves.startsWith(move)) {
+                    let index = openingsBeverages.indexOf(move);
+                    if (index !== -1) { // Check if the move is found in the array
+                        openingsBeverages.splice(index, 1); // Remove the move from the array
+                    }
+                }
+            }
+            if (openingsBeverages.length === 0) {
+                achID = "openings-beverages";
                 document.getElementById(achID).src = achievementsJSON["Openings: Collections"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Openings: Collections"].find(item => item.id === achID).details;
             }
