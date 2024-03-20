@@ -286,7 +286,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
                 let checks = movesBlackString.match(regex) || [];
                 let checksN = checks.length;
                 if (checksN > 4) {
-                    achID = "survivor":
+                    achID = "survivor";
                     document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
                     document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;
                 }
@@ -541,7 +541,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
                 let checks = movesWhiteString.match(regex) || [];
                 let checksN = checks.length;
                 if (checksN > 4) {
-                    achID = "survivor":
+                    achID = "survivor";
                     document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
                     document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;
                 }
