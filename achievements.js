@@ -274,15 +274,15 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
             };
             
             // underachiever
-            if (game.winner == color && game.status == "mate" && (movesWhiteString.includes("=R") || movesWhiteString.includes("=B") || movesWhiteString.includes("=N"))) {
+            if (game.winner == color && ["mate", "resign", "outoftime"].includes(game.status) && (movesWhiteString.includes("=R") || movesWhiteString.includes("=B") || movesWhiteString.includes("=N"))) {
                 achID = "underachiever";
                 document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;
             }
             
             // survivor
-            if (game.winner == color && movesBlackString.includes("+")) {
-                let regex = new RegExp("+", 'g');
+            if (game.winner == color && ["mate", "resign", "outoftime"].includes(game.status) && movesBlackString.includes("+")) {
+                let regex = new RegExp("\\+", 'g');
                 let checks = movesBlackString.match(regex) || [];
                 let checksN = checks.length;
                 if (checksN > 4) {
@@ -529,15 +529,15 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
             };
             
             // underachiever
-            if (game.winner == color && game.status == "mate" && (movesBlackString.includes("=R") || movesBlackString.includes("=B") || movesBlackString.includes("=N"))) {
+            if (game.winner == color && ["mate", "resign", "outoftime"].includes(game.status) && (movesBlackString.includes("=R") || movesBlackString.includes("=B") || movesBlackString.includes("=N"))) {
                 achID = "underachiever";
                 document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;
             }
             
             // survivor
-            if (game.winner == color && movesWhiteString.includes("+")) {
-                let regex = new RegExp("+", 'g');
+            if (game.winner == color && ["mate", "resign", "outoftime"].includes(game.status) && movesWhiteString.includes("+")) {
+                let regex = new RegExp("\\+", 'g');
                 let checks = movesWhiteString.match(regex) || [];
                 let checksN = checks.length;
                 if (checksN > 4) {
