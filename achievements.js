@@ -258,6 +258,18 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;
             }
             
+            // survivor
+            if (game.winner == color && movesBlackString.includes("+")) {
+                let regex = new RegExp("+", 'g');
+                let checks = movesBlackString.match(regex) || [];
+                let checksN = checks.length;
+                if (checksN > 4) {
+                    achID = "survivor":
+                    document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
+                    document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;
+                }
+            }
+            
             // queen party
             if (movesWhiteString.includes("=Q")) {
                 let regex = new RegExp("=Q", 'g');
@@ -469,6 +481,18 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
                 achID = "underachiever";
                 document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;
+            }
+            
+            // survivor
+            if (game.winner == color && movesWhiteString.includes("+")) {
+                let regex = new RegExp("+", 'g');
+                let checks = movesWhiteString.match(regex) || [];
+                let checksN = checks.length;
+                if (checksN > 4) {
+                    achID = "survivor":
+                    document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
+                    document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;
+                }
             }
             
             // queen party
