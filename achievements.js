@@ -198,7 +198,17 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
     let pacifist_win = false;
     let flag_opponent = false;
     
-    let firstMovesWhite = ["a3", "a4", "b3", "b4", "c3", "c4", "d3", "d4", "e3", "e4", "f3", "f4", "g3", "g4", "h3", "h4", "Na3", "Nc3", "Nf3", "Nh3"];
+    let firstMovesWhite = ["a3", "a4", 
+                           "b3", "b4", 
+                           "c3", "c4", 
+                           "d3", "d4", 
+                           "e3", "e4", 
+                           "f3", "f4", 
+                           "g3", "g4", 
+                           "h3", "h4", 
+                           "Na3", "Nc3", 
+                           "Nf3", "Nh3"
+                           ];
     let openingsEU = ["e4 e5 Nc3",                    // AT Vienna Game
                       "e4 c5 Nf3 f5",                 // BE Sicilian Defense: Brussels Gambit
                       "e4 e5 Nf3 Nc6 Bb5 a5",         // BG Ruy Lopez: Bulgarian Variation
@@ -225,8 +235,20 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
                       "e4 c5 b4 cxb4 a3 d5 exd5 Qxd5 Nf3 e5 Bb2 Nc6 c4 Qe6", // RO Sicilian_Defense_Wing_Gambit_Romanian_Defense
                       "d4 d5 c4 e6 Nc3 c5 cxd5 exd5 Nf3 Nc6 g3 c4", // SE Tarrasch_Defense_Swedish_Variation
                       "d4 Nf6 c4 c6",                 // SI Slav_Indian
-                      "d4 d5 c4 c6",                  // SK Slav_Defense
+                      "d4 d5 c4 c6"                   // SK Slav_Defense
                       ];
+    
+    let openingsScary = ["e4 e5 Nf3 Nc6 Bb5 Nf6 Nxe5", // Ruy Lopez: Halloween Attack
+                         "e4 e5 Nf3 Nc6 Nc3 Nf6 Nxe5", // Four Knights Game: Halloween Gambit
+                         "e4 e5 Nc3 Nf6 Bc4 Nxe4"      // Vienna Game: Frankenstein-Dracula Variation
+                         ];
+    
+    let openingsFantasy = ["e4 f6 d4 b6 c4 Bb7",        // Owen Defense: Unicorn Variation
+                           "e4 e5 Nf3 Nc6 c4 Nf6 Nxe5", // Dresden Opening: The Goblin
+                           "d4 Nf6 c4 g5",              // Indian Defense: Medusa Gambit
+                           "e4 c6 d4 d5 Nf3 dxe4 Ng5",  // Caro-Kann Defense: Ulysses Gambit
+                           "e4_c6_d4_d5_Nc3_dxe4_Nxe4_Nf6_Ng5_h6_Nxf7" // Caro-Kann Defense: Alien Gambit
+                           ];
     
     let counter = 1; // this lets the user know where we're at with analyzing the games
     
@@ -311,6 +333,36 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
             }
             if (openingsEU.length === 0) {
                 achID = "openings-eu";
+                document.getElementById(achID).src = achievementsJSON["Openings: Collections"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Openings: Collections"].find(item => item.id === achID).details;
+            }
+            
+            // eliminate openings from openings-scary
+            for (let move of openingsScary) {
+                if (game.moves.startsWith(move)) {
+                    let index = openingsScary.indexOf(move);
+                    if (index !== -1) { // Check if the move is found in the array
+                        openingsScary.splice(index, 1); // Remove the move from the array
+                    }
+                }
+            }
+            if (openingsScary.length === 0) {
+                achID = "openings-scary";
+                document.getElementById(achID).src = achievementsJSON["Openings: Collections"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Openings: Collections"].find(item => item.id === achID).details;
+            }
+            
+            // eliminate openings from openings-fantasy
+            for (let move of openingsFantasy) {
+                if (game.moves.startsWith(move)) {
+                    let index = openingsFantasy.indexOf(move);
+                    if (index !== -1) { // Check if the move is found in the array
+                        openingsFantasy.splice(index, 1); // Remove the move from the array
+                    }
+                }
+            }
+            if (openingsScary.length === 0) {
+                achID = "openings-fantasy";
                 document.getElementById(achID).src = achievementsJSON["Openings: Collections"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Openings: Collections"].find(item => item.id === achID).details;
             }
@@ -521,6 +573,36 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
             }
             if (openingsEU.length === 0) {
                 achID = "openings-eu";
+                document.getElementById(achID).src = achievementsJSON["Openings: Collections"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Openings: Collections"].find(item => item.id === achID).details;
+            }
+            
+            // eliminate openings from openings-scary
+            for (let move of openingsScary) {
+                if (game.moves.startsWith(move)) {
+                    let index = openingsScary.indexOf(move);
+                    if (index !== -1) { // Check if the move is found in the array
+                        openingsScary.splice(index, 1); // Remove the move from the array
+                    }
+                }
+            }
+            if (openingsScary.length === 0) {
+                achID = "openings-scary";
+                document.getElementById(achID).src = achievementsJSON["Openings: Collections"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Openings: Collections"].find(item => item.id === achID).details;
+            }
+            
+            // eliminate openings from openings-fantasy
+            for (let move of openingsFantasy) {
+                if (game.moves.startsWith(move)) {
+                    let index = openingsFantasy.indexOf(move);
+                    if (index !== -1) { // Check if the move is found in the array
+                        openingsFantasy.splice(index, 1); // Remove the move from the array
+                    }
+                }
+            }
+            if (openingsScary.length === 0) {
+                achID = "openings-fantasy";
                 document.getElementById(achID).src = achievementsJSON["Openings: Collections"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Openings: Collections"].find(item => item.id === achID).details;
             }

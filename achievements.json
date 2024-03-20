@@ -202,6 +202,18 @@
       "title": "The Union",
       "details": "Play an opening for each EU member state",
       "image": "images/openings-eu.png"
+  	},
+  	{
+  		"id": "openings-scary",
+      "title": "Scary stuff",
+      "details": "Play very scary openings",
+      "image": "images/openings-scary.png"
+  	},
+  	{
+  		"id": "openings-fantasy",
+      "title": "Fierce fantasy",
+      "details": "Play fantasy-themed openings",
+      "image": "images/openings-fantasy.png"
   	}
   ],
   "Play Games": [
