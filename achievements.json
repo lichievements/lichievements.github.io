@@ -2,25 +2,25 @@
   "Win the Game": [
     {
       "id": "queen-mate",
-      "title": "Queen mate",
+      "title": "Queen's quest",
       "details": "Deliver checkmate with a queen",
       "image": "images/mate-queen.png"
     },
     {
       "id": "rook-mate",
-      "title": "Rook mate",
+      "title": "Raging rook",
       "details": "Deliver checkmate with a rook",
       "image": "images/mate-rook.png"
     },
     {
       "id": "bishop-mate",
-      "title": "Bishop mate",
+      "title": "Bold bishop",
       "details": "Deliver checkmate with a bishop",
       "image": "images/mate-bishop.png"
     },
     {
       "id": "knight-mate",
-      "title": "Knight mate",
+      "title": "Knight knockout",
       "details": "Deliver checkmate with a knight",
       "image": "images/mate-knight.png"
     },
@@ -38,7 +38,7 @@
     },
     {
       "id": "en-passant-mate",
-      "title": "French mate",
+      "title": "French move",
       "details": "Deliver checkmate by taking a pawn en passant",
       "image": "images/mate-en-passant.png"
     },
@@ -193,7 +193,7 @@
     },
   	{
   		"id": "openings-eu",
-      "title": "EU",
+      "title": "The Union",
       "details": "Play an opening for each EU member state",
       "image": "images/openings-eu.png"
   	}
