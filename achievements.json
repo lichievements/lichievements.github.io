@@ -137,6 +137,104 @@
       "details": "1. d4 d5 2. Nc3 Nf6 3. e4",
       "image": "images/opening-huebschgambit.png",
       "moves": "d4 d5 Nc3 Nf6 e4"
+    },
+    {
+      "id": "opening-chameleon",
+      "title": "Sicilian Defense: Chameleon Variation",
+      "details": "1. e4 c5 2. Nc3 Nc6 3. Nge2",
+      "image": "images/opening-chameleon.png",
+      "moves": "e4 c5 Nc3 Nc6 Nge2"
+    },
+    {
+      "id": "opening-crab",
+      "title": "Crab Opening",
+      "details": "1. a4 e5 2. h4",
+      "image": "images/opening-crab.png",
+      "moves": "a4 e5 h4"
+    },
+    {
+      "id": "opening-lion",
+      "title": "Lion Defense: Lion's Jaw",
+      "details": "1. e4 d6 2. d4 Nf6 3. f3",
+      "image": "images/opening-lion.png",
+      "moves": "e4 d6 d4 Nf6 f3"
+    },
+    {
+      "id": "opening-pocupine",
+      "title": "English Opening: Porcupine Variation",
+      "details": "1. c4 f5 2. Nc3 Nf6 3. e4 fxe4 4. g4",
+      "image": "images/opening-porcupine.png",
+      "moves": "c4 f5 Nc3 Nf6 e4 fxe4 g4"
+    },
+    {
+      "id": "opening-orangutan",
+      "title": "English Orangutan",
+      "details": "1. c4 Nf6 2. b4",
+      "image": "images/opening-orangutan.png",
+      "moves": "c4 Nf6 b4"
+    },
+    {
+      "id": "opening-giraffe",
+      "title": "Giraffe Attack",
+      "details": "1. e4 e5 2. Nc3 Bc5 3. Qg4",
+      "image": "images/opening-giraffe.png",
+      "moves": "e4 e5 Nc3 Bc5 Qg4"
+    },
+    {
+      "id": "opening-crocodile",
+      "title": "Crocodile Variation",
+      "details": "1. e4 e5 2. d4 exd4 3. f4 Bc5 4. Nf3 Nc6 5. c3",
+      "image": "images/opening-crocodile.png",
+      "moves": "e4 e5 d4 exd4 f4 Bc5 Nf3 Nc6 c3"
+    },
+    {
+      "id": "opening-lobster",
+      "title": "Lobster Gambit",
+      "details": "1. e4 e5 2. Nf3 f5 3. g4",
+      "image": "images/opening-lobster.png",
+      "moves": "e4 e5 Nf3 f5 g4"
+    },
+    {
+      "id": "opening-penguin",
+      "title": "Penguin Variation",
+      "details": "1. Nf3 d5 2. c4 d4 3. Rg1",
+      "image": "images/opening-penguin.png",
+      "moves": "Nf3 d5 c4 d4 Rg1"
+    },
+    {
+      "id": "opening-clam",
+      "title": "Clam Gambit",
+      "details": "1. e4 e5 2. Nf3 Nc6 3. d3 f5 4. exf5",
+      "image": "images/opening-clam.png",
+      "moves": "e4 e5 Nf3 Nc6 d3 f5 exf5"
+    },
+    {
+      "id": "opening-dog",
+      "title": "Mad Dog Attack",
+      "details": "1. d4 d5 2. e4 dxe4 3. Nc3 Nf6 4. f3 exf3 5. Nxf3 g6 6. Bc4 Bg7 7. h4",
+      "image": "images/opening-dog.png",
+      "moves": "d4 d5 e4 dxe4 Nc3 Nf6 f3 exf3 Nxf3 g6 Bc4 Bg7 h4"
+    },
+    {
+      "id": "opening-scorpion",
+      "title": "Scorpion-Horus Gambit",
+      "details": "1. e4 c6 2. Nc3 d5 3. d3 dxe4 4. Bg5",
+      "image": "images/opening-scorpion.png",
+      "moves": "e4 c6 Nc3 d5 d3 dxe4 Bg5"
+    },
+    {
+      "id": "opening-tortoise",
+      "title": "Tortoise Opening",
+      "details": "1. e4 e5 2. Bd3",
+      "image": "images/opening-tortoise.png",
+      "moves": "e4 e5 Bd3"
+    },
+    {
+      "id": "opening-whale",
+      "title": "English Opening: The Whale",
+      "details": "1. e4 e5 2. c4",
+      "image": "images/opening-whale.png",
+      "moves": "e4 e5 c4"
     }
   ],
   "Openings: Black": [
@@ -188,6 +286,132 @@
       "details": "1. e4 e5 2. Ke2 Ke7",
       "image": "images/opening-doublebongcloud.png",
       "moves": "e4 e5 Ke2 Ke7"
+    },
+    {
+      "id": "opening-mosquito",
+      "title": "Mosquito Gambit",
+      "details": "1. d4 e5 2. dxe5 Qh4",
+      "image": "images/opening-mosquito.png",
+      "moves": "d4 e5 dxe5 Qh4"
+    },
+    {
+      "id": "opening-hedgehog-system",
+      "title": "English Opening: Hedgehog System",
+      "details": "1. c4 Nf6 2. Nc3 e6",
+      "image": "images/opening-hedgehog-system.png",
+      "moves": "c4 Nf6 Nc3 e6"
+    },
+    {
+      "id": "opening-rat",
+      "title": "Rat Defense: English Rat",
+      "details": "1. d4 d6 2. c4 e5",
+      "image": "images/opening-rat.png",
+      "moves": "d4 d6 c4 e5"
+    },
+    {
+      "id": "opening-hippopotamus",
+      "title": "Hippopotamus Defense",
+      "details": "1. e4 Nh6",
+      "image": "images/opening-hippopotamus.png",
+      "moves": "e4 Nh6"
+    },
+    {
+      "id": "opening-monkeysbum",
+      "title": "Modern Defense: Monkey's Bum",
+      "details": "1. e4 g6 2. Bc4 Bg7 3. Qf3 e6 4. d4 Bxd4",
+      "image": "images/opening-monkeysbum.png",
+      "moves": "e4 g6 Bc4 Bg7 Qf3 e6 d4 Bxd4"
+    },
+    {
+      "id": "opening-kangaroo",
+      "title": "Kangaroo Defense",
+      "details": "1. d4 e6 2. c4 Bb4+",
+      "image": "images/opening-kangaroo.png",
+      "moves": "d4 e6 c4 Bb4+"
+    },
+    {
+      "id": "opening-squirrel",
+      "title": "The Squirrel",
+      "details": "1. e4 Nf6 2. e5 Nd5 3. c4 Nf4",
+      "image": "images/opening-squirrel.png",
+      "moves": "e4 Nf6 e5 Nd5 c4 Nf4"
+    },
+    {
+      "id": "opening-elephant",
+      "title": "Elephant Gambit",
+      "details": "1. e4 e5 2. Nf3 d5",
+      "image": "images/opening-elephant.png",
+      "moves": "e4 e5 Nf3 d5"
+    },
+    {
+      "id": "opening-wasp",
+      "title": "Elephant Gambit: Wasp Variation",
+      "details": "1. e4 e5 2. Nf3 d5 3. Nxe5 dxe4 4. Bc4 Qg5",
+      "image": "images/opening-wasp.png",
+      "moves": "e4 e5 Nf3 d5 Nxe5 dxe4 Bc4 Qg5"
+    },
+    {
+      "id": "opening-lamb",
+      "title": "Lamb Defense",
+      "details": "1. d4 d5 2. e4 dxe4 3. Nc3 Nf6 4. f3 Nc6",
+      "image": "images/opening-lamb.png",
+      "moves": "d4 d5 e4 dxe4 Nc3 Nf6 f3 Nc6"
+    },
+    {
+      "id": "opening-doubleduck",
+      "title": "Double Duck Formation",
+      "details": "1. f4 f5 2. d4 d5",
+      "image": "images/opening-doubleduck.png",
+      "moves": "f4 f5 d4 d5"
+    },
+    {
+      "id": "opening-friedfox",
+      "title": "Fried Fox Defense",
+      "details": "1. e4 f6 2. d4 Kf7",
+      "image": "images/opening-friedfox.png",
+      "moves": "e4 f6 d4 Kf7"
+    },
+    {
+      "id": "opening-snake",
+      "title": "English Opening: Great Snake Variation",
+      "details": "1. c4 g6",
+      "image": "images/opening-snake.png",
+      "moves": "c4 g6"
+    },
+    {
+      "id": "opening-hawk",
+      "title": "Benoni Defense: Hawk Variation",
+      "details": "1. d4 Nf6 2. Nf3 c5 3. d5 c4",
+      "image": "images/opening-hawk.png",
+      "moves": "d4 Nf6 Nf3 c5 d5 c4"
+    },
+    {
+      "id": "opening-lizard",
+      "title": "Lizard Defense",
+      "details": "1. e4 g6 2. d4 Bg7 3. Nc3 d5",
+      "image": "images/opening-lizard.png",
+      "moves": "e4 g6 d4 Bg7 Nc3 d5"
+    },
+    {
+      "id": "opening-mongoose",
+      "title": "Sicilian Defense: Mongoose Variation",
+      "details": "1. e4 c5 2. Nf3 Qa5",
+      "image": "images/opening-mongoose.png",
+      "moves": "e4 c5 Nf3 Qa5"
+    },
+    {
+      "id": "opening-snail",
+      "title": "Benoni Defense: Snail Variation",
+      "details": "1. d4 c5 2. d5 Na6",
+      "image": "images/opening-snail.png",
+      "moves": "d4 c5 d5 Na6"
+    },
+    {
+      "id": "opening-vulture",
+      "title": "Vulture Defense",
+      "details": "1. d4 Nf6 2. c4 c5 3. d5 Ne4",
+      "image": "images/opening-vulture.png",
+      "moves": "d4 Nf6 c4 c5 d5 Ne4"
     }
   ],
   "Openings: Collections": [
