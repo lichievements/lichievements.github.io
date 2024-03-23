@@ -247,7 +247,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
                            "e4 e5 Nf3 Nc6 c4 Nf6 Nxe5", // Dresden Opening: The Goblin
                            "d4 Nf6 c4 g5",              // Indian Defense: Medusa Gambit
                            "e4 c6 d4 d5 Nf3 dxe4 Ng5",  // Caro-Kann Defense: Ulysses Gambit
-                           "e4_c6_d4_d5_Nc3_dxe4_Nxe4_Nf6_Ng5_h6_Nxf7" // Caro-Kann Defense: Alien Gambit
+                           "e4 c6 d4 d5 Nc3 dxe4 Nxe4 Nf6 Ng5 h6 Nxf7" // Caro-Kann Defense: Alien Gambit
                            ];
     
     let openingsBeverages = ["d4 Nf6 c4 c5 d5 b5 cxb5 a6 Nc3 axb5 e4 b4 Nb5 d6 Bc4", // Benko Gambit: Nescafe Frappe Attack

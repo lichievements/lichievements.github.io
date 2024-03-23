@@ -325,19 +325,19 @@
   "Puzzles": [
   	{
   		"id": "puzzle-streak",
-      "title": "Play Puzzle Streak",
+      "title": "Puzzle Streak",
       "details": "",
       "image": "images/puzzle-streak.png"
   	},
   	{
   		"id": "puzzle-storm",
-      "title": "Play Puzzle Storm",
+      "title": "Puzzle Storm",
       "details": "",
       "image": "images/puzzle-storm.png"
   	},
   	{
   		"id": "puzzle-racer",
-      "title": "Play Puzzle Racer",
+      "title": "Puzzle Racer",
       "details": "",
       "image": "images/puzzle-racer.png"
   	}
