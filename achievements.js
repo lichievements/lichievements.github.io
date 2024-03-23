@@ -279,6 +279,13 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
                 };
             };
             
+            // underpromote to everything
+            if (movesWhiteString.includes("=Q") && movesWhiteString.includes("=R") && movesWhiteString.includes("=B") && movesWhiteString.includes("=N")) {
+                achID = "promotion-party";
+                document.getElementById(achID).src = achievementsJSON["Play Games"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Play Games"].find(item => item.id === achID).details;
+            }
+            
             // underpromote to a knight
             if (movesWhiteString.includes("=N")) {
                 achID = "underpromote-knight";
@@ -569,6 +576,13 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
                     objectAchievements[achievementsJSON["Openings: Black"][i].id] = true
                 };
             };
+            
+            // underpromote to everything
+            if (movesBlackString.includes("=Q") && movesBlackString.includes("=R") && movesBlackString.includes("=B") && movesBlackString.includes("=N")) {
+                achID = "promotion-party";
+                document.getElementById(achID).src = achievementsJSON["Play Games"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Play Games"].find(item => item.id === achID).details;
+            }
             
             // underpromote to a knight
             if (movesBlackString.includes("=N")) {

@@ -496,22 +496,28 @@
       "image": "images/queen-party.png"
   	},
   	{
-  		"id": "queen-underpromote-knight",
+  		"id": "underpromote-knight",
       "title": "Pawn to Knight",
       "details": "Underpromote a pawn to a knight",
-      "image": "images/queen-underpromote-knight.png"
+      "image": "images/underpromote-knight.png"
   	},
   	{
-  		"id": "queen-underpromote-bishop",
+  		"id": "underpromote-bishop",
       "title": "Pawn to Bishop",
       "details": "Underpromote a pawn to a bishop",
-      "image": "images/queen-underpromote-bishop.png"
+      "image": "images/underpromote-bishop.png"
   	},
   	{
-  		"id": "queen-underpromote-rook",
+  		"id": "underpromote-rook",
       "title": "Pawn to Rook",
       "details": "Underpromote a pawn to a rook",
-      "image": "images/queen-underpromote-rook.png"
+      "image": "images/underpromote-rook.png"
+  	},
+  	{
+  		"id": "promotion-party",
+      "title": "Promotion Party",
+      "details": "Underpromote four pawns to a queen, a rook, a bishop and a knight in a single game",
+      "image": "images/promotion-party.png"
   	}
   ],
   "Play Games: Variants": [
