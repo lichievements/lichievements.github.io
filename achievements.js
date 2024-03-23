@@ -217,11 +217,11 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
                       "e4 e5 Nf3 Nc6 Bb5 Nf6",        // DE Ruy Lopez: Berlin Defense
                       "e4 e5 d4 exd4 c3",             // DK Danish_Gambit
                       "d4 d5 c4 Bf5",                 // EE Queens_Gambit_Declined_Baltic_Defense
-                      "e4 e5 Nf3 Nc6 Bb5",            // ES Ruy_Lopez (Spanish Game)
-                      "e4 c6 d4 d5 Nd2 dxe4 Nxe4 h6", // FI Caro-Kann_Defense_Finnish_Variation
+                      "e4 e5 Nf3 Nc6 Bb5",            // ES Ruy Lopez (Spanish Game)
+                      "e4 c6 d4 d5 Nd2 dxe4 Nxe4 h6", // FI Caro-Kann Defense Finnish Variation
                       "e4 e6",                        // FR French Defense
                       "e4 b6",                        // GR Greek Defense (aka Owen's Defense)
-                      "e4 c5 Nf3 d6 d4 cxd4 Nxd4 Nf6 Nc3 a6 g3", // HR Sicilian_Defense_Najdorf_Variation_Zagreb_Variation
+                      "e4 c5 Nf3 d6 d4 cxd4 Nxd4 Nf6 Nc3 a6 g3", // HR Sicilian Defense Najdorf Variation_Zagreb_Variation
                       "g3",                           // HU Hungarian_Opening
                       "e4 e5 Nf3 Nc6 Nxe5",           // IE Irish_Gambit
                       "e4 e5 Nf3 Nc6 Bc4",            // IT Italian Game
