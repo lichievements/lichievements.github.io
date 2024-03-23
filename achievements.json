@@ -494,6 +494,24 @@
       "title": "Queen Party",
       "details": "Have more than one queen on the board",
       "image": "images/queen-party.png"
+  	},
+  	{
+  		"id": "queen-underpromote-knight",
+      "title": "Pawn to Knight",
+      "details": "Underpromote a pawn to a knight",
+      "image": "images/queen-underpromote-knight.png"
+  	},
+  	{
+  		"id": "queen-underpromote-bishop",
+      "title": "Pawn to Bishop",
+      "details": "Underpromote a pawn to a bishop",
+      "image": "images/queen-underpromote-bishop.png"
+  	},
+  	{
+  		"id": "queen-underpromote-rook",
+      "title": "Pawn to Rook",
+      "details": "Underpromote a pawn to a rook",
+      "image": "images/queen-underpromote-rook.png"
   	}
   ],
   "Play Games: Variants": [

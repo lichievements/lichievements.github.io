@@ -279,6 +279,27 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
                 };
             };
             
+            // underpromote to a knight
+            if (movesWhiteString.includes("=N")) {
+                achID = "underpromote-knight";
+                document.getElementById(achID).src = achievementsJSON["Play Games"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Play Games"].find(item => item.id === achID).details;
+            }
+            
+            // underpromote to a bishop
+            if (movesWhiteString.includes("=B")) {
+                achID = "underpromote-bishop";
+                document.getElementById(achID).src = achievementsJSON["Play Games"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Play Games"].find(item => item.id === achID).details;
+            }
+            
+            // underpromote to a rook
+            if (movesWhiteString.includes("=R")) {
+                achID = "underpromote-rook";
+                document.getElementById(achID).src = achievementsJSON["Play Games"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Play Games"].find(item => item.id === achID).details;
+            }
+            
             // underachiever
             if (game.winner == color && ["mate", "resign", "outoftime"].includes(game.status) && (movesWhiteString.includes("=R") || movesWhiteString.includes("=B") || movesWhiteString.includes("=N"))) {
                 achID = "underachiever";
@@ -548,6 +569,27 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
                     objectAchievements[achievementsJSON["Openings: Black"][i].id] = true
                 };
             };
+            
+            // underpromote to a knight
+            if (movesBlackString.includes("=N")) {
+                achID = "underpromote-knight";
+                document.getElementById(achID).src = achievementsJSON["Play Games"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Play Games"].find(item => item.id === achID).details;
+            }
+            
+            // underpromote to a bishop
+            if (movesBlackString.includes("=B")) {
+                achID = "underpromote-bishop";
+                document.getElementById(achID).src = achievementsJSON["Play Games"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Play Games"].find(item => item.id === achID).details;
+            }
+            
+            // underpromote to a rook
+            if (movesBlackString.includes("=R")) {
+                achID = "underpromote-rook";
+                document.getElementById(achID).src = achievementsJSON["Play Games"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Play Games"].find(item => item.id === achID).details;
+            }
             
             // underachiever
             if (game.winner == color && ["mate", "resign", "outoftime"].includes(game.status) && (movesBlackString.includes("=R") || movesBlackString.includes("=B") || movesBlackString.includes("=N"))) {
