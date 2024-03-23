@@ -216,27 +216,27 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
                       "e4 e6 d4 Nf6",                 // CY French Defense: Mediterranean Defense
                       "e4 d6 d4 Nf6 Nc3 c6",          // CZ Czech Defense
                       "e4 e5 Nf3 Nc6 Bb5 Nf6",        // DE Ruy Lopez: Berlin Defense
-                      "e4 e5 d4 exd4 c3",             // DK Danish_Gambit
-                      "d4 d5 c4 Bf5",                 // EE Queens_Gambit_Declined_Baltic_Defense
+                      "e4 e5 d4 exd4 c3",             // DK Danish Gambit
+                      "d4 d5 c4 Bf5",                 // EE Queens Gambit Declined: Baltic Defense
                       "e4 e5 Nf3 Nc6 Bb5",            // ES Ruy Lopez (Spanish Game)
                       "e4 c6 d4 d5 Nd2 dxe4 Nxe4 h6", // FI Caro-Kann Defense Finnish Variation
                       "e4 e6",                        // FR French Defense
                       "e4 b6",                        // GR Greek Defense (aka Owen's Defense)
-                      "e4 c5 Nf3 d6 d4 cxd4 Nxd4 Nf6 Nc3 a6 g3", // HR Sicilian Defense Najdorf Variation_Zagreb_Variation
-                      "g3",                           // HU Hungarian_Opening
-                      "e4 e5 Nf3 Nc6 Nxe5",           // IE Irish_Gambit
+                      "e4 c5 Nf3 d6 d4 cxd4 Nxd4 Nf6 Nc3 a6 g3", // HR Sicilian Defense: Najdorf Variation: Zagreb Variation
+                      "g3",                           // HU Hungarian Opening
+                      "e4 e5 Nf3 Nc6 Nxe5",           // IE Irish Gambit
                       "e4 e5 Nf3 Nc6 Bc4",            // IT Italian Game
-                      "d4 Nc6 c4 e5 d5 Nce7",         // LT Mikenas_Defense_Lithuanian_Variation
-                      "e4 e5 Nf3 Nc6 Bb5 Nf6 O-O Bc5 c3 O-O d4 Bb6", // LU Ruy_Lopez_Classical_Defense_Benelux_Variation
-                      "e4 e5 Nf3 f5",                 // LV Latvian_Gambit
-                      "d4 Nf6 g4 Nxg4 f3 Nf6 e4",     // MT Indian_Defense_Gibbins-Weidenhagen_Gambit_Maltese_Falcon
-                      "d4 f5",                        // NL Dutch_Defense
-                      "d4 b5",                        // PL Polish_Defense
+                      "d4 Nc6 c4 e5 d5 Nce7",         // LT Mikenas Defense: Lithuanian Variation
+                      "e4 e5 Nf3 Nc6 Bb5 Nf6 O-O Bc5 c3 O-O d4 Bb6", // LU Ruy Lopez: Classical Defense: Benelux Variation
+                      "e4 e5 Nf3 f5",                 // LV Latvian Gambit
+                      "d4 Nf6 g4 Nxg4 f3 Nf6 e4",     // MT Indian Defense: Gibbins-Weidenhagen Gambit: Maltese Falcon
+                      "d4 f5",                        // NL Dutch Defense
+                      "d4 b5",                        // PL Polish Defense
                       "e4 e5 Bb5",                    // PT Portuguese_Opening
-                      "e4 c5 b4 cxb4 a3 d5 exd5 Qxd5 Nf3 e5 Bb2 Nc6 c4 Qe6", // RO Sicilian_Defense_Wing_Gambit_Romanian_Defense
-                      "d4 d5 c4 e6 Nc3 c5 cxd5 exd5 Nf3 Nc6 g3 c4", // SE Tarrasch_Defense_Swedish_Variation
-                      "d4 Nf6 c4 c6",                 // SI Slav_Indian
-                      "d4 d5 c4 c6"                   // SK Slav_Defense
+                      "e4 c5 b4 cxb4 a3 d5 exd5 Qxd5 Nf3 e5 Bb2 Nc6 c4 Qe6", // RO Sicilian Defense: Wing Gambit: Romanian Defense
+                      "d4 d5 c4 e6 Nc3 c5 cxd5 exd5 Nf3 Nc6 g3 c4", // SE Tarrasch Defense: Swedish Variation
+                      "d4 Nf6 c4 c6",                 // SI Slav Indian
+                      "d4 d5 c4 c6"                   // SK Slav Defense
                       ];
     
     let openingsScary = ["e4 e5 Nf3 Nc6 Bb5 Nf6 Nxe5", // Ruy Lopez: Halloween Attack
