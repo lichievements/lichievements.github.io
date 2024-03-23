@@ -424,8 +424,6 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
                 pacifist_win = true;
             }
             
-            if (counter ==2) {console.log(game.status)}
-            
             // check for flag the opponent
             if (!flag_opponent && game.status == "outoftime" && !game.moves.includes("#") && game.winner == color) {
                 achID = "flag-opponent";
@@ -867,15 +865,17 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
     }
     
     // Check playtime total and tv:
-    if (userData.playTime.total > 0) {
-        achID = "playtime";
-        document.getElementById(achID).src = achievementsJSON["Miscellaneous"].find(item => item.id === achID).image;
-        document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Miscellaneous"].find(item => item.id === achID).details;
-    }
-    if (userData.playTime.tv > 0) {
-        achID = "tv";
-        document.getElementById(achID).src = achievementsJSON["Miscellaneous"].find(item => item.id === achID).image;
-        document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Miscellaneous"].find(item => item.id === achID).details;
+    if (userData.playTime) {
+        if (userData.playTime.total > 0) {
+            achID = "playtime";
+            document.getElementById(achID).src = achievementsJSON["Miscellaneous"].find(item => item.id === achID).image;
+            document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Miscellaneous"].find(item => item.id === achID).details;
+        }
+        if (userData.playTime.tv > 0) {
+            achID = "tv";
+            document.getElementById(achID).src = achievementsJSON["Miscellaneous"].find(item => item.id === achID).image;
+            document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Miscellaneous"].find(item => item.id === achID).details;
+        }
     }
     // console.log(userData.playTime);
     
