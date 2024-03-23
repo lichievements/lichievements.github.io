@@ -179,7 +179,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
     const numberOfGamesTotal = numberOfGamesWhite + numberOfGamesBlack
     
     // At the start, no achievement is unlocked
-    let objectAchievements = {};
+    let objectAchievements = {}; // object to track opening achievements
     
     for (let i = 0; i < achievementsJSON["Openings: White"].length; i++) {
         objectAchievements[achievementsJSON["Openings: White"][i].id] = false;
@@ -209,6 +209,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
                            "Na3", "Nc3", 
                            "Nf3", "Nh3"
                            ];
+    
     let openingsEU = ["e4 e5 Nc3",                    // AT Vienna Game
                       "e4 c5 Nf3 f5",                 // BE Sicilian Defense: Brussels Gambit
                       "e4 e5 Nf3 Nc6 Bb5 a5",         // BG Ruy Lopez: Bulgarian Variation
