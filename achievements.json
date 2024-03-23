@@ -611,8 +611,8 @@
     },
     {
       "id": "tv",
-      "title": "Watch Lichess TV",
-      "details": "",
+      "title": "TV Star",
+      "details": "Appear on Lichess TV",
       "image": "images/tv.png"
     }
   ]
