@@ -255,10 +255,6 @@ h1 {
   text-align: center;
 }
 
-h2 {
-  margin-left: 8px;
-}
-
 button {
   border: none;
   color: var(--colorFont);
@@ -335,4 +331,32 @@ p.stretch > button {
 p.stretch a button {
   width: 100%;
 }
+
+.infopage {
+  line-height: 1.3;
+}
+
+pre {
+  margin: 0;
+}
+
+li {
+  margin-bottom: 6px;
+}
+
+summary {
+    display: block; /* Ensures summary is a block-level element, improving consistency */
+    padding-bottom: 6px;
+    cursor: pointer;
+}
+
+summary > h3 {
+    display: inline; /* Makes h3 inline to avoid the new line issue */
+    margin: 0; /* Removes default margin from h3 to avoid spacing issues */
+}
+
+summary > h3::before {
+    content: "▸ ";
+}
+
 
