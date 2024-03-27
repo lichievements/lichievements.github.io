@@ -316,7 +316,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
             }
             
             // kings journey
-            if ((movesWhiteString.includes("Ka8") || movesWhiteString.includes("Kxa8") || movesWhiteString.includes("Kb8") || movesWhiteString.includes("Kxb8") || movesWhiteString.includes("Kc8") || movesWhiteString.includes("Kxc8") || movesWhiteString.includes("Kd8") || movesWhiteString.includes("Kxd8") || movesWhiteString.includes("Ke8") || movesWhiteString.includes("Kxe8") || movesWhiteString.includes("Kf8") || movesWhiteString.includes("Kxf8") || movesWhiteString.includes("Kg8") || movesWhiteString.includes("Kxg8") || movesWhiteString.includes("Kh8") || movesWhiteString.includes("Kxh8") || ) && game.winner == color) {
+            if ((movesWhiteString.includes("Ka8") || movesWhiteString.includes("Kxa8") || movesWhiteString.includes("Kb8") || movesWhiteString.includes("Kxb8") || movesWhiteString.includes("Kc8") || movesWhiteString.includes("Kxc8") || movesWhiteString.includes("Kd8") || movesWhiteString.includes("Kxd8") || movesWhiteString.includes("Ke8") || movesWhiteString.includes("Kxe8") || movesWhiteString.includes("Kf8") || movesWhiteString.includes("Kxf8") || movesWhiteString.includes("Kg8") || movesWhiteString.includes("Kxg8") || movesWhiteString.includes("Kh8") || movesWhiteString.includes("Kxh8")) && game.winner == color) {
                 achID = "kings-journey";
                 document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;
@@ -654,7 +654,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
             }
             
             // kings journey
-            if ((movesBlackString.includes("Ka1") || movesBlackString.includes("Kxa1") || movesBlackString.includes("Kb1") || movesBlackString.includes("Kxb1") || movesBlackString.includes("Kc1") || movesBlackString.includes("Kxc1") || movesBlackString.includes("Kd1") || movesBlackString.includes("Kxd1") || movesBlackString.includes("Ke1") || movesBlackString.includes("Kxe1") || movesBlackString.includes("Kf1") || movesBlackString.includes("Kxf1") || movesBlackString.includes("Kg1") || movesBlackString.includes("Kxg1") || movesBlackString.includes("Kh1") || movesBlackString.includes("Kxh1") || ) && game.winner == color) {
+            if ((movesBlackString.includes("Ka1") || movesBlackString.includes("Kxa1") || movesBlackString.includes("Kb1") || movesBlackString.includes("Kxb1") || movesBlackString.includes("Kc1") || movesBlackString.includes("Kxc1") || movesBlackString.includes("Kd1") || movesBlackString.includes("Kxd1") || movesBlackString.includes("Ke1") || movesBlackString.includes("Kxe1") || movesBlackString.includes("Kf1") || movesBlackString.includes("Kxf1") || movesBlackString.includes("Kg1") || movesBlackString.includes("Kxg1") || movesBlackString.includes("Kh1") || movesBlackString.includes("Kxh1")) && game.winner == color) {
                 achID = "kings-journey";
                 document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;
