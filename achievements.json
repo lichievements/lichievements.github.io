@@ -65,6 +65,42 @@
       "title": "Survivor",
       "details": "Win the game after being in check at least five times",
       "image": "images/survivor.png"
+    },
+    {
+      "id": "kings-journey",
+      "title": "King's Journey",
+      "details": "Win the game after your king has visited the other side of the board",
+      "image": "images/kings-journey.png"
+    },
+    {
+      "id": "lazy-king",
+      "title": "Lazy King",
+      "details": "Checkmate your opponent with your king not having moved at all",
+      "image": "images/lazy-king.png"
+    },
+    {
+      "id": "lazy-queen",
+      "title": "Lazy Queen",
+      "details": "Checkmate your opponent with your queen not having moved at all",
+      "image": "images/lazy-queen.png"
+    },
+    {
+      "id": "lazy-rook",
+      "title": "Lazy Rook",
+      "details": "Checkmate your opponent with your rooks not having moved at all",
+      "image": "images/lazy-rook.png"
+    },
+    {
+      "id": "lazy-bishop",
+      "title": "Lazy Bishop",
+      "details": "Checkmate your opponent with your Bishops not having moved at all",
+      "image": "images/lazy-bishop.png"
+    },
+    {
+      "id": "lazy-knight",
+      "title": "Lazy Knight",
+      "details": "Checkmate your opponent with your Knights not having moved at all",
+      "image": "images/lazy-knight.png"
     }
   ],
   "Openings: White": [

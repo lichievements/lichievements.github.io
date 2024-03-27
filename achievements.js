@@ -280,6 +280,48 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
                 };
             };
             
+            // lazy king
+            if (!movesWhiteString.includes("K") && !movesWhiteString.includes("O-O") && !movesWhiteString.includes("O-O-O") && game.winner == color && game.status == "mate") {
+                achID = "lazy-king";
+                document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;
+            }
+            
+            // lazy queen
+            if (!movesWhiteString.includes("Q") && game.winner == color && game.status == "mate") {
+                achID = "lazy-queen";
+                document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;
+            }
+            
+            // lazy rooks
+            if (!movesWhiteString.includes("R") && !movesWhiteString.includes("O-O") && !movesWhiteString.includes("O-O-O") && game.winner == color && game.status == "mate") {
+                achID = "lazy-rook";
+                document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;
+            }
+            
+            // lazy bishop
+            if (!movesWhiteString.includes("B") && game.winner == color && game.status == "mate") {
+                achID = "lazy-bishop";
+                document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;
+            }
+            
+            // lazy knight
+            if (!movesWhiteString.includes("N") && game.winner == color && game.status == "mate") {
+                achID = "lazy-knight";
+                document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;
+            }
+            
+            // kings journey
+            if ((movesWhiteString.includes("Ka8") || movesWhiteString.includes("Kxa8") || movesWhiteString.includes("Kb8") || movesWhiteString.includes("Kxb8") || movesWhiteString.includes("Kc8") || movesWhiteString.includes("Kxc8") || movesWhiteString.includes("Kd8") || movesWhiteString.includes("Kxd8") || movesWhiteString.includes("Ke8") || movesWhiteString.includes("Kxe8") || movesWhiteString.includes("Kf8") || movesWhiteString.includes("Kxf8") || movesWhiteString.includes("Kg8") || movesWhiteString.includes("Kxg8") || movesWhiteString.includes("Kh8") || movesWhiteString.includes("Kxh8") || ) && game.winner == color) {
+                achID = "kings-journey";
+                document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;
+            }
+            
             // underpromote to everything
             if (movesWhiteString.includes("=Q") && movesWhiteString.includes("=R") && movesWhiteString.includes("=B") && movesWhiteString.includes("=N")) {
                 achID = "promotion-party";
@@ -575,6 +617,48 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
                     objectAchievements[achievementsJSON["Openings: Black"][i].id] = true
                 };
             };
+            
+            // lazy king
+            if (!movesBlackString.includes("K") && !movesBlackString.includes("O-O") && !movesBlackString.includes("O-O-O") && game.winner == color && game.status == "mate") {
+                achID = "lazy-king";
+                document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;
+            }
+            
+            // lazy queen
+            if (!movesBlackString.includes("Q") && game.winner == color && game.status == "mate") {
+                achID = "lazy-queen";
+                document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;
+            }
+            
+            // lazy rooks
+            if (!movesBlackString.includes("R") && !movesBlackString.includes("O-O") && !movesBlackString.includes("O-O-O") && game.winner == color && game.status == "mate") {
+                achID = "lazy-rook";
+                document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;
+            }
+            
+            // lazy bishop
+            if (!movesBlackString.includes("B") && game.winner == color && game.status == "mate") {
+                achID = "lazy-bishop";
+                document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;
+            }
+            
+            // lazy knight
+            if (!movesBlackString.includes("N") && game.winner == color && game.status == "mate") {
+                achID = "lazy-knight";
+                document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;
+            }
+            
+            // kings journey
+            if ((movesBlackString.includes("Ka1") || movesBlackString.includes("Kxa1") || movesBlackString.includes("Kb1") || movesBlackString.includes("Kxb1") || movesBlackString.includes("Kc1") || movesBlackString.includes("Kxc1") || movesBlackString.includes("Kd1") || movesBlackString.includes("Kxd1") || movesBlackString.includes("Ke1") || movesBlackString.includes("Kxe1") || movesBlackString.includes("Kf1") || movesBlackString.includes("Kxf1") || movesBlackString.includes("Kg1") || movesBlackString.includes("Kxg1") || movesBlackString.includes("Kh1") || movesBlackString.includes("Kxh1") || ) && game.winner == color) {
+                achID = "kings-journey";
+                document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;
+            }
             
             // underpromote to everything
             if (movesBlackString.includes("=Q") && movesBlackString.includes("=R") && movesBlackString.includes("=B") && movesBlackString.includes("=N")) {
