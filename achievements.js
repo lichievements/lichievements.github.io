@@ -1,3 +1,5 @@
+import { Chess } from './chess.js'
+
 // Function to display achievements
 function displayAchievements(achievements) {
     const container = document.getElementById('achievements-container');
@@ -144,7 +146,7 @@ async function checkAchievements() { // this function gets called by the input b
     resetAchievements(); 
     
     // Create hourglass
-    loadDiv = document.getElementById("loading-div");
+    let loadDiv = document.getElementById("loading-div");
     loadDiv.innerHTML = '<i id="hourglass" class="fa-regular fa-hourglass-half"></i>&ensp;Loading games...'
 
     const username = document.getElementById('username').value.trim(); // trim removes leading and trailing whitespace
@@ -160,7 +162,7 @@ async function checkAchievements() { // this function gets called by the input b
     }
     
     // Now process the data for achievements
-    processAchievements(gamesWhite, gamesBlack, userData, username);
+    processAchievements(gamesWhite, gamesBlack, userData, username, loadDiv);
     
     // Delete hourglass
     loadDiv.innerHTML = '';
@@ -171,7 +173,7 @@ async function checkAchievements() { // this function gets called by the input b
     
 }
 
-async function processAchievements(gamesWhite, gamesBlack, userData, username) {
+async function processAchievements(gamesWhite, gamesBlack, userData, username, loadDiv) {
     console.log("processAchievements(..)")
     
     const numberOfGamesWhite = gamesWhite.length
@@ -258,21 +260,26 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
                             ];
     
     let counter = 1; // this lets the user know where we're at with analyzing the games
+    let achID;
     
     for (let i = 0; i < gamesWhite.length; i++) {
         const game = gamesWhite[i];
         let color = "white";
+        let movesArray = game.moves.split(" ");
         let movesWhiteArray = game.moves.split(" ").filter((element, index) => index % 2 === 0);
         let movesBlackArray = game.moves.split(" ").filter((element, index) => index % 2 === 1);
         let movesWhiteString = movesWhiteArray.join(" ");
         let movesBlackString = movesBlackArray.join(" ");
+        
+        var chess = new Chess(); // using the chess.js library
+        chess.load_pgn(game.moves);
         
         loadDiv.innerHTML = 'Analyzing game ' + i + '/' + numberOfGamesTotal;
         
         if (game.variant == "standard") {
         
             for (let i = 0; i < achievementsJSON["Openings: White"].length; i++) {
-                let achID = achievementsJSON["Openings: White"][i].id;
+                achID = achievementsJSON["Openings: White"][i].id;
                 if (!objectAchievements[achievementsJSON["Openings: White"][i].id] && game.moves.startsWith(achievementsJSON["Openings: White"][i].moves)) {
                     document.getElementById(achID).src = achievementsJSON["Openings: White"].find(item => item.id === achID).image;
                     document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Openings: White"].find(item => item.id === achID).details;
@@ -371,17 +378,18 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
             
             // queen party
             if (movesWhiteString.includes("=Q")) {
-                let regex = new RegExp("=Q", 'g');
-                let promotions = movesWhiteString.match(regex) || [];
-                let promotionsN = promotions.length;
-                regex = new RegExp("xQ", 'g');
-                let captures = movesBlackString.match(regex) || [];
-                let capturesN = captures.length;
-                if (promotionsN > capturesN) {
-                    achID = "queen-party";
-                    document.getElementById(achID).src = achievementsJSON["Play Games"].find(item => item.id === achID).image;
-                    document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Play Games"].find(item => item.id === achID).details;
+                var chess1 = new Chess();
+                for (let move of movesArray){
+                    chess1.move(move);
+                    let matches = chess1.fen().split(' ')[0].match(/Q/g);
+                    if (matches && matches.length > 1) {
+                        achID = "queen-party";
+                        document.getElementById(achID).src = achievementsJSON["Play Games"].find(item => item.id === achID).image;
+                        document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Play Games"].find(item => item.id === achID).details;
+                        console.log("found it: " + game.id);
+                    }
                 }
+                
             }
             
             // eliminate those first moves that have been played, if the list is empty -> achievement
@@ -479,7 +487,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
             
             for (let i=0; i < list_of_speeds.length; i++) {
                 if (game.speed == list_of_speeds[i]) {
-                    let achID = "play-" + list_of_speeds[i];
+                    achID = "play-" + list_of_speeds[i];
                     document.getElementById(achID).src = achievementsJSON["Play Games"].find(item => item.id === achID).image;
                     document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Play Games"].find(item => item.id === achID).details;
                 }
@@ -600,17 +608,21 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
     for (let i = 0; i < gamesBlack.length; i++) {
         const game = gamesBlack[i];
         let color = "black";
+        let movesArray = game.moves.split(" ");
         let movesWhiteArray = game.moves.split(" ").filter((element, index) => index % 2 === 0);
         let movesBlackArray = game.moves.split(" ").filter((element, index) => index % 2 === 1);
         let movesWhiteString = movesWhiteArray.join(" ");
         let movesBlackString = movesBlackArray.join(" ");
+        
+        var chess = new Chess(); // using the chess.js library
+        chess.load_pgn(game.moves);
         
         loadDiv.innerHTML = 'Analyzing game ' + (i + numberOfGamesWhite) + '/' + numberOfGamesTotal;
         
         if (game.variant == "standard") {
 
             for (let i = 0; i < achievementsJSON["Openings: Black"].length; i++) {
-                let achID = achievementsJSON["Openings: Black"][i].id;
+                achID = achievementsJSON["Openings: Black"][i].id;
                 if (!objectAchievements[achievementsJSON["Openings: Black"][i].id] && game.moves.startsWith(achievementsJSON["Openings: Black"][i].moves)) {
                     document.getElementById(achID).src = achievementsJSON["Openings: Black"].find(item => item.id === achID).image;
                     document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Openings: Black"].find(item => item.id === achID).details;
@@ -709,17 +721,18 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
             
             // queen party
             if (movesBlackString.includes("=Q")) {
-                let regex = new RegExp("=Q", 'g');
-                let promotions = movesBlackString.match(regex) || [];
-                let promotionsN = promotions.length;
-                regex = new RegExp("xQ", 'g');
-                let captures = movesWhiteString.match(regex) || [];
-                let capturesN = captures.length;
-                if (promotionsN > capturesN) {
-                    achID = "queen-party";
-                    document.getElementById(achID).src = achievementsJSON["Play Games"].find(item => item.id === achID).image;
-                    document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Play Games"].find(item => item.id === achID).details;
+                var chess1 = new Chess();
+                for (let move of movesArray){
+                    chess1.move(move);
+                    let matches = chess1.fen().split(' ')[0].match(/q/g);
+                    if (matches && matches.length > 1) {
+                        achID = "queen-party";
+                        document.getElementById(achID).src = achievementsJSON["Play Games"].find(item => item.id === achID).image;
+                        document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Play Games"].find(item => item.id === achID).details;
+                        console.log("found it: " + game.id);
+                    }
                 }
+                
             }
             
             // eliminate openings from openings-eu
@@ -802,7 +815,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username) {
             
             for (let i=0; i < list_of_speeds.length; i++) {
                 if (game.speed == list_of_speeds[i]) {
-                    let achID = "play-" + list_of_speeds[i];
+                    achID = "play-" + list_of_speeds[i];
                     document.getElementById(achID).src = achievementsJSON["Play Games"].find(item => item.id === achID).image;
                     document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Play Games"].find(item => item.id === achID).details;
                 }
@@ -1014,3 +1027,5 @@ function showInfo() {
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
+
+window.checkAchievements = checkAchievements;
