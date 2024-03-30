@@ -292,6 +292,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
                 achID = "lazy-king";
                 document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;
+                document.getElementById(achID).setAttribute('data-game-id', game.id);
             }
             
             // lazy queen
@@ -299,6 +300,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
                 achID = "lazy-queen";
                 document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;
+                document.getElementById(achID).setAttribute('data-game-id', game.id);
             }
             
             // lazy rooks
@@ -306,6 +308,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
                 achID = "lazy-rook";
                 document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;
+                document.getElementById(achID).setAttribute('data-game-id', game.id);
             }
             
             // lazy bishop
@@ -313,6 +316,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
                 achID = "lazy-bishop";
                 document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;
+                document.getElementById(achID).setAttribute('data-game-id', game.id);
             }
             
             // lazy knight
@@ -320,6 +324,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
                 achID = "lazy-knight";
                 document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;
+                document.getElementById(achID).setAttribute('data-game-id', game.id);
             }
             
             // kings journey
@@ -327,6 +332,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
                 achID = "kings-journey";
                 document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;
+                document.getElementById(achID).setAttribute('data-game-id', game.id);
             }
             
             // underpromote to everything
@@ -334,6 +340,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
                 achID = "promotion-party";
                 document.getElementById(achID).src = achievementsJSON["Play Games"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Play Games"].find(item => item.id === achID).details;
+                document.getElementById(achID).setAttribute('data-game-id', game.id);
             }
             
             // underpromote to a knight
@@ -341,6 +348,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
                 achID = "underpromote-knight";
                 document.getElementById(achID).src = achievementsJSON["Play Games"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Play Games"].find(item => item.id === achID).details;
+                document.getElementById(achID).setAttribute('data-game-id', game.id);
             }
             
             // underpromote to a bishop
@@ -348,6 +356,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
                 achID = "underpromote-bishop";
                 document.getElementById(achID).src = achievementsJSON["Play Games"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Play Games"].find(item => item.id === achID).details;
+                document.getElementById(achID).setAttribute('data-game-id', game.id);
             }
             
             // underpromote to a rook
@@ -355,6 +364,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
                 achID = "underpromote-rook";
                 document.getElementById(achID).src = achievementsJSON["Play Games"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Play Games"].find(item => item.id === achID).details;
+                document.getElementById(achID).setAttribute('data-game-id', game.id);
             }
             
             // underachiever
@@ -362,6 +372,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
                 achID = "underachiever";
                 document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;
+                document.getElementById(achID).setAttribute('data-game-id', game.id);
             }
             
             // survivor
@@ -373,6 +384,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
                     achID = "survivor";
                     document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
                     document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;
+                    document.getElementById(achID).setAttribute('data-game-id', game.id);
                 }
             }
             
@@ -386,7 +398,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
                         achID = "queen-party";
                         document.getElementById(achID).src = achievementsJSON["Play Games"].find(item => item.id === achID).image;
                         document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Play Games"].find(item => item.id === achID).details;
-                        console.log("found it: " + game.id);
+                        document.getElementById(achID).setAttribute('data-game-id', game.id);
                     }
                 }
                 
@@ -472,6 +484,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
                 achID = "pacifist-win";
                 document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;
+                document.getElementById(achID).setAttribute('data-game-id', game.id);
                 pacifist_win = true;
             }
             
@@ -480,6 +493,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
                 achID = "flag-opponent";
                 document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;
+                document.getElementById(achID).setAttribute('data-game-id', game.id);
                 flag_opponent = true;
             }
             
@@ -505,6 +519,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
             if (!found_mate_rook && game.winner == color && /R[^ ]*#/.test(game.moves)) {
                 document.getElementById('rook-mate').src = achievementsJSON["Win the Game"].find(item => item.id === 'rook-mate').image;
                 document.getElementById('rook-mate-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === 'rook-mate').details;
+                document.getElementById('rook-mate').setAttribute('data-game-id', game.id);
                 found_mate_rook = true;
             };
             
@@ -512,6 +527,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
             if (!found_mate_bishop && game.winner == color && /B[^ ]*#/.test(game.moves)) {
                 document.getElementById('bishop-mate').src = achievementsJSON["Win the Game"].find(item => item.id === 'bishop-mate').image;
                 document.getElementById('bishop-mate-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === 'bishop-mate').details;
+                document.getElementById('bishop-mate').setAttribute('data-game-id', game.id);
                 found_mate_bishop = true;
             };
             
@@ -519,6 +535,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
             if (!found_mate_knight && game.winner == color && /N[^ ]*#/.test(game.moves)) {
                 document.getElementById('knight-mate').src = achievementsJSON["Win the Game"].find(item => item.id === 'knight-mate').image;
                 document.getElementById('knight-mate-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === 'knight-mate').details;
+                document.getElementById('knight-mate').setAttribute('data-game-id', game.id);
                 found_mate_knight = true;
             };
             
@@ -526,6 +543,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
             if (!found_mate_castle_short && game.winner == color && /O-O[^ ]*#/.test(game.moves)) {
                 document.getElementById('short-castle-mate').src = achievementsJSON["Win the Game"].find(item => item.id === 'short-castle-mate').image;
                 document.getElementById('short-castle-mate-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === 'short-castle-mate').details;
+                document.getElementById('short-castle-mate').setAttribute('data-game-id', game.id);
                 found_mate_castle_short = true;
             };
             
@@ -533,6 +551,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
             if (!found_mate_castle_long && game.winner == color && /O-O[^ ]*#/.test(game.moves)) {
                 document.getElementById('long-castle-mate').src = achievementsJSON["Win the Game"].find(item => item.id === 'long-castle-mate').image;
                 document.getElementById('long-castle-mate-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === 'long-castle-mate').details;
+                document.getElementById('long-castle-mate').setAttribute('data-game-id', game.id);
                 found_mate_castle_long = true;
             };
             
@@ -543,6 +562,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
                     achID = "en-passant-mate";
                     document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
                     document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;
+                document.getElementById(achID).setAttribute('data-game-id', game.id);
                 };
             };
             
@@ -636,6 +656,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
                 achID = "lazy-king";
                 document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;
+                document.getElementById(achID).setAttribute('data-game-id', game.id);
             }
             
             // lazy queen
@@ -643,6 +664,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
                 achID = "lazy-queen";
                 document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;
+                document.getElementById(achID).setAttribute('data-game-id', game.id);
             }
             
             // lazy rooks
@@ -650,6 +672,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
                 achID = "lazy-rook";
                 document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;
+                document.getElementById(achID).setAttribute('data-game-id', game.id);
             }
             
             // lazy bishop
@@ -657,6 +680,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
                 achID = "lazy-bishop";
                 document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;
+                document.getElementById(achID).setAttribute('data-game-id', game.id);
             }
             
             // lazy knight
@@ -664,6 +688,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
                 achID = "lazy-knight";
                 document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;
+                document.getElementById(achID).setAttribute('data-game-id', game.id);
             }
             
             // kings journey
@@ -671,6 +696,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
                 achID = "kings-journey";
                 document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;
+                document.getElementById(achID).setAttribute('data-game-id', game.id);
             }
             
             // underpromote to everything
@@ -678,6 +704,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
                 achID = "promotion-party";
                 document.getElementById(achID).src = achievementsJSON["Play Games"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Play Games"].find(item => item.id === achID).details;
+                document.getElementById(achID).setAttribute('data-game-id', game.id);
             }
             
             // underpromote to a knight
@@ -685,6 +712,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
                 achID = "underpromote-knight";
                 document.getElementById(achID).src = achievementsJSON["Play Games"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Play Games"].find(item => item.id === achID).details;
+                document.getElementById(achID).setAttribute('data-game-id', game.id);
             }
             
             // underpromote to a bishop
@@ -692,6 +720,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
                 achID = "underpromote-bishop";
                 document.getElementById(achID).src = achievementsJSON["Play Games"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Play Games"].find(item => item.id === achID).details;
+                document.getElementById(achID).setAttribute('data-game-id', game.id);
             }
             
             // underpromote to a rook
@@ -699,6 +728,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
                 achID = "underpromote-rook";
                 document.getElementById(achID).src = achievementsJSON["Play Games"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Play Games"].find(item => item.id === achID).details;
+                document.getElementById(achID).setAttribute('data-game-id', game.id);
             }
             
             // underachiever
@@ -706,6 +736,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
                 achID = "underachiever";
                 document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;
+                document.getElementById(achID).setAttribute('data-game-id', game.id);
             }
             
             // survivor
@@ -717,6 +748,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
                     achID = "survivor";
                     document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
                     document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;
+                    document.getElementById(achID).setAttribute('data-game-id', game.id);
                 }
             }
             
@@ -730,7 +762,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
                         achID = "queen-party";
                         document.getElementById(achID).src = achievementsJSON["Play Games"].find(item => item.id === achID).image;
                         document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Play Games"].find(item => item.id === achID).details;
-                        console.log("found it: " + game.id);
+                        document.getElementById(achID).setAttribute('data-game-id', game.id);
                     }
                 }
                 
@@ -801,6 +833,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
                 achID = "pacifist-win";
                 document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;
+                document.getElementById(achID).setAttribute('data-game-id', game.id);
                 pacifist_win = true;
             }
             
@@ -809,6 +842,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
                 achID = "flag-opponent";
                 document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;
+                document.getElementById(achID).setAttribute('data-game-id', game.id);
                 flag_opponent = true;
             }
             
@@ -826,6 +860,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
             if (!found_mate_queen && game.winner == color && /Q[^ ]*#/.test(game.moves)) {
                 document.getElementById('queen-mate').src = achievementsJSON["Win the Game"].find(item => item.id === 'queen-mate').image;
                 document.getElementById('queen-mate-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === 'queen-mate').details;
+                document.getElementById('queen-mate').setAttribute('data-game-id', game.id);
                 found_mate_queen = true;
             };
             
@@ -833,6 +868,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
             if (!found_mate_queen && game.winner == color && /R[^ ]*#/.test(game.moves)) {
                 document.getElementById('rook-mate').src = achievementsJSON["Win the Game"].find(item => item.id === 'rook-mate').image;
                 document.getElementById('rook-mate-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === 'rook-mate').details;
+                document.getElementById('rook-mate').setAttribute('data-game-id', game.id);
                 found_mate_rook = true;
             };
             
@@ -840,6 +876,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
             if (!found_mate_bishop && game.winner == color && /B[^ ]*#/.test(game.moves)) {
                 document.getElementById('bishop-mate').src = achievementsJSON["Win the Game"].find(item => item.id === 'bishop-mate').image;
                 document.getElementById('bishop-mate-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === 'bishop-mate').details;
+                document.getElementById('bishop-mate').setAttribute('data-game-id', game.id);
                 found_mate_bishop = true;
             };
             
@@ -847,6 +884,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
             if (!found_mate_knight && game.winner == color && /N[^ ]*#/.test(game.moves)) {
                 document.getElementById('knight-mate').src = achievementsJSON["Win the Game"].find(item => item.id === 'knight-mate').image;
                 document.getElementById('knight-mate-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === 'knight-mate').details;
+                document.getElementById('knight-mate').setAttribute('data-game-id', game.id);
                 found_mate_knight = true;
             };
             
@@ -854,6 +892,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
             if (!found_mate_castle_short && game.winner == color && /O-O[^ ]*#/.test(game.moves)) {
                 document.getElementById('short-castle-mate').src = achievementsJSON["Win the Game"].find(item => item.id === 'short-castle-mate').image;
                 document.getElementById('short-castle-mate-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === 'short-castle-mate').details;
+                document.getElementById('short-castle-mate').setAttribute('data-game-id', game.id);
                 found_mate_castle_short = true;
             };
             
@@ -861,6 +900,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
             if (!found_mate_castle_long && game.winner == color && /O-O[^ ]*#/.test(game.moves)) {
                 document.getElementById('long-castle-mate').src = achievementsJSON["Win the Game"].find(item => item.id === 'long-castle-mate').image;
                 document.getElementById('long-castle-mate-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === 'long-castle-mate').details;
+                document.getElementById('long-castle-mate').setAttribute('data-game-id', game.id);
                 found_mate_castle_long = true;
             };
             
@@ -871,6 +911,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
                     achID = "en-passant-mate";
                     document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
                     document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;
+                    document.getElementById(achID).setAttribute('data-game-id', game.id);
                 };
             };
         
@@ -976,7 +1017,6 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
             document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Miscellaneous"].find(item => item.id === achID).details;
         }
     }
-    // console.log(userData.playTime);
     
     
     
@@ -1016,14 +1056,6 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
     addLinksToImg();
     
 }
-
-
-
-
-function showInfo() {
-    alert("Hello!\n\nThis website shows achievements that you can collect while playing chess on lichess.\n\nPlease be aware, though, that we are an independent entity and not officially affiliated with, endorsed by, or sponsored by lichess or any of its affiliates. Although the user data is fetched via the lichess API, the content on this website is created and managed independently.\n\nHappy collecting!");
-}
-
 
 
 
