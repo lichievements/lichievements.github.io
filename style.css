@@ -247,7 +247,8 @@ body.darkTheme img.achievement-image {
 
 h1,h2,h3 {
   line-height: 1.2;
-  font-weight: 400;
+  font-weight: 300;
+  padding-left: 16px;
 }
 
 h1 {

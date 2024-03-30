@@ -21,7 +21,7 @@ function displayAchievements(achievements) {
 
             // Create an img element for the achievement image
             const imgElement = document.createElement('img');
-            imgElement.src = 'images/locked.png'; // Assuming the first level's image
+            imgElement.src = 'images/locked.png'; 
             imgElement.classList.add('achievement-image');
             imgElement.id = achievement.id;
             
