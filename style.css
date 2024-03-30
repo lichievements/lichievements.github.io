@@ -162,7 +162,7 @@ body.darkTheme img.achievement-image {
     transform: rotate(360deg);
   }
 }
-#hourglass {
+#loading-icon {
   /* Apply the animation */
   animation: rotateAnimation 2s linear infinite;
 }
@@ -361,4 +361,6 @@ summary > h3::before {
     content: "▸ ";
 }
 
-
+img.clickable {
+  cursor: pointer;
+}

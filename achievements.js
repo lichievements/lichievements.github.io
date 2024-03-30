@@ -145,9 +145,9 @@ async function checkAchievements() { // this function gets called by the input b
     // Reset achievements, reset summary at the bottom
     resetAchievements(); 
     
-    // Create hourglass
+    // Create loading icon
     let loadDiv = document.getElementById("loading-div");
-    loadDiv.innerHTML = '<i id="hourglass" class="fa-regular fa-hourglass-half"></i>&ensp;Loading games...'
+    loadDiv.innerHTML = '<i id="loading-icon" class="fa-solid fa-spinner"></i>&ensp;Loading games...'
 
     const username = document.getElementById('username').value.trim(); // trim removes leading and trailing whitespace
     let gamesWhite, gamesBlack, userData;
@@ -164,7 +164,7 @@ async function checkAchievements() { // this function gets called by the input b
     // Now process the data for achievements
     processAchievements(gamesWhite, gamesBlack, userData, username, loadDiv);
     
-    // Delete hourglass
+    // Delete loading icon
     loadDiv.innerHTML = '';
     
     if (userNotFound) {
@@ -497,6 +497,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
             if (!found_mate_queen && game.winner == color && /Q[^ ]*#/.test(game.moves)) {
                 document.getElementById('queen-mate').src = achievementsJSON["Win the Game"].find(item => item.id === 'queen-mate').image;
                 document.getElementById('queen-mate-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === 'queen-mate').details;
+                document.getElementById('queen-mate').setAttribute('data-game-id', game.id);
                 found_mate_queen = true;
             };
             
@@ -1011,6 +1012,9 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
     spanSummary.textContent = "Unlocked: " + numAchUnlocked + "/" + numAchTotal;
     document.getElementById('summary').appendChild(spanSummary);
     
+    addCursorToImg();
+    addLinksToImg();
+    
 }
 
 
@@ -1029,3 +1033,39 @@ function sleep(ms) {
 }
 
 window.checkAchievements = checkAchievements;
+
+
+// add event listener for linking to a game
+function addLinksToImg() {
+    document.querySelectorAll('img.achievement-image').forEach(function(img) {
+        img.addEventListener('click', function(e) {
+            // Check if the data-game-id attribute exists
+            if (e.target.hasAttribute('data-game-id')) {
+                let imageUrl = "https://lichess.org/" + e.target.getAttribute('data-game-id');
+                if (e.target.dataset.expanded === 'false') {
+                    if ('ontouchstart' in window) {
+                        // On the first touch, just expand the image
+                        e.target.dataset.expanded = 'true';
+                    } else {
+                        // On desktop, open link in a new tab
+                        window.open(imageUrl, '_blank');
+                    }
+                } else {
+                    // On the second touch on mobile, open link in a new tab
+                    window.open(imageUrl, '_blank');
+                }
+            }
+        });
+    });
+}
+
+// set class to img that has data-game-id
+function addCursorToImg() {
+    document.querySelectorAll('img.achievement-image').forEach(function(img) {
+        // Check if the data-game-id attribute exists
+        if (img.hasAttribute('data-game-id')) {
+            img.classList.add('clickable');
+        }
+    });
+}
+
