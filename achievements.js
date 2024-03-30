@@ -1069,27 +1069,33 @@ window.checkAchievements = checkAchievements;
 
 // add event listener for linking to a game
 function addLinksToImg() {
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    
     document.querySelectorAll('img.achievement-image').forEach(function(img) {
         img.addEventListener('click', function(e) {
             // Check if the data-game-id attribute exists
             if (e.target.hasAttribute('data-game-id')) {
                 let imageUrl = "https://lichess.org/" + e.target.getAttribute('data-game-id');
-                if (e.target.dataset.expanded === 'false') {
-                    if ('ontouchstart' in window) {
-                        // On the first touch, just expand the image
-                        e.target.dataset.expanded = 'true';
+                
+                if (isTouchDevice) {
+                    // On touch devices, toggle expansion and navigate on second tap
+                    if (!e.target.classList.contains('expanded')) {
+                        e.target.classList.add('expanded');
+                        e.preventDefault(); // Prevent navigation on first tap
                     } else {
-                        // On desktop, open link in a new tab
+                        // Navigate on second tap
                         window.open(imageUrl, '_blank');
                     }
                 } else {
-                    // On the second touch on mobile, open link in a new tab
+                    // On non-touch devices, navigate immediately
                     window.open(imageUrl, '_blank');
                 }
             }
         });
     });
 }
+
+
 
 // set class to img that has data-game-id
 function addCursorToImg() {
