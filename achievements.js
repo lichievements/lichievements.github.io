@@ -283,6 +283,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
                 if (!objectAchievements[achievementsJSON["Openings: White"][i].id] && game.moves.startsWith(achievementsJSON["Openings: White"][i].moves)) {
                     document.getElementById(achID).src = achievementsJSON["Openings: White"].find(item => item.id === achID).image;
                     document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Openings: White"].find(item => item.id === achID).details;
+                    document.getElementById(achID).setAttribute('data-game-id', game.id);
                     objectAchievements[achievementsJSON["Openings: White"][i].id] = true
                 };
             };
@@ -647,6 +648,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
                 if (!objectAchievements[achievementsJSON["Openings: Black"][i].id] && game.moves.startsWith(achievementsJSON["Openings: Black"][i].moves)) {
                     document.getElementById(achID).src = achievementsJSON["Openings: Black"].find(item => item.id === achID).image;
                     document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Openings: Black"].find(item => item.id === achID).details;
+                    document.getElementById(achID).setAttribute('data-game-id', game.id);
                     objectAchievements[achievementsJSON["Openings: Black"][i].id] = true
                 };
             };
