@@ -983,6 +983,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
     if (userData.patron) {
         document.getElementById('support-patron').src = 'images/patron.png';
         document.getElementById('support-patron').classList.add("goldshadow");
+        document.getElementById('support-patron-tooltip-details').textContent = "Thanks for supporting Lichess!"; 
         console.log(`${username} is a patron of Lichess.`);
     }
     //console.log("######");
@@ -1040,6 +1041,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
     for (let i = 1; i <= 100000; i=i*10) {
         if (numberOfGamesTotal >= i) {
             document.getElementById('play-games').src = 'images/play-'+i+'.png';
+            document.getElementById('play-games-tooltip-details').textContent = "You have played " + numberOfGamesTotal + "rated games";
         }
     }
     
