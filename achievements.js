@@ -990,7 +990,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
     //console.log(userData);
     //console.log(userData.perfs);
     //console.log(userData.perfs.streak);
-    // Check puzzles
+    // Check puzzles // runs and score
     if (userData?.perfs?.streak?.runs > 0) {
         achID = "puzzle-streak";
         document.getElementById(achID).src = achievementsJSON["Puzzles"].find(item => item.id === achID).image;
