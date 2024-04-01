@@ -219,7 +219,7 @@ body.darkTheme img.achievement-image {
 
 .tooltip-title {
   font-weight: 400;
-  margin-bottom: 3px;
+  margin-bottom: 0;
   font-size: 14px;
 }
 

@@ -1091,13 +1091,13 @@ function addLinksToImg() {
     const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
     
     document.querySelectorAll('img.achievement-image').forEach(function(img) {
-        img.addEventListener('click', function(e) {
+        const eventType = isTouchDevice ? 'touchend' : 'click';
+        img.addEventListener(eventType, function(e) {
             // Check if the data-game-id attribute exists
             if (e.target.hasAttribute('data-game-id')) {
                 let imageUrl = "https://lichess.org/" + e.target.getAttribute('data-game-id');
                 
                 if (isTouchDevice) {
-                    // On touch devices, toggle expansion and navigate on second tap
                     if (!e.target.classList.contains('expanded')) {
                         e.target.classList.add('expanded');
                         e.preventDefault(); // Prevent navigation on first tap
@@ -1106,13 +1106,13 @@ function addLinksToImg() {
                         window.open(imageUrl, '_blank');
                     }
                 } else {
-                    // On non-touch devices, navigate immediately
                     window.open(imageUrl, '_blank');
                 }
             }
         });
     });
 }
+
 
 
 
