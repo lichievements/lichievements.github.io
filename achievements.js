@@ -1090,6 +1090,13 @@ window.checkAchievements = checkAchievements;
 function addLinksToImg() {
     const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
     
+    // Function to remove 'expanded' class from all images
+    function shrinkImages() {
+        document.querySelectorAll('img.achievement-image.expanded').forEach(function(img) {
+            img.classList.remove('expanded');
+        });
+    }
+
     document.querySelectorAll('img.achievement-image').forEach(function(img) {
         const eventType = isTouchDevice ? 'touchend' : 'click';
         img.addEventListener(eventType, function(e) {
@@ -1101,6 +1108,7 @@ function addLinksToImg() {
                     if (!e.target.classList.contains('expanded')) {
                         e.target.classList.add('expanded');
                         e.preventDefault(); // Prevent navigation on first tap
+                        e.stopPropagation(); // Stop the event from propagating to the document
                     } else {
                         // Navigate on second tap
                         window.open(imageUrl, '_blank');
@@ -1110,6 +1118,13 @@ function addLinksToImg() {
                 }
             }
         });
+    });
+
+    // Global listener to handle touches/clicks outside the images
+    document.addEventListener(eventType, function(e) {
+        if (!e.target.classList.contains('achievement-image')) {
+            shrinkImages();
+        }
     });
 }
 
