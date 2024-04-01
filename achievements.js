@@ -996,13 +996,28 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
         document.getElementById(achID).src = achievementsJSON["Puzzles"].find(item => item.id === achID).image;
         document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Puzzles"].find(item => item.id === achID).details;
     }
+    if (userData?.perfs?.streak?.score >= 30) {
+        achID = "puzzle-streak-score";
+        document.getElementById(achID).src = achievementsJSON["Puzzles"].find(item => item.id === achID).image;
+        document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Puzzles"].find(item => item.id === achID).details;
+    }
     if (userData?.perfs?.storm?.runs > 0) {
         achID = "puzzle-storm";
         document.getElementById(achID).src = achievementsJSON["Puzzles"].find(item => item.id === achID).image;
         document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Puzzles"].find(item => item.id === achID).details;
     }
+    if (userData?.perfs?.storm?.score >= 30) {
+        achID = "puzzle-storm-score";
+        document.getElementById(achID).src = achievementsJSON["Puzzles"].find(item => item.id === achID).image;
+        document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Puzzles"].find(item => item.id === achID).details;
+    }
     if (userData?.perfs?.racer?.runs > 0) {
         achID = "puzzle-racer";
+        document.getElementById(achID).src = achievementsJSON["Puzzles"].find(item => item.id === achID).image;
+        document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Puzzles"].find(item => item.id === achID).details;
+    }
+    if (userData?.perfs?.racer?.score >= 30) {
+        achID = "puzzle-racer-score";
         document.getElementById(achID).src = achievementsJSON["Puzzles"].find(item => item.id === achID).image;
         document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Puzzles"].find(item => item.id === achID).details;
     }

@@ -614,16 +614,34 @@
       "image": "images/puzzle-streak.png"
   	},
   	{
+  		"id": "puzzle-streak-score",
+      "title": "Unstoppable force",
+      "details": "Achieve a score of 30 in puzzle streak",
+      "image": "images/puzzle-streak-score.png"
+  	},
+  	{
   		"id": "puzzle-storm",
       "title": "Storm",
       "details": "Play puzzle storm",
       "image": "images/puzzle-storm.png"
   	},
   	{
+  		"id": "puzzle-storm-score",
+      "title": "Puzzle pro",
+      "details": "Achieve a score of 30 in puzzle storm",
+      "image": "images/puzzle-storm-score.png"
+  	},
+  	{
   		"id": "puzzle-racer",
       "title": "Racer",
       "details": "Play puzzle racer",
       "image": "images/puzzle-racer.png"
+  	},
+  	{
+  		"id": "puzzle-racer-score",
+      "title": "Supreme speed",
+      "details": "Achieve a score of 30 in puzzle racer",
+      "image": "images/puzzle-racer-score.png"
   	}
   ],
   "Miscellaneous": [
