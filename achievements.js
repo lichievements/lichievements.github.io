@@ -1088,47 +1088,25 @@ window.checkAchievements = checkAchievements;
 
 // add event listener for linking to a game
 function addLinksToImg() {
-    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-    
-    // Function to remove 'expanded' class from all images
-    function shrinkImages() {
-        document.querySelectorAll('img.achievement-image.expanded').forEach(function(img) {
-            img.classList.remove('expanded');
-        });
-    }
-
     document.querySelectorAll('img.achievement-image').forEach(function(img) {
-        const eventType = isTouchDevice ? 'touchend' : 'click';
-        img.addEventListener(eventType, function(e) {
-            // Check if the data-game-id attribute exists
+        img.addEventListener('click', function(e) {
+            // Ensure the event target is the image and it has the required attribute
             if (e.target.hasAttribute('data-game-id')) {
+                // Retrieve the URL from the data-game-id attribute
                 let imageUrl = "https://lichess.org/" + e.target.getAttribute('data-game-id');
                 
-                if (isTouchDevice) {
-                    if (!e.target.classList.contains('expanded')) {
-                        e.target.classList.add('expanded');
-                        e.preventDefault(); // Prevent navigation on first tap
-                        e.stopPropagation(); // Stop the event from propagating to the document
-                    } else {
-                        // Navigate on second tap
-                        window.open(imageUrl, '_blank');
-                    }
-                } else {
+                // Check the width of the image to determine if it's been expanded
+                // Since the image is scaled, its width would change accordingly
+                let scaleX = e.target.getBoundingClientRect().width / e.target.offsetWidth;
+                
+                // If the image is expanded, scaleX == 1.08, proceed to open the URL
+                if (scaleX > 1.) {
                     window.open(imageUrl, '_blank');
-                }
+                } 
             }
         });
     });
-
-    // Global listener to handle touches/clicks outside the images
-    document.addEventListener(eventType, function(e) {
-        if (!e.target.classList.contains('achievement-image')) {
-            shrinkImages();
-        }
-    });
 }
-
-
 
 
 // set class to img that has data-game-id
