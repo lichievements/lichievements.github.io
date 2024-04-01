@@ -1041,7 +1041,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
     for (let i = 1; i <= 100000; i=i*10) {
         if (numberOfGamesTotal >= i) {
             document.getElementById('play-games').src = 'images/play-'+i+'.png';
-            document.getElementById('play-games-tooltip-details').textContent = "You have played " + numberOfGamesTotal + "rated games";
+            document.getElementById('play-games-tooltip-details').textContent = "You have played " + numberOfGamesTotal + " rated games";
         }
     }
     
