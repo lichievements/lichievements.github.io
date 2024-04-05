@@ -288,6 +288,24 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
                 };
             };
             
+            // takes, takes, takes
+            if (movesWhiteString.includes("x")) {
+                let streak = 0;
+                for (let i = 0; i < movesWhiteArray.length; i++) {
+                    if (movesWhiteArray[i].includes('x')) {
+                        streak++; 
+                        if (streak >= 3) {
+                            achID = "takes-takes-takes";
+                            document.getElementById(achID).src = achievementsJSON["Play Games"].find(item => item.id === achID).image;
+                            document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Play Games"].find(item => item.id === achID).details;
+                            document.getElementById(achID).setAttribute('data-game-id', game.id);
+                        }
+                    } else {
+                        streak = 0; 
+                    }
+                }
+            }
+            
             // lazy king
             if (!movesWhiteString.includes("K") && !movesWhiteString.includes("O-O") && !movesWhiteString.includes("O-O-O") && game.winner == color && game.status == "mate") {
                 achID = "lazy-king";
@@ -652,6 +670,24 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
                     objectAchievements[achievementsJSON["Openings: Black"][i].id] = true
                 };
             };
+            
+            // takes, takes, takes
+            if (movesBlackString.includes("x")) {
+                let streak = 0;
+                for (let i = 0; i < movesBlackArray.length; i++) {
+                    if (movesBlackArray[i].includes('x')) {
+                        streak++; 
+                        if (streak >= 3) {
+                            achID = "takes-takes-takes";
+                            document.getElementById(achID).src = achievementsJSON["Play Games"].find(item => item.id === achID).image;
+                            document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Play Games"].find(item => item.id === achID).details;
+                            document.getElementById(achID).setAttribute('data-game-id', game.id);
+                        }
+                    } else {
+                        streak = 0; 
+                    }
+                }
+            }
             
             // lazy king
             if (!movesBlackString.includes("K") && !movesBlackString.includes("O-O") && !movesBlackString.includes("O-O-O") && game.winner == color && game.status == "mate") {
