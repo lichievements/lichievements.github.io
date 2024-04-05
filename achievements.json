@@ -666,7 +666,7 @@
     {
       "id": "tv",
       "title": "TV Star",
-      "details": "Appear on Lichess TV",
+      "details": "",
       "image": "images/tv.png"
     }
   ]

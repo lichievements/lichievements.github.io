@@ -1027,12 +1027,42 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
         if (userData.playTime.total > 0) {
             achID = "playtime";
             document.getElementById(achID).src = achievementsJSON["Miscellaneous"].find(item => item.id === achID).image;
-            document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Miscellaneous"].find(item => item.id === achID).details;
+            //document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Miscellaneous"].find(item => item.id === achID).details;
+            let time = userData.playTime.total;
+            let unit = " seconds";
+            if (time > 86400) {
+                time = time / 86400;
+                unit = " days";
+            }
+            else if (time > 3600) {
+                time = time / 3600;
+                unit = " hours";
+            }
+            else if (time > 60) {
+                time = time / 60;
+                unit = " minutes";
+            }
+            document.getElementById(achID+'-tooltip-details').textContent = "You played for more than " + Math.floor(time) + unit;
         }
         if (userData.playTime.tv > 0) {
             achID = "tv";
             document.getElementById(achID).src = achievementsJSON["Miscellaneous"].find(item => item.id === achID).image;
-            document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Miscellaneous"].find(item => item.id === achID).details;
+            //document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Miscellaneous"].find(item => item.id === achID).details;
+            let time = userData.playTime.tv;
+            let unit = " seconds";
+            if (time > 86400) {
+                time = time / 86400;
+                unit = " days";
+            }
+            else if (time > 3600) {
+                time = time / 3600;
+                unit = " hours";
+            }
+            else if (time > 60) {
+                time = time / 60;
+                unit = " minutes";
+            }
+            document.getElementById(achID+'-tooltip-details').textContent = "You appeared on TV for more than " + Math.floor(time) + unit;
         }
     }
     
@@ -1049,7 +1079,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
     if (age > 0) {
         //document.getElementById('account-age').src = "images/age-${age.toString().padStart(2, '0')}.png";
         document.getElementById('account-age').src = "images/birthday.png";
-        document.getElementById('account-age-tooltip-details').textContent = "";
+        document.getElementById('account-age-tooltip-details').textContent = "Your account is " + age + " years old";
     }
     
     // Check number of rated games:
