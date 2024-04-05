@@ -533,19 +533,19 @@
   	},
   	{
   		"id": "underpromote-knight",
-      "title": "Pawn to Knight",
+      "title": "Knighthood",
       "details": "Underpromote a pawn to a knight",
       "image": "images/underpromote-knight.png"
   	},
   	{
   		"id": "underpromote-bishop",
-      "title": "Pawn to Bishop",
+      "title": "Cleric",
       "details": "Underpromote a pawn to a bishop",
       "image": "images/underpromote-bishop.png"
   	},
   	{
   		"id": "underpromote-rook",
-      "title": "Pawn to Rook",
+      "title": "Fortress",
       "details": "Underpromote a pawn to a rook",
       "image": "images/underpromote-rook.png"
   	},
