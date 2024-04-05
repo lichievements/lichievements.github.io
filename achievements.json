@@ -86,19 +86,19 @@
     },
     {
       "id": "lazy-rook",
-      "title": "Lazy Rook",
+      "title": "Lazy Rooks",
       "details": "Checkmate your opponent with your rooks not having moved at all",
       "image": "images/lazy-rook.png"
     },
     {
       "id": "lazy-bishop",
-      "title": "Lazy Bishop",
+      "title": "Lazy Bishops",
       "details": "Checkmate your opponent with your Bishops not having moved at all",
       "image": "images/lazy-bishop.png"
     },
     {
       "id": "lazy-knight",
-      "title": "Lazy Knight",
+      "title": "Lazy Knights",
       "details": "Checkmate your opponent with your Knights not having moved at all",
       "image": "images/lazy-knight.png"
     }
