@@ -653,7 +653,7 @@
   "Miscellaneous": [
     {
       "id": "support-patron",
-      "title": "Thank you!",
+      "title": "Patron",
       "details": "Become a patron on Lichess",
       "image": "images/patron.png"
     },
@@ -665,7 +665,7 @@
     },
     {
       "id": "playtime",
-      "title": "Play on Lichess",
+      "title": "Play chess",
       "details": "",
       "image": "images/playtime.png"
     },
