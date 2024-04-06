@@ -101,6 +101,18 @@
       "title": "Lazy Knights",
       "details": "Checkmate your opponent with your Knights not having moved at all",
       "image": "images/lazy-knight.png"
+    },
+    {
+      "id": "pawn-finish",
+      "title": "Pawn finish",
+      "details": "Checkmate your opponent by promoting a pawn to a queen",
+      "image": "images/pawn-finish.png"
+    },
+    {
+      "id": "pawn-finish-deluxe",
+      "title": "Pawn finish deluxe",
+      "details": "Checkmate your opponent by underpromoting a pawn",
+      "image": "images/pawn-finish-deluxe.png"
     }
   ],
   "Openings: White": [

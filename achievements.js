@@ -306,6 +306,22 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
                 }
             }
             
+            // pawn finish deluxe
+            if ((movesWhiteString.includes("=R#") || movesWhiteString.includes("=B#") || movesWhiteString.includes("=N#")) && game.winner == color && game.status == "mate") {
+                achID = "pawn-finish-deluxe";
+                document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;
+                document.getElementById(achID).setAttribute('data-game-id', game.id);
+            }
+            
+            // pawn finish
+            if (movesWhiteString.includes("=Q#") && game.winner == color && game.status == "mate") {
+                achID = "pawn-finish";
+                document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;
+                document.getElementById(achID).setAttribute('data-game-id', game.id);
+            }
+            
             // lazy king
             if (!movesWhiteString.includes("K") && !movesWhiteString.includes("O-O") && !movesWhiteString.includes("O-O-O") && game.winner == color && game.status == "mate") {
                 achID = "lazy-king";
@@ -687,6 +703,22 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
                         streak = 0; 
                     }
                 }
+            }
+            
+            // pawn finish deluxe
+            if ((movesBlackString.includes("=R#") || movesBlackString.includes("=B#") || movesBlackString.includes("=N#")) && game.winner == color && game.status == "mate") {
+                achID = "pawn-finish-deluxe";
+                document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;
+                document.getElementById(achID).setAttribute('data-game-id', game.id);
+            }
+            
+            // pawn finish
+            if (movesBlackString.includes("=Q#") && game.winner == color && game.status == "mate") {
+                achID = "pawn-finish";
+                document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
+                document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;
+                document.getElementById(achID).setAttribute('data-game-id', game.id);
             }
             
             // lazy king
