@@ -306,6 +306,16 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
                 }
             }
             
+            // check check mate
+            if (movesWhiteString.includes("+") && game.winner == color && game.status == "mate") {
+                if (movesWhiteArray[movesWhiteArray.length-1].includes("#") && movesWhiteArray[movesWhiteArray.length-2].includes("+") && movesWhiteArray[movesWhiteArray.length-3].includes("+")) {
+                    achID = "check-check-mate";
+                    document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
+                    document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;
+                    document.getElementById(achID).setAttribute('data-game-id', game.id);
+                }
+            }
+            
             // pawn finish deluxe
             if ((movesWhiteString.includes("=R#") || movesWhiteString.includes("=B#") || movesWhiteString.includes("=N#")) && game.winner == color && game.status == "mate") {
                 achID = "pawn-finish-deluxe";
@@ -705,6 +715,16 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
                 }
             }
             
+            // check check mate
+            if (movesBlackString.includes("+") && game.winner == color && game.status == "mate") {
+                if (movesBlackArray[movesBlackArray.length-1].includes("#") && movesBlackArray[movesBlackArray.length-2].includes("+") && movesBlackArray[movesBlackArray.length-3].includes("+")) {
+                    achID = "check-check-mate";
+                    document.getElementById(achID).src = achievementsJSON["Win the Game"].find(item => item.id === achID).image;
+                    document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Win the Game"].find(item => item.id === achID).details;
+                    document.getElementById(achID).setAttribute('data-game-id', game.id);
+                }
+            }
+            
             // pawn finish deluxe
             if ((movesBlackString.includes("=R#") || movesBlackString.includes("=B#") || movesBlackString.includes("=N#")) && game.winner == color && game.status == "mate") {
                 achID = "pawn-finish-deluxe";
@@ -1088,6 +1108,13 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
         achID = "puzzle-racer-score";
         document.getElementById(achID).src = achievementsJSON["Puzzles"].find(item => item.id === achID).image;
         document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Puzzles"].find(item => item.id === achID).details;
+    }
+    
+    // Check games vs AI
+    if (userData?.count?.ai >= 0) {
+        achID = "play-computer";
+        document.getElementById(achID).src = achievementsJSON["Play Games"].find(item => item.id === achID).image;
+        document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Play Games"].find(item => item.id === achID).details;
     }
     
     // Check playtime total and tv:

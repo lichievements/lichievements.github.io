@@ -113,6 +113,12 @@
       "title": "Pawn finish deluxe",
       "details": "Checkmate your opponent by underpromoting a pawn",
       "image": "images/pawn-finish-deluxe.png"
+    },
+    {
+      "id": "check-check-mate",
+      "title": "Check, check, mate",
+      "details": "Within three moves: put the opponent's king in check twice and then deliver checkmate",
+      "image": "images/check-check-mate.png"
     }
   ],
   "Openings: White": [
@@ -572,6 +578,12 @@
       "title": "Takes, takes, takes",
       "details": "Capture one of your opponent's pieces on three consecutive turns",
       "image": "images/takes-takes-takes.png"
+  	},
+  	{
+  		"id": "play-computer",
+      "title": "Play against the computer",
+      "details": "Play a game against stockfish",
+      "image": "images/play-computer.png"
   	}
   ],
   "Play Games: Variants": [
