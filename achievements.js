@@ -549,6 +549,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
                     achID = "play-" + list_of_speeds[i];
                     document.getElementById(achID).src = achievementsJSON["Play Games"].find(item => item.id === achID).image;
                     document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Play Games"].find(item => item.id === achID).details;
+                    document.getElementById(achID).setAttribute('data-game-id', "@/" + userData.username + "/perf/" + list_of_speeds[i]);
                 }
             }
             
@@ -620,48 +621,56 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
                 achID = "variant-crazyhouse";
                 document.getElementById(achID).src = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).details;
+                document.getElementById(achID).setAttribute('data-game-id', "@/" + userData.username + "/perf/crazyhouse");
             }
             
             if (game.variant == "chess960") {
                 achID = "variant-chess960";
                 document.getElementById(achID).src = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).details;
+                document.getElementById(achID).setAttribute('data-game-id', "@/" + userData.username + "/perf/chess960");
             }
             
             if (game.variant == "kingOfTheHill") {
                 achID = "variant-kingOfTheHill";
                 document.getElementById(achID).src = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).details;
+                document.getElementById(achID).setAttribute('data-game-id', "@/" + userData.username + "/perf/kingOfTheHill");
             }
             
             if (game.variant == "threeCheck") {
                 achID = "variant-threeCheck";
                 document.getElementById(achID).src = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).details;
+                document.getElementById(achID).setAttribute('data-game-id', "@/" + userData.username + "/perf/threeCheck");
             }
             
             if (game.variant == "antichess") {
                 achID = "variant-antichess";
                 document.getElementById(achID).src = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).details;
+                document.getElementById(achID).setAttribute('data-game-id', "@/" + userData.username + "/perf/antichess");
             }
             
             if (game.variant == "atomic") {
                 achID = "variant-atomic";
                 document.getElementById(achID).src = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).details;
+                document.getElementById(achID).setAttribute('data-game-id', "@/" + userData.username + "/perf/atomic");
             }
             
             if (game.variant == "horde") {
                 achID = "variant-horde";
                 document.getElementById(achID).src = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).details;
+                document.getElementById(achID).setAttribute('data-game-id', "@/" + userData.username + "/perf/horde");
             }
             
             if (game.variant == "racingKings") {
                 achID = "variant-racingKings";
                 document.getElementById(achID).src = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).details;
+                document.getElementById(achID).setAttribute('data-game-id', "@/" + userData.username + "/perf/racingKings");
             }
             
         }
@@ -943,6 +952,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
                     achID = "play-" + list_of_speeds[i];
                     document.getElementById(achID).src = achievementsJSON["Play Games"].find(item => item.id === achID).image;
                     document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Play Games"].find(item => item.id === achID).details;
+                    document.getElementById(achID).setAttribute('data-game-id', "@/" + userData.username + "/perf/" + list_of_speeds[i]);
                 }
             }
             
@@ -1014,48 +1024,56 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
                 achID = "variant-crazyhouse";
                 document.getElementById(achID).src = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).details;
+                document.getElementById(achID).setAttribute('data-game-id', "@/" + userData.username + "/perf/crazyhouse");
             }
             
             if (game.variant == "chess960") {
                 achID = "variant-chess960";
                 document.getElementById(achID).src = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).details;
+                document.getElementById(achID).setAttribute('data-game-id', "@/" + userData.username + "/perf/chess960");
             }
             
             if (game.variant == "kingOfTheHill") {
                 achID = "variant-kingOfTheHill";
                 document.getElementById(achID).src = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).details;
+                document.getElementById(achID).setAttribute('data-game-id', "@/" + userData.username + "/perf/kingOfTheHill");
             }
             
             if (game.variant == "threeCheck") {
                 achID = "variant-threeCheck";
                 document.getElementById(achID).src = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).details;
+                document.getElementById(achID).setAttribute('data-game-id', "@/" + userData.username + "/perf/threeCheck");
             }
             
             if (game.variant == "antichess") {
                 achID = "variant-antichess";
                 document.getElementById(achID).src = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).details;
+                document.getElementById(achID).setAttribute('data-game-id', "@/" + userData.username + "/perf/antichess");
             }
             
             if (game.variant == "atomic") {
                 achID = "variant-atomic";
                 document.getElementById(achID).src = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).details;
+                document.getElementById(achID).setAttribute('data-game-id', "@/" + userData.username + "/perf/atomic");
             }
             
             if (game.variant == "horde") {
                 achID = "variant-horde";
                 document.getElementById(achID).src = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).details;
+                document.getElementById(achID).setAttribute('data-game-id', "@/" + userData.username + "/perf/horde");
             }
             
             if (game.variant == "racingKings") {
                 achID = "variant-racingKings";
                 document.getElementById(achID).src = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Play Games: Variants"].find(item => item.id === achID).details;
+                document.getElementById(achID).setAttribute('data-game-id', "@/" + userData.username + "/perf/racingKings");
             }
             
         }
@@ -1069,10 +1087,11 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
     
     //Check for patron:
     if (userData.patron) {
+        let achID = 'support-patron';
         document.getElementById('support-patron').src = 'images/patron.png';
         document.getElementById('support-patron').classList.add("goldshadow");
         document.getElementById('support-patron-tooltip-details').textContent = "Thanks for supporting Lichess!"; 
-        console.log(`${username} is a patron of Lichess.`);
+        document.getElementById(achID).setAttribute('data-game-id', "@/" + userData.username);
     }
     //console.log("######");
     //console.log(userData);
@@ -1138,6 +1157,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
                 unit = " minutes";
             }
             document.getElementById(achID+'-tooltip-details').textContent = "You played for more than " + Math.floor(time) + unit;
+            document.getElementById(achID).setAttribute('data-game-id', "@/" + userData.username);
         }
         if (userData.playTime.tv > 0) {
             achID = "tv";
@@ -1158,6 +1178,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
                 unit = " minutes";
             }
             document.getElementById(achID+'-tooltip-details').textContent = "You appeared on TV for more than " + Math.floor(time) + unit;
+            document.getElementById(achID).setAttribute('data-game-id', "@/" + userData.username);
         }
     }
     
@@ -1175,6 +1196,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
         //document.getElementById('account-age').src = "images/age-${age.toString().padStart(2, '0')}.png";
         document.getElementById('account-age').src = "images/birthday.png";
         document.getElementById('account-age-tooltip-details').textContent = "Your account is " + age + " years old";
+        document.getElementById('account-age').setAttribute('data-game-id', "@/" + userData.username);
     }
     
     // Check number of rated games:
@@ -1182,6 +1204,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
         if (numberOfGamesTotal >= i) {
             document.getElementById('play-games').src = 'images/play-'+i+'.png';
             document.getElementById('play-games-tooltip-details').textContent = "You have played " + numberOfGamesTotal + " rated games";
+            document.getElementById('play-games').setAttribute('data-game-id', "@/" + userData.username);
         }
     }
     
