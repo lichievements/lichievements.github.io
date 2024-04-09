@@ -1204,7 +1204,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
         if (numberOfGamesTotal >= i) {
             document.getElementById('play-games').src = 'images/play-'+i+'.png';
             document.getElementById('play-games-tooltip-details').textContent = "You have played " + numberOfGamesTotal + " rated games";
-            document.getElementById('play-games').setAttribute('data-game-id', "@/" + userData.username);
+            document.getElementById('play-games').setAttribute('data-game-id', "@/" + userData.username + "/rated");
         }
     }
     
