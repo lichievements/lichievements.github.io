@@ -680,12 +680,6 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
         await sleep(1);
     }
     
-    console.log("firstMovesWhite: ", firstMovesWhite);
-    console.log("openingsEU: ", openingsEU);
-    console.log("openingsScary: ", openingsScary);
-    console.log("openingsFantasy: ", openingsFantasy);
-    console.log("openingsBeverages: ", openingsBeverages);
-    
     for (let i = 0; i < gamesBlack.length; i++) {
         const game = gamesBlack[i];
         let color = "black";
@@ -1088,6 +1082,12 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
         
         await sleep(1);
     }
+    
+    console.log("firstMovesWhite: ", firstMovesWhite);
+    console.log("openingsEU: ", openingsEU);
+    console.log("openingsScary: ", openingsScary);
+    console.log("openingsFantasy: ", openingsFantasy);
+    console.log("openingsBeverages: ", openingsBeverages);
     
     loadDiv.innerHTML = 'Analyzing user data...';
     
