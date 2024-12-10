@@ -462,9 +462,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
                 achID = "openings-allwhite";
                 document.getElementById(achID).src = achievementsJSON["Openings: Collections"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Openings: Collections"].find(item => item.id === achID).details;
-            } else {
-                console.log("firstMovesWhite: ", firstMovesWhite)
-            }
+            } 
             
             // eliminate openings from openings-eu
             for (let move of openingsEU) {
@@ -479,9 +477,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
                 achID = "openings-eu";
                 document.getElementById(achID).src = achievementsJSON["Openings: Collections"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Openings: Collections"].find(item => item.id === achID).details;
-            } else {
-                console.log("openingsEU: ", openingsEU)
-            }
+            } 
             
             // eliminate openings from openings-scary
             for (let move of openingsScary) {
@@ -496,9 +492,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
                 achID = "openings-scary";
                 document.getElementById(achID).src = achievementsJSON["Openings: Collections"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Openings: Collections"].find(item => item.id === achID).details;
-            } else {
-                console.log("openingsScary: ", openingsScary)
-            }
+            } 
             
             // eliminate openings from openings-fantasy
             for (let move of openingsFantasy) {
@@ -513,9 +507,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
                 achID = "openings-fantasy";
                 document.getElementById(achID).src = achievementsJSON["Openings: Collections"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Openings: Collections"].find(item => item.id === achID).details;
-            } else {
-                console.log("openingsFantasy: ", openingsFantasy)
-            }
+            } 
             
             // eliminate openings from openings-beverages
             for (let move of openingsBeverages) {
@@ -530,9 +522,7 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
                 achID = "openings-beverages";
                 document.getElementById(achID).src = achievementsJSON["Openings: Collections"].find(item => item.id === achID).image;
                 document.getElementById(achID+'-tooltip-details').textContent = achievementsJSON["Openings: Collections"].find(item => item.id === achID).details;
-            } else {
-                console.log("openingsBeverages: ", openingsBeverages)
-            }
+            } 
             
             // check for pacifist win
             if (!pacifist_win && !game.moves.includes("x") && game.winner == color && game.status == "mate") {
@@ -689,6 +679,12 @@ async function processAchievements(gamesWhite, gamesBlack, userData, username, l
         
         await sleep(1);
     }
+    
+    console.log("firstMovesWhite: ", firstMovesWhite);
+    console.log("openingsEU: ", openingsEU);
+    console.log("openingsScary: ", openingsScary);
+    console.log("openingsFantasy: ", openingsFantasy);
+    console.log("openingsBeverages: ", openingsBeverages);
     
     for (let i = 0; i < gamesBlack.length; i++) {
         const game = gamesBlack[i];
