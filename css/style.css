@@ -152,6 +152,7 @@ a { color: inherit; }
 .btn-ghost:hover { color: var(--text); border-color: var(--accent-2); }
 
 .logo-mark { width: 1.2em; height: 1.2em; display: inline-block; vertical-align: -0.2em; }
+.btn-icon { width: 1.15em; height: 1.15em; flex-shrink: 0; }
 
 /* --- Account / status bar -------------------------------------------------- */
 
