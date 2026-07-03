@@ -7,11 +7,13 @@ const AUTH_URL = `${LICHESS}/oauth`;
 const TOKEN_URL = `${LICHESS}/api/token`;
 const ACCOUNT_URL = `${LICHESS}/api/account`;
 
-// Identifying the user and reading public account data needs no scope. Two
+// Identifying the user and reading public account data needs no scope. Three
 // extra achievement sources are private, so we request read-only access to
-// them: `study:read` (has the user authored a study?) and `follow:read`
-// (whom does the user follow?). Games, teams and tournaments stay public.
-const SCOPE = 'study:read follow:read';
+// them: `study:read` (has the user authored a study?), `follow:read` (whom does
+// the user follow?) and `puzzle:read` (puzzle dashboard: per-theme solves and
+// puzzle performance). Games, teams, tournaments and per-format performance
+// stats (peak rating, play streaks, berserks) stay public.
+const SCOPE = 'study:read follow:read puzzle:read';
 
 const REDIRECT_URI = location.origin + location.pathname;
 const CLIENT_ID = REDIRECT_URI; // arbitrary stable string; the deployed URL is convention

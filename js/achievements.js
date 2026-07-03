@@ -182,6 +182,12 @@ export const CATEGORIES = [
       { id: 'survivor', title: 'Survivor', details: 'Win a game after being checked at least five times', image: 'images/survivor.png', scope: 'game', detect: (c) => c.won && c.checksByOpp >= 5 },
       { id: 'underachiever', title: 'Underachiever', details: 'Win a game in which you underpromoted a pawn', image: 'images/underachiever.png', scope: 'game', detect: (c) => c.won && c.userSan.some((m) => /=[RBN]/.test(m)) },
       { id: 'kings-journey', title: "King's Journey", details: "Win after your king reaches the opponent's back rank (8th for White, 1st for Black)", image: 'images/kings-journey.png', scope: 'game', needsBoard: true, detect: (c) => c.won && c.board.kingCrossed },
+      { id: 'underdog', title: 'Underdog', details: 'Beat an opponent rated at least 200 points above you', svg: 'chart', color: '#0ea5e9', scope: 'game', detect: (c) => c.won && c.oppRating && c.myRating && (c.oppRating - c.myRating) >= 200 },
+      { id: 'giant-slayer', title: 'Giant Slayer', details: 'Beat a titled player', svg: 'cap', color: '#0891b2', scope: 'game', detect: (c) => c.won && !!c.oppTitle && c.oppTitle !== 'BOT' },
+      { id: 'comeback', title: 'Comeback King', details: 'Win after being down at least a rook (5 points of material) at some point', svg: 'trophy', color: '#f59e0b', scope: 'game', needsBoard: true, detect: (c) => c.won && c.board.minMaterialDiff <= -5 },
+      { id: 'houdini', title: 'The Great Escape', details: 'Win after being down at least a full queen (9 points of material) at some point', svg: 'sparkles', color: '#ef4444', scope: 'game', needsBoard: true, detect: (c) => c.won && c.board.minMaterialDiff <= -9 },
+      { id: 'win-streak-5', title: 'On Fire', details: 'Win five standard games in a row', svg: 'fire', color: '#f97316', scope: 'game', init: () => ({ cur: 0 }), detect: (c, s) => { s.cur = c.won ? s.cur + 1 : 0; return s.cur >= 5; } },
+      { id: 'win-streak-10', title: 'Unstoppable', details: 'Win ten standard games in a row', svg: 'bolt', color: '#dc2626', scope: 'game', init: () => ({ cur: 0 }), detect: (c, s) => { s.cur = c.won ? s.cur + 1 : 0; return s.cur >= 10; } },
     ],
   },
   {
@@ -201,6 +207,9 @@ export const CATEGORIES = [
         for (const m of c.userSan) { if (m.includes('x')) { if (++run >= 3) return true; } else run = 0; }
         return false;
       } },
+      { id: 'en-passant', title: 'En Passant', details: 'Capture a pawn en passant', svg: 'bolt', color: '#22c55e', scope: 'game', needsBoard: true, detect: (c) => c.board.epAny },
+      { id: 'promote-three', title: 'Promotion Spree', details: 'Promote three or more pawns in a single game', svg: 'sparkles', color: '#8b5cf6', scope: 'game', detect: (c) => c.userSan.filter((m) => m.includes('=')).length >= 3 },
+      { id: 'promote-eight', title: 'Eight is Enough', details: 'Promote all eight of your pawns in a single game', svg: 'crown', color: '#a855f7', scope: 'game', detect: (c) => c.userSan.filter((m) => m.includes('=')).length >= 8 },
     ],
   },
   {
@@ -317,6 +326,9 @@ export const CATEGORIES = [
       { id: 'rating-2000', title: 'Expert', details: 'Reach an established rating of 2000', svg: 'trophy', color: '#8b5cf6', scope: 'account', unlock: (a) => bestRating(a) >= 2000 },
       { id: 'rating-2200', title: 'Master Class', details: 'Reach an established rating of 2200', svg: 'cap', color: '#a855f7', scope: 'account', unlock: (a) => bestRating(a) >= 2200 },
       { id: 'rating-established', title: 'Established', details: 'Clear a provisional rating in any format', svg: 'verified', color: '#0ea5e9', scope: 'account', unlock: (a) => hasEstablished(a) },
+      { id: 'peak-2000', title: 'New Heights', details: 'Reach a peak rating of 2000 in any format', svg: 'trophy', color: '#7c3aed', scope: 'extra', unlock: (x) => x.peak.int >= 2000 ? { gameId: x.peak.gameId } : false },
+      { id: 'peak-2200', title: 'Mountaineer', details: 'Reach a peak rating of 2200 in any format', svg: 'crown', color: '#6d28d9', scope: 'extra', unlock: (x) => x.peak.int >= 2200 ? { gameId: x.peak.gameId } : false },
+      { id: 'peak-2400', title: 'Summit', details: 'Reach a peak rating of 2400 in any format', svg: 'star', color: '#5b21b6', scope: 'extra', unlock: (x) => x.peak.int >= 2400 ? { gameId: x.peak.gameId } : false },
     ],
   },
   {
@@ -335,11 +347,15 @@ export const CATEGORIES = [
     items: [
       { id: 'puzzle-solve', title: 'Puzzler', details: 'Solve a Lichess puzzle', svg: 'puzzle', color: '#f59e0b', scope: 'account', unlock: (a) => (a.perfs?.puzzle?.games || 0) >= 1 },
       { id: 'puzzle-2000', title: 'Puzzle Expert', details: 'Reach a puzzle rating of 2000', svg: 'star', color: '#d97706', scope: 'account', unlock: (a) => (a.perfs?.puzzle?.games || 0) > 0 && (a.perfs?.puzzle?.rating || 0) >= 2000 },
-      { id: 'storm-play', title: 'Storm Chaser', details: 'Play Puzzle Storm', svg: 'fire', color: '#f97316', scope: 'account', unlock: (a) => (a.perfs?.storm?.runs || 0) >= 1 },
-      { id: 'storm-50', title: 'Eye of the Storm', details: 'Score 50 in Puzzle Storm', svg: 'fire', color: '#ea580c', scope: 'account', unlock: (a) => (a.perfs?.storm?.score || 0) >= 50 },
-      { id: 'racer-play', title: 'Puzzle Racer', details: 'Play Puzzle Racer', svg: 'bolt', color: '#fb923c', scope: 'account', unlock: (a) => (a.perfs?.racer?.runs || 0) >= 1 },
-      { id: 'streak-play', title: 'On a Streak', details: 'Play Puzzle Streak', svg: 'fire', color: '#f59e0b', scope: 'account', unlock: (a) => (a.perfs?.streak?.runs || 0) >= 1 },
-      { id: 'streak-50', title: 'Unbroken', details: 'Reach a streak of 50', svg: 'star', color: '#b45309', scope: 'account', unlock: (a) => (a.perfs?.streak?.score || 0) >= 50 },
+      { id: 'storm-play', title: 'Storm Chaser', details: 'Play Puzzle Storm', image: 'images/puzzle-storm.png', scope: 'account', unlock: (a) => (a.perfs?.storm?.runs || 0) >= 1 },
+      { id: 'storm-50', title: 'Eye of the Storm', details: 'Score 50 in Puzzle Storm', image: 'images/puzzle-storm-score.png', scope: 'account', unlock: (a) => (a.perfs?.storm?.score || 0) >= 50 },
+      { id: 'racer-play', title: 'Puzzle Racer', details: 'Play Puzzle Racer', image: 'images/puzzle-racer.png', scope: 'account', unlock: (a) => (a.perfs?.racer?.runs || 0) >= 1 },
+      { id: 'racer-50', title: 'Photo Finish', details: 'Score 50 in Puzzle Racer', image: 'images/puzzle-racer-score.png', scope: 'account', unlock: (a) => (a.perfs?.racer?.score || 0) >= 50 },
+      { id: 'streak-play', title: 'On a Streak', details: 'Play Puzzle Streak', image: 'images/puzzle-streak.png', scope: 'account', unlock: (a) => (a.perfs?.streak?.runs || 0) >= 1 },
+      { id: 'streak-50', title: 'Unbroken', details: 'Reach a streak of 50', image: 'images/puzzle-streak-score.png', scope: 'account', unlock: (a) => (a.perfs?.streak?.score || 0) >= 50 },
+      { id: 'storm-100', title: 'Storm Master', details: 'Score 100 in Puzzle Storm', svg: 'fire', color: '#c2410c', scope: 'account', unlock: (a) => (a.perfs?.storm?.score || 0) >= 100 },
+      { id: 'puzzle-theme', title: 'Theme Hunter', details: 'Solve at least 50 puzzles of a single theme', svg: 'puzzle', color: '#ca8a04', scope: 'extra', unlock: (x) => x.puzzleThemeMax >= 50 },
+      { id: 'puzzle-performance', title: 'Tactician', details: 'Reach a puzzle performance of 2200', svg: 'star', color: '#a16207', scope: 'extra', unlock: (x) => x.puzzlePerformance >= 2200 },
     ],
   },
   {
@@ -360,10 +376,12 @@ export const CATEGORIES = [
   {
     name: 'Dedication',
     items: [
-      { id: 'playtime-24h', title: 'A Full Day', details: 'Play for a total of 24 hours', svg: 'clock', color: '#06b6d4', scope: 'account', unlock: (a) => (a.playTime?.total || 0) >= 86400 },
+      { id: 'playtime-24h', title: 'A Full Day', details: 'Play for a total of 24 hours', image: 'images/play-time.png', scope: 'account', unlock: (a) => (a.playTime?.total || 0) >= 86400 },
       { id: 'playtime-100h', title: 'Centurion of Hours', details: 'Play for a total of 100 hours', svg: 'clock', color: '#0891b2', scope: 'account', unlock: (a) => (a.playTime?.total || 0) >= 360000 },
       { id: 'playtime-1000h', title: 'Timeless', details: 'Play for a total of 1,000 hours', svg: 'hourglass', color: '#0e7490', scope: 'account', unlock: (a) => (a.playTime?.total || 0) >= 3600000 },
-      { id: 'tv-time', title: 'Prime Time', details: 'Be featured on Lichess TV', svg: 'tv', color: '#22d3ee', scope: 'account', unlock: (a) => (a.playTime?.tv || 0) >= 1 },
+      { id: 'tv-time', title: 'Prime Time', details: 'Be featured on Lichess TV', image: 'images/tv.png', scope: 'account', unlock: (a) => (a.playTime?.tv || 0) >= 1 },
+      { id: 'session-games', title: 'Grinder', details: 'Play at least 20 games in a single sitting', svg: 'fire', color: '#0e7490', scope: 'extra', unlock: (x) => x.sessionGames >= 20 },
+      { id: 'session-time', title: 'Iron Player', details: 'Play for two hours in a single sitting', svg: 'hourglass', color: '#155e75', scope: 'extra', unlock: (x) => x.sessionTime >= 7200 },
     ],
   },
   {
@@ -373,6 +391,7 @@ export const CATEGORIES = [
       { id: 'marathon', title: 'Marathon', details: 'Play a game of at least 60 moves', svg: 'hourglass', color: '#f43f5e', scope: 'game', detect: (c) => c.san.length >= 120 },
       { id: 'scholars-mate', title: "Scholar's Mate", details: 'Checkmate in the first four moves with your queen', svg: 'trophy', color: '#e11d48', scope: 'game', detect: (c) => isMate(c) && c.san.length <= 8 && /^Qx?f[27]#$/.test(c.lastSan) },
       { id: 'fools-mate', title: "Fool's Mate", details: 'Deliver the two-move fool’s mate', svg: 'star', color: '#be123c', scope: 'game', detect: (c) => isMate(c) && c.san.length <= 4 && c.lastSan === 'Qh4#' },
+      { id: 'night-owl', title: 'Night Owl', details: 'Play a game between midnight and 5 a.m. your local time', svg: 'clock', color: '#6366f1', scope: 'game', detect: (c) => { const h = new Date(c.createdAt).getHours(); return h >= 0 && h < 5; } },
     ],
   },
 
@@ -384,7 +403,7 @@ export const CATEGORIES = [
       { id: 'team-three', title: 'Social Butterfly', details: 'Be a member of three teams at once', svg: 'sparkles', color: '#6366f1', scope: 'extra', unlock: (x) => x.teams.length >= 3 },
       { id: 'follow-one', title: 'Fan', details: 'Follow another player', svg: 'star', color: '#7c3aed', scope: 'extra', unlock: (x) => x.following.length >= 1 },
       { id: 'follow-ten', title: 'Networker', details: 'Follow ten players', svg: 'chart', color: '#8b5cf6', scope: 'extra', unlock: (x) => x.following.length >= 10 },
-      { id: 'study-write', title: 'Scholar', details: 'Create a study', svg: 'pencil', color: '#a855f7', scope: 'extra', unlock: (x) => x.studies.length >= 1 },
+      { id: 'study-write', title: 'Scholar', details: 'Create a study', image: 'images/study.png', scope: 'extra', unlock: (x) => x.studies.length >= 1 },
     ],
   },
   {
@@ -396,6 +415,8 @@ export const CATEGORIES = [
       { id: 'arena-win', title: 'Arena Champion', details: 'Win an arena tournament', svg: 'trophy', color: '#f97316', scope: 'extra', unlock: (x) => x.tournaments.some((t) => t.player?.rank === 1) },
       { id: 'arena-points-100', title: 'Point Collector', details: 'Score 100 arena points in total', svg: 'star', color: '#ea580c', scope: 'extra', unlock: (x) => x.arenaPoints >= 100 },
       { id: 'arena-points-1000', title: 'Point Hoarder', details: 'Score 1,000 arena points in total', svg: 'crown', color: '#b45309', scope: 'extra', unlock: (x) => x.arenaPoints >= 1000 },
+      { id: 'berserk-1', title: 'Berserker', details: 'Berserk a tournament game', svg: 'bolt', color: '#dc2626', scope: 'extra', unlock: (x) => x.berserk >= 1 },
+      { id: 'berserk-100', title: 'Berserk Fanatic', details: 'Berserk 100 tournament games', svg: 'fire', color: '#b91c1c', scope: 'extra', unlock: (x) => x.berserk >= 100 },
     ],
   },
 ];

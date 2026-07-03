@@ -188,7 +188,12 @@ function unlock(id, gameId, color, ply, { animate = true, persist = true } = {})
   }
 
   if (gameId) {
-    tile.href = `https://lichess.org/${gameId}/${color}#${ply + 1}`;
+    // Game-derived tiles carry color + ply; account/extra tiles (e.g. peak rating)
+    // may carry only a gameId, so build the deep link from whatever we have.
+    let href = `https://lichess.org/${gameId}`;
+    if (color) href += `/${color}`;
+    if (Number.isInteger(ply)) href += `#${ply + 1}`;
+    tile.href = href;
     tile.target = '_blank';
     tile.rel = 'noopener';
   }

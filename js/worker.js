@@ -45,7 +45,7 @@ async function run({ username, userId, token, account }) {
   // 1b) Extra-scope achievements — fetched from supplementary endpoints in
   // parallel with (and independently of) the game stream. Their unlocks may
   // arrive after the 'done' of the game pass; main.js reveals them regardless.
-  if (extraAchievements.length) evaluateExtra(username, token, extraAchievements).catch(() => {});
+  if (extraAchievements.length) evaluateExtra(username, token, extraAchievements, account).catch(() => {});
 
   // Nothing game-based left to find? We're done.
   let locked = gameAchievements;
@@ -107,7 +107,11 @@ async function run({ username, userId, token, account }) {
 
 const LI = 'https://lichess.org';
 
-async function evaluateExtra(username, token, achievements) {
+// Time controls whose per-format performance stats we mine for peak rating,
+// play-session length and berserk counts (GET /api/user/{u}/perf/{perf}).
+const PERF_KEYS = ['ultraBullet', 'bullet', 'blitz', 'rapid', 'classical', 'correspondence'];
+
+async function evaluateExtra(username, token, achievements, account) {
   const auth = token ? { Authorization: `Bearer ${token}` } : {};
   const u = encodeURIComponent(username);
 
@@ -122,11 +126,55 @@ async function evaluateExtra(username, token, achievements) {
   let arenaPoints = 0;
   for (const t of tournaments) arenaPoints += t.player?.score || 0;
 
-  const extra = { teams, tournaments, created, studies, following, arenaPoints };
-  for (const a of achievements) {
-    try { if (a.unlock(extra)) post({ type: 'unlock', id: a.id, gameId: null }); }
-    catch { /* ignore a bad detector */ }
+  // Per-format performance stats (public) — one call per time control the user has
+  // actually played, run in parallel. We keep the best across formats.
+  const playedPerfs = PERF_KEYS.filter((k) => (account?.perfs?.[k]?.games || 0) > 0);
+  const perfStats = await Promise.all(playedPerfs.map((k) => fetchJson(`${LI}/api/user/${u}/perf/${k}`, auth)));
+  const peak = { int: 0, gameId: null };
+  let sessionGames = 0;
+  let sessionTime = 0;
+  let berserk = 0;
+  for (const ps of perfStats) {
+    const st = ps?.stat;
+    if (!st) continue;
+    const hi = st.highest?.int || 0;
+    if (hi > peak.int) { peak.int = hi; peak.gameId = st.highest?.gameId || null; }
+    sessionGames = Math.max(sessionGames, st.playStreak?.nb?.max?.v || 0);
+    sessionTime = Math.max(sessionTime, st.playStreak?.time?.max?.v || 0);
+    berserk += st.count?.berserk || 0;
   }
+
+  // Puzzle dashboard (needs the puzzle:read scope) — best-effort. A long window so
+  // per-theme counts accumulate; missing scope just leaves these achievements locked.
+  let puzzleThemeMax = 0;
+  let puzzlePerformance = 0;
+  const dash = await fetchJson(`${LI}/api/puzzle/dashboard/1000`, auth);
+  if (dash) {
+    puzzlePerformance = dash.global?.performance || 0;
+    const themes = dash.themes || {};
+    for (const key of Object.keys(themes)) {
+      puzzleThemeMax = Math.max(puzzleThemeMax, themes[key]?.results?.nb || 0);
+    }
+  }
+
+  const extra = {
+    teams, tournaments, created, studies, following, arenaPoints,
+    peak, sessionGames, sessionTime, berserk, puzzleThemeMax, puzzlePerformance,
+  };
+  for (const a of achievements) {
+    try {
+      const r = a.unlock(extra);
+      if (r) post({ type: 'unlock', id: a.id, gameId: (r && r.gameId) || null });
+    } catch { /* ignore a bad detector */ }
+  }
+}
+
+async function fetchJson(url, auth) {
+  try {
+    const res = await fetch(url, { headers: { Accept: 'application/json', ...auth } });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch { return null; }
 }
 
 async function fetchJsonArray(url, auth) {
@@ -165,22 +213,26 @@ async function fetchNdjson(url, auth) {
 
 // ---------------------------------------------------------------------------
 
-const ZERO_BOARD = { maxQueens: 0, kingCrossed: false, epMate: false };
+const ZERO_BOARD = { maxQueens: 0, kingCrossed: false, epMate: false, epAny: false, minMaterialDiff: 0 };
 const EP_LAST = /^[a-h]x[a-h][36]$/; // a pawn capture landing on the en-passant rank
+const PIECE_VALUE = { p: 1, n: 3, b: 3, r: 5, q: 9, k: 0 };
 
 // Decide the cheapest board pass this game needs, given still-locked achievements.
 //   { replay:false }          -> no chess.js replay at all
 //   { replay:true, scan:bool } -> replay; scan=true also walks the board each ply
 function boardPlan(locked, lastBare) {
   let scan = false;
-  let ep = false;
+  let epMate = false;
+  let epAny = false;
   for (const l of locked) {
     if (!l.def.needsBoard) continue;
-    if (l.def.id === 'en-passant-mate') ep = true;
-    else scan = true; // queen-party, king's journey need per-ply board state
+    if (l.def.id === 'en-passant-mate') epMate = true;
+    else if (l.def.id === 'en-passant') epAny = true;
+    else scan = true; // queen-party, king's journey, comeback, houdini need per-ply board state
   }
-  if (scan) return { replay: true, scan: true };
-  if (ep && EP_LAST.test(lastBare)) return { replay: true, scan: false };
+  if (scan) return { replay: true, scan: true };       // full walk covers ep too
+  if (epAny) return { replay: true, scan: false };      // any move might be en passant
+  if (epMate && EP_LAST.test(lastBare)) return { replay: true, scan: false };
   return { replay: false };
 }
 
@@ -193,6 +245,9 @@ function analyseGame(game, uid, locked) {
   const blackId = players.black?.user?.id?.toLowerCase();
   const color = whiteId === uid ? 'white' : blackId === uid ? 'black' : null;
   if (!color) return;
+
+  const me = players[color] || {};
+  const opp = players[color === 'white' ? 'black' : 'white'] || {};
 
   const san = (game.moves || '').split(/\s+/).filter(Boolean);
   if (!san.length) return;
@@ -213,6 +268,10 @@ function analyseGame(game, uid, locked) {
     lastSan: san[san.length - 1],
     checksByOpp: oppSan.reduce((n, m) => n + (m.endsWith('+') || m.endsWith('#') ? 1 : 0), 0),
     anyCapture: san.some((m) => m.includes('x')),
+    createdAt: game.createdAt,
+    myRating: me.rating || null,
+    oppRating: opp.rating || null,
+    oppTitle: opp.user?.title || null, // 'GM', 'IM', ... or 'BOT'
     board: ZERO_BOARD,
   };
 
@@ -237,6 +296,8 @@ function computeBoard(san, userWhite, scan) {
   let maxQueens = 0;
   let kingCrossed = false;
   let epMate = false;
+  let epAny = false;
+  let minMaterialDiff = 0; // most negative (user material − opponent material) over the game
   const last = san.length - 1;
 
   for (let i = 0; i <= last; i++) {
@@ -244,29 +305,41 @@ function computeBoard(san, userWhite, scan) {
     try { mv = chess.move(san[i]); } catch { break; }
     if (!mv) break;
 
+    const byUser = (i % 2 === 0) === userWhite;
+    if (byUser && mv.flags.includes('e')) epAny = true; // 'e' = en-passant capture
+
     if (scan) {
       const b = chess.board();
       let q = 0;
       let kingRank = null;
+      let userMat = 0;
+      let oppMat = 0;
       for (let r = 0; r < 8; r++) {
         for (let f = 0; f < 8; f++) {
           const p = b[r][f];
           if (!p) continue;
           const isUser = (p.color === 'w') === userWhite;
-          if (!isUser) continue;
-          if (p.type === 'q') q++;
-          else if (p.type === 'k') kingRank = 8 - r; // rows run rank 8 -> 1
+          if (p.type === 'k') { if (isUser) kingRank = 8 - r; continue; } // rows run rank 8 -> 1
+          if (p.type === 'q' && isUser) q++;
+          if (isUser) userMat += PIECE_VALUE[p.type] || 0;
+          else oppMat += PIECE_VALUE[p.type] || 0;
         }
       }
       if (q > maxQueens) maxQueens = q;
       // "Far side" = the opponent's back rank: rank 8 for White, rank 1 for Black.
       if (kingRank != null && (userWhite ? kingRank === 8 : kingRank === 1)) kingCrossed = true;
+      // Sample the material deficit only after the user's own moves, so a queen
+      // trade in progress (down a queen until the recapture) isn't mistaken for a
+      // sacrifice — only a genuine standing deficit counts.
+      if (byUser) {
+        const diff = userMat - oppMat;
+        if (diff < minMaterialDiff) minMaterialDiff = diff;
+      }
     }
 
     if (i === last) {
-      const byUser = (i % 2 === 0) === userWhite;
       if (byUser && mv.flags.includes('e') && chess.isCheckmate()) epMate = true;
     }
   }
-  return { maxQueens, kingCrossed, epMate };
+  return { maxQueens, kingCrossed, epMate, epAny, minMaterialDiff };
 }

@@ -30,9 +30,14 @@ The name is always styled as **li**`chievements` — `li` bold, `chievements` th
 - **No server secret needed:** Lichess OAuth2 uses the **Authorization Code flow with
   PKCE** (public client). `client_id` is an arbitrary string (use the site's origin);
   `redirect_uri` must equal the deployed URL.
-- **No persistent caching** (per decision): every visit re-streams and re-analyzes the
-  full history. Therefore *all* performance comes from streaming + fast detection +
-  early-exit (see §5), not from storing results.
+- **No game-result caching during analysis:** every *analysis run* re-streams and
+  re-analyzes the full history, so the pipeline's speed comes from streaming + fast
+  detection + early-exit (see §5), not from storing intermediate results.
+- **Light client-side persistence (added later):** the *unlocked set* is cached in
+  `localStorage` per user (`li_unlocked:{uid}`) and the access token in
+  `sessionStorage` (`li_token`), so a page reload restores the previous tiles
+  instantly without re-analysing, and a **Reload** button re-runs the full analysis
+  on demand without a fresh Lichess login. Logout clears both.
 
 ### File layout
 ```
@@ -43,12 +48,20 @@ js/main.js            # UI orchestration, OAuth, streaming fetch, DOM reveal
 js/oauth.js           # PKCE helpers (code_verifier/challenge, state, token exchange)
 js/worker.js          # game analysis worker: runs detectors over streamed games
 js/achievements.js    # achievement registry (metadata) + detector functions
-js/chess.min.js       # vendored chess.js (MIT) — used ONLY for board-required detectors
+js/chess.js           # vendored chess.js (MIT) — used ONLY for board-required detectors
 data/                 # (optional) generated opening tables if externalized
 images/               # tile art (provided; more to come). locked.png = locked tile
 fonts/                # Inter-4.1/web/*.woff2, JetBrainsMono-2.304/.../*.woff2
 icon.png              # favicon
+sw.js                 # service worker: network-first for app code, cache-first for assets
+manifest.webmanifest  # PWA manifest
+icon-192/512*.png, apple-touch-icon.png   # PWA / iOS home-screen icons
 ```
+
+The site is also installable as a **PWA**. `sw.js` serves HTML/JS/CSS **network-first**
+(so every online launch gets the latest deploy — important for iOS PWAs that can't be
+manually refreshed) and fonts/images cache-first. `index.html` auto-reloads once when
+an updated worker takes control. Bump `APP_VERSION` in `sw.js` to invalidate the cache.
 
 ---
 
@@ -57,9 +70,10 @@ icon.png              # favicon
 1. On "Log in": generate random `code_verifier` + `state`, store in `sessionStorage`,
    compute S256 `code_challenge`, redirect to
    `https://lichess.org/oauth?response_type=code&client_id=<origin>&redirect_uri=<url>&code_challenge_method=S256&code_challenge=...&state=...`.
-   **Scope:** `study:read follow:read` — needed only for the "created a study" and
-   "follow someone" achievements. All other endpoints (account, games, teams,
-   tournaments) work with an empty-scope token; these two read private data.
+   **Scope:** `study:read follow:read puzzle:read` — needed only for the "created a
+   study", "follow someone", and puzzle-dashboard (per-theme / performance)
+   achievements. All other endpoints (account, games, teams, tournaments, per-format
+   performance stats) work with an empty-scope token; these three read private data.
 2. On redirect back with `?code&state`: verify `state`, POST to
    `https://lichess.org/api/token` with `grant_type=authorization_code`, the `code`,
    `redirect_uri`, `client_id`, and the stored `code_verifier` → access token.
@@ -80,15 +94,21 @@ icon.png              # favicon
   `GET /api/team/of/{u}` (teams joined), `GET /api/user/{u}/tournament/played`
   (arenas: participation, podium, win, cumulative `player.score` points) and
   `.../tournament/created` (hosting), `GET /api/study/by/{u}` (studies — needs
-  `study:read`), `GET /api/rel/following` (follows — needs `follow:read`).
-  **No blog API exists on Lichess**, so "write a blog post" is not detectable and is
-  omitted.
+  `study:read`), `GET /api/rel/following` (follows — needs `follow:read`),
+  `GET /api/user/{u}/perf/{perf}` (public; one call per *played* time control —
+  `stat.highest` peak rating, `playStreak` longest sitting, `count.berserk`; the best
+  across formats is kept) and `GET /api/puzzle/dashboard/1000` (needs `puzzle:read` —
+  per-theme solve counts + puzzle performance). **No blog API exists on Lichess**, so
+  "write a blog post" is not detectable and is omitted.
 - **`GET /api/games/user/{username}`** with `Accept: application/x-ndjson`,
   `moves=true&opening=true&tags=false&clocks=false&evals=false&pgnInJson=false`,
   `sort=dateAsc`. Streams one JSON object per game, each with:
   `id` (Lichess game id), `moves` (space-separated **SAN**), `opening{eco,name,ply}`,
-  `players`, `winner`, `speed`, `variant`, `status`, `createdAt`. This is the single
-  heavy request; it is read as a `ReadableStream` and fed line-by-line to the worker.
+  `players` (incl. each side's `rating`, `ratingDiff`, `user.title`, `aiLevel`),
+  `winner`, `speed`, `variant`, `status`, `createdAt`. This is the single heavy
+  request; it is read as a `ReadableStream` and fed line-by-line to the worker.
+  Player ratings/titles arrive in the JSON by default (no extra param), powering the
+  upset / giant-slayer detectors with no additional request.
 - **Puzzle/other:** fetch from dedicated endpoints where the API allows; anything not
   verifiable from account+games is **omitted** (per decision — no dead placeholders).
 
@@ -96,7 +116,9 @@ icon.png              # favicon
 
 ## 5. Performance strategy (critical — accounts can have 10k+ games)
 
-Speed is a primary requirement. No caching, so the pipeline must be lean:
+Speed is a primary requirement. Each analysis pass re-streams the full history (the
+persisted unlocked set only skips re-analysis on a plain reload — §2), so the pipeline
+must be lean:
 
 1. **Stream, don't buffer.** Process each NDJSON line as it arrives via
    `fetch().body.getReader()`; never hold the whole history in memory.
@@ -142,11 +164,23 @@ Data-driven registry in `js/achievements.js`. Each entry:
   title: "Queen's Quest",
   details: 'Deliver checkmate with a queen',
   image: 'images/mate-queen.png',
-  scope: 'game-san',           // 'account' | 'game-san' | 'game-board' | 'opening'
-  detect: (ctx) => { ... }     // opening entries instead carry a `moves` sequence
-                               // returns e.g. { unlocked: true, gameId, color, ply }
+  scope: 'game',               // 'account' | 'extra' | 'game'
+  needsBoard: false,           // 'game' detectors set true when they read ctx.board.*
+  detect: (ctx, state) => { ... }  // returns falsy | true | { ply }
 }
 ```
+
+**Scopes (as implemented in `js/achievements.js`):**
+- `account` — `unlock(account)`, evaluated once from `/api/account`.
+- `extra` — `unlock(extra)`, evaluated once from the supplementary endpoints
+  (teams / tournaments / studies / following) — see the worker.
+- `game` — `detect(ctx, state)`, evaluated per streamed game. A `game` detector may
+  set `needsBoard: true` to read `ctx.board.*` (en-passant mate, king's journey,
+  multiple queens); the worker only reconstructs the board when at least one
+  still-locked achievement needs it. Openings and opening collections are ordinary
+  `game` detectors built from SAN move lines (`prefixMatch`), not a separate scope.
+  A `detect` returns falsy (locked), `true` (link points at the last move), or
+  `{ ply }` (link jumps to that 0-based ply).
 
 **Unlock provenance & deep links.** Each game-derived achievement stores the first
 game that unlocked it: `{ gameId, color, ply }`. The unlocked tile is rendered as a
@@ -155,9 +189,13 @@ from the winning side, jumped to the deciding move (omit `/{color}` / `#{ply}` w
 not applicable). `account`-scope achievements have no single source game, so their
 tiles are non-linking (or link to the user's profile).
 
-- **Categories** (rendered as `<h2>` section headers, matching the old file's spirit):
-  Checkmates · Openings: White · Openings: Black · Opening Collections ·
-  Play & Games · Variants · Milestones/Account · (Puzzles if fetchable).
+- **Categories** (rendered as `<h2>` section headers). The live set (~170
+  achievements total) is: Checkmates · Winning Feats · Board Antics · Openings: White ·
+  Openings: Black · Opening Collections · Time Controls · Variants · Milestones ·
+  Ratings · Records · Puzzles · Profile & Community · Dedication · Notable Games ·
+  Social · Tournaments. (Social and Tournaments are `extra`-scope.) Categories whose
+  art doesn't exist yet render coloured SVG placeholder tiles (see `ICONS` in
+  `achievements.js`); a category header shows a checkmark once fully unlocked.
 - **Seed content:** port `achievements_OLD.json` (it maps 1:1 to images already in
   `images/`), then expand toward the ~100 target using additional detectable ideas
   (more mate patterns, streaks, promotion combos, opening lines, per-speed/variant
