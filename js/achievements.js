@@ -70,6 +70,16 @@ const OPENINGS = [
   ['opening-tortoise', 'Tortoise Opening', '1. e4 e5 2. Bd3', 'opening-tortoise', W, 'e4 e5 Bd3'],
   ['opening-whale', 'English: The Whale', '1. e4 e5 2. c4', 'opening-whale', W, 'e4 e5 c4'],
 
+  // Common mainstream openings (White)
+  ['opening-london', 'London System', '1. d4 d5 2. Bf4', 'opening-london', W, 'd4 d5 Bf4'],
+  ['opening-vienna', 'Vienna Game', '1. e4 e5 2. Nc3', 'opening-vienna', W, 'e4 e5 Nc3'],
+  ['opening-bishopsopening', "Bishop's Opening", '1. e4 e5 2. Bc4', 'opening-bishopsopening', W, 'e4 e5 Bc4'],
+  ['opening-catalan', 'Catalan', '1. d4 Nf6 2. c4 e6 3. g3', 'opening-catalan', W, 'd4 Nf6 c4 e6 g3'],
+  ['opening-bird', "Bird's Opening", '1. f4', 'opening-bird', W, 'f4'],
+  ['opening-larsen', 'Nimzo-Larsen Attack', '1. b3', 'opening-larsen', W, 'b3'],
+  ['opening-trompowsky', 'Trompowsky Attack', '1. d4 Nf6 2. Bg5', 'opening-trompowsky', W, 'd4 Nf6 Bg5'],
+  ['opening-fourknights', 'Four Knights Game', '1. e4 e5 2. Nf3 Nc6 3. Nc3 Nf6', 'opening-fourknights', W, 'e4 e5 Nf3 Nc6 Nc3 Nf6'],
+
   // Black
   ['opening-sicilian', 'Sicilian', '1. e4 c5', 'opening-sicilian', B, 'e4 c5'],
   ['opening-carokann', 'Caro-Kann', '1. e4 c6', 'opening-carokann', B, 'e4 c6'],
@@ -96,6 +106,16 @@ const OPENINGS = [
   ['opening-mongoose', 'Sicilian: Mongoose', '1. e4 c5 2. Nf3 Qa5', 'opening-mongoose', B, 'e4 c5 Nf3 Qa5'],
   ['opening-snail', 'Benoni: Snail', '1. d4 c5 2. d5 Na6', 'opening-snail', B, 'd4 c5 d5 Na6'],
   ['opening-vulture', 'Vulture Defense', '1. d4 Nf6 2. c4 c5 3. d5 Ne4', 'opening-vulture', B, 'd4 Nf6 c4 c5 d5 Ne4'],
+
+  // Common mainstream defenses (Black)
+  ['opening-kingsindian', "King's Indian Defense", '1. d4 Nf6 2. c4 g6 3. Nc3 Bg7', 'opening-kingsindian', B, 'd4 Nf6 c4 g6 Nc3 Bg7'],
+  ['opening-nimzoindian', 'Nimzo-Indian Defense', '1. d4 Nf6 2. c4 e6 3. Nc3 Bb4', 'opening-nimzoindian', B, 'd4 Nf6 c4 e6 Nc3 Bb4'],
+  ['opening-grunfeld', 'Grünfeld Defense', '1. d4 Nf6 2. c4 g6 3. Nc3 d5', 'opening-grunfeld', B, 'd4 Nf6 c4 g6 Nc3 d5'],
+  ['opening-qgd', "Queen's Gambit Declined", '1. d4 d5 2. c4 e6', 'opening-qgd', B, 'd4 d5 c4 e6'],
+  ['opening-slav', 'Slav Defense', '1. d4 d5 2. c4 c6', 'opening-slav', B, 'd4 d5 c4 c6'],
+  ['opening-alekhine', "Alekhine's Defense", '1. e4 Nf6', 'opening-alekhine', B, 'e4 Nf6'],
+  ['opening-philidor', 'Philidor Defense', '1. e4 e5 2. Nf3 d6', 'opening-philidor', B, 'e4 e5 Nf3 d6'],
+  ['opening-petrov', 'Petrov Defense', '1. e4 e5 2. Nf3 Nf6', 'opening-petrov', B, 'e4 e5 Nf3 Nf6'],
 ];
 
 function openingAchievement([id, title, details, image, color, movesStr]) {
