@@ -166,6 +166,7 @@ function renderGrid() {
       tile.className = 'tile';
       tile.dataset.id = a.id;
       tile.dataset.cat = cat.name;
+      if (a.link) tile.dataset.link = a.link; // static deep link (account/extra tiles)
 
       const locked = new Image();
       locked.className = 'locked';
@@ -235,6 +236,14 @@ function unlock(id, gameId, color, ply, { animate = true, persist = true } = {})
     tile.href = href;
     tile.target = '_blank';
     tile.rel = 'noopener';
+  } else if (tile.dataset.link) {
+    // Static deep link (e.g. profile, teams, puzzle modes). `{u}` -> user id.
+    const link = tile.dataset.link;
+    if (!link.includes('{u}') || currentUserId) {
+      tile.href = link.replace('{u}', encodeURIComponent(currentUserId || ''));
+      tile.target = '_blank';
+      tile.rel = 'noopener';
+    }
   }
 
   unlockedCount++;

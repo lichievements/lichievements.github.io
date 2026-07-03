@@ -444,6 +444,43 @@ export const CATEGORIES = [
 // Flat list, for the worker.
 export const ALL = CATEGORIES.flatMap((c) => c.items);
 
+// Static deep links for achievements that aren't tied to a single game (account/
+// extra scope). `{u}` is replaced with the logged-in user's id at render time
+// (see main.js). Applied onto the achievement objects below.
+const LINKS = {
+  // Social
+  'team-join': 'https://lichess.org/team/me',
+  'team-three': 'https://lichess.org/team/me',
+  'follow-one': 'https://lichess.org/@/{u}/following',
+  'follow-ten': 'https://lichess.org/@/{u}/following',
+  'study-write': 'https://lichess.org/study/mine/updated',
+  // Puzzles
+  'storm-play': 'https://lichess.org/storm',
+  'storm-50': 'https://lichess.org/storm',
+  'storm-100': 'https://lichess.org/storm',
+  'racer-play': 'https://lichess.org/racer',
+  'racer-50': 'https://lichess.org/racer',
+  'streak-play': 'https://lichess.org/streak',
+  'streak-50': 'https://lichess.org/streak',
+  // Ratings (Lichess shows where your rating sits in the distribution)
+  'rating-1500': 'https://lichess.org/stat/rating/distribution/blitz',
+  'rating-1800': 'https://lichess.org/stat/rating/distribution/blitz',
+  'rating-2000': 'https://lichess.org/stat/rating/distribution/blitz',
+  'rating-2200': 'https://lichess.org/stat/rating/distribution/blitz',
+  'rating-established': 'https://lichess.org/stat/rating/distribution/blitz',
+  // Profile & Community
+  'profile-flag': 'https://lichess.org/@/{u}',
+  'profile-bio': 'https://lichess.org/@/{u}',
+  'profile-name': 'https://lichess.org/@/{u}',
+  'profile-fide': 'https://lichess.org/@/{u}',
+  'account-title': 'https://lichess.org/@/{u}',
+  'account-verified': 'https://lichess.org/@/{u}',
+  'account-flair': 'https://lichess.org/@/{u}',
+  'account-streamer': 'https://lichess.org/@/{u}',
+  'support-patron': 'https://lichess.org/patron',
+};
+for (const a of ALL) { const l = LINKS[a.id]; if (l) a.link = l; }
+
 // SVG line icons (heroicons-style) used by the coloured placeholder tiles.
 export const ICONS = {
   star: '<path d="M11.48 3.5a.56.56 0 011.04 0l2.12 5.11a.56.56 0 00.48.35l5.52.44c.5.04.7.66.32.99l-4.2 3.6a.56.56 0 00-.18.56l1.28 5.38a.56.56 0 01-.84.61l-4.72-2.88a.56.56 0 00-.6 0L6.98 20.5a.56.56 0 01-.84-.6l1.29-5.4a.56.56 0 00-.18-.55l-4.2-3.6a.56.56 0 01.32-.99l5.52-.44a.56.56 0 00.47-.35L11.48 3.5z"/>',
