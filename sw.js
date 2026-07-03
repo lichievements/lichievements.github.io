@@ -56,15 +56,19 @@ self.addEventListener('fetch', (e) => {
     return;
   }
 
-  // Same-origin assets: cache-first, then network (and cache the result).
+  // Same-origin assets: stale-while-revalidate — serve cache instantly (offline-
+  // friendly, fast) while fetching a fresh copy in the background for next time,
+  // so deploys are picked up without manual cache-version bumps.
   e.respondWith(
-    caches.match(req).then((hit) =>
-      hit ||
-      fetch(req).then((res) => {
-        const copy = res.clone();
-        caches.open(CACHE).then((c) => c.put(req, copy)).catch(() => {});
-        return res;
-      })
-    )
+    caches.match(req).then((hit) => {
+      const network = fetch(req)
+        .then((res) => {
+          const copy = res.clone();
+          caches.open(CACHE).then((c) => c.put(req, copy)).catch(() => {});
+          return res;
+        })
+        .catch(() => hit);
+      return hit || network;
+    })
   );
 });
