@@ -53,6 +53,42 @@ function initTileInteraction() {
   });
 }
 
+// --- Table of contents -----------------------------------------------------
+// Tapping any category heading collapses every grid so the headings stack into a
+// compact table of contents; tapping again restores the tiles and brings the
+// tapped heading to the top of the screen.
+
+let tocCollapsed = false;
+
+function toggleToc(head) {
+  tocCollapsed = !tocCollapsed;
+  // Class on <body> so page chrome (header, footer, theme/GitHub row) can hide too.
+  document.body.classList.toggle('toc-mode', tocCollapsed);
+  for (const h of document.querySelectorAll('.category-head')) {
+    h.setAttribute('aria-expanded', String(!tocCollapsed));
+  }
+  // Let the layout settle after showing/hiding the grids, then scroll. Opening
+  // the TOC jumps to the very top; expanding brings the tapped heading to the top.
+  requestAnimationFrame(() => {
+    if (tocCollapsed) window.scrollTo(0, 0);
+    else head.scrollIntoView({ block: 'start' });
+  });
+}
+
+function initToc() {
+  el.gridRoot.addEventListener('click', (e) => {
+    const head = e.target.closest('.category-head');
+    if (head) toggleToc(head);
+  });
+  el.gridRoot.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const head = e.target.closest('.category-head');
+    if (!head) return;
+    e.preventDefault(); // Space would otherwise scroll the page
+    toggleToc(head);
+  });
+}
+
 // --- Theme -----------------------------------------------------------------
 
 function initTheme() {
@@ -105,6 +141,9 @@ function renderGrid() {
 
     const head = document.createElement('div');
     head.className = 'category-head';
+    head.tabIndex = 0;
+    head.setAttribute('role', 'button');
+    head.setAttribute('aria-expanded', 'true');
     const h2 = document.createElement('h2');
     h2.textContent = cat.name;
     const check = document.createElement('span');
@@ -350,6 +389,7 @@ async function boot() {
   initTheme();
   renderGrid();
   initTileInteraction();
+  initToc();
 
   el.loginBtn.addEventListener('click', () => login().catch((e) => showError(e.message)));
   el.reloadBtn.addEventListener('click', reloadAchievements);
