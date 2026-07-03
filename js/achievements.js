@@ -311,9 +311,7 @@ export const CATEGORIES = [
       { id: 'play-10000', title: 'Veteran', details: 'Play 10,000 games', image: 'images/play-10000.png', scope: 'account', unlock: (a) => (a.count?.all || 0) >= 10000 },
       { id: 'play-100000', title: 'Legend', details: 'Play 100,000 games', image: 'images/play-100000.png', scope: 'account', unlock: (a) => (a.count?.all || 0) >= 100000 },
       { id: 'play-computer', title: 'Machine Challenger', details: 'Play a game against the computer', image: 'images/play-computer.png', scope: 'account', unlock: (a) => (a.count?.ai || 0) >= 1 },
-      { id: 'support-patron', title: 'Patron', details: 'Become a Lichess Patron', image: 'images/patron.png', scope: 'account', unlock: (a) => !!a.patron },
       { id: 'account-age', title: 'Happy Birthday!', details: 'Have a Lichess account at least one year old', image: 'images/birthday.png', scope: 'account', unlock: (a) => a.createdAt && Date.now() - a.createdAt >= 365 * 864e5 },
-      { id: 'playtime', title: 'Time Well Spent', details: 'Spend at least one hour playing chess', image: 'images/playtime.png', scope: 'account', unlock: (a) => (a.playTime?.total || 0) >= 3600 },
     ],
   },
 
@@ -367,6 +365,7 @@ export const CATEGORIES = [
       { id: 'profile-fide', title: 'Over the Board', details: 'Link a FIDE rating or ID', svg: 'chart', color: '#a21caf', scope: 'account', unlock: (a) => !!(a.profile?.fideRating || a.fideId) },
       { id: 'account-title', title: 'Titled Player', details: 'Hold a Lichess title', svg: 'cap', color: '#7e22ce', scope: 'account', unlock: (a) => !!a.title },
       { id: 'account-verified', title: 'Verified', details: 'Get a verified account', svg: 'verified', color: '#9333ea', scope: 'account', unlock: (a) => !!a.verified },
+      { id: 'support-patron', title: 'Patron', details: 'Become a Lichess Patron', image: 'images/patron.png', scope: 'account', unlock: (a) => !!a.patron },
       { id: 'account-flair', title: 'Flair', details: 'Choose a profile flair', svg: 'sparkles', color: '#e879f9', scope: 'account', unlock: (a) => !!a.flair },
       { id: 'count-bookmark', title: 'Collector', details: 'Bookmark a game', svg: 'bookmark', color: '#db2777', scope: 'account', unlock: (a) => (a.count?.bookmark || 0) >= 1 },
       { id: 'count-import', title: 'Archivist', details: 'Import a game', svg: 'import', color: '#be185d', scope: 'account', unlock: (a) => (a.count?.import || 0) >= 1 },
@@ -376,6 +375,7 @@ export const CATEGORIES = [
   {
     name: 'Dedication',
     items: [
+      { id: 'playtime', title: 'Time Well Spent', details: 'Spend at least one hour playing chess', image: 'images/playtime.png', scope: 'account', unlock: (a) => (a.playTime?.total || 0) >= 3600 },
       { id: 'playtime-24h', title: 'A Full Day', details: 'Play for a total of 24 hours', image: 'images/play-time.png', scope: 'account', unlock: (a) => (a.playTime?.total || 0) >= 86400 },
       { id: 'playtime-100h', title: 'Centurion of Hours', details: 'Play for a total of 100 hours', svg: 'clock', color: '#0891b2', scope: 'account', unlock: (a) => (a.playTime?.total || 0) >= 360000 },
       { id: 'playtime-1000h', title: 'Timeless', details: 'Play for a total of 1,000 hours', svg: 'hourglass', color: '#0e7490', scope: 'account', unlock: (a) => (a.playTime?.total || 0) >= 3600000 },
