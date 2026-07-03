@@ -248,6 +248,14 @@ are not derivable from games and will be omitted unless a fetchable endpoint exi
 - Deploy = copy the whole folder to the server. Ensure NDJSON requests are same-site
   or CORS-permitted by Lichess (they are, for `lichess.org`).
 
+### Version control & deploy cadence
+
+- **Commit each logical change separately** — one focused commit per fix/feature,
+  with its own message, rather than bundling unrelated changes together.
+- **Push very seldom.** `origin/main` is the GitHub Pages source, so every push
+  triggers a live redeploy. Accumulate several vetted commits locally and push in a
+  batch only when you deliberately intend to publish — don't push per commit.
+
 ---
 
 ## 9. Implementation order
