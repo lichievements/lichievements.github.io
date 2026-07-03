@@ -22,6 +22,36 @@ const el = {
   themeToggle: $('#theme-toggle'),
 };
 
+// --- Touch interaction -----------------------------------------------------
+// On touch devices there's no hover, so a tile's caption is shown by tapping it.
+// The first tap on a tile only reveals its caption; a link (if any) fires only on
+// a second tap while it's revealed. Tapping anywhere else dismisses the caption.
+
+function clearRevealed() {
+  document.querySelectorAll('.tile.revealed').forEach((t) => t.classList.remove('revealed'));
+}
+
+function initTileInteraction() {
+  const touch = matchMedia('(hover: none)');
+
+  el.gridRoot.addEventListener('click', (e) => {
+    if (!touch.matches) return; // pointer devices keep hover + single-click
+    const tile = e.target.closest('.tile');
+    if (!tile) return;
+    if (!tile.classList.contains('revealed')) {
+      e.preventDefault(); // first tap: reveal caption only, don't follow the link
+      clearRevealed();
+      tile.classList.add('revealed');
+    }
+    // already revealed: let the default action run (navigate if it has an href)
+  });
+
+  // A tap outside any revealed tile hides the caption again.
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.tile.revealed')) clearRevealed();
+  });
+}
+
 // --- Theme -----------------------------------------------------------------
 
 function initTheme() {
@@ -190,6 +220,7 @@ function showError(msg) {
 async function boot() {
   initTheme();
   renderGrid();
+  initTileInteraction();
 
   el.loginBtn.addEventListener('click', () => login().catch((e) => showError(e.message)));
   el.logoutBtn.addEventListener('click', async () => {

@@ -307,8 +307,13 @@ a { color: inherit; }
   line-height: 1.3;
 }
 
-.tile:hover .caption,
-.tile:focus-visible .caption { transform: translateY(0); }
+/* Show the caption: on hover (pointer devices only), on keyboard focus, or when
+   a tap has "revealed" it (touch devices — see main.js). */
+@media (hover: hover) {
+  .tile:hover .caption { transform: translateY(0); }
+}
+.tile:focus-visible .caption,
+.tile.revealed .caption { transform: translateY(0); }
 
 .tile:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
@@ -333,8 +338,11 @@ a { color: inherit; }
   transition: opacity 0.2s var(--ease), transform 0.2s var(--ease);
   z-index: 3;
 }
-.tile.unlocked[href]:hover .ext,
-.tile.unlocked[href]:focus-visible .ext { opacity: 1; transform: none; }
+@media (hover: hover) {
+  .tile.unlocked[href]:hover .ext { opacity: 1; transform: none; }
+}
+.tile.unlocked[href]:focus-visible .ext,
+.tile.unlocked[href].revealed .ext { opacity: 1; transform: none; }
 
 .tile.unlocked[href] { cursor: pointer; }
 .tile:not([href]) { cursor: default; }
@@ -365,14 +373,15 @@ a { color: inherit; }
   text-align: center;
 }
 
-/* Theme toggle -------------------------------------------------------------- */
+/* Theme toggle (centered, below the last grid) ------------------------------ */
+.theme-switch-row {
+  display: flex;
+  justify-content: center;
+  margin-top: clamp(8px, 3vw, 24px);
+}
 .theme-toggle {
-  position: fixed;
-  top: 4px;
-  right: 18px;
-  z-index: 10;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   padding: 0;
   border-radius: 50%;
   display: grid;
