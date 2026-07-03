@@ -1,6 +1,12 @@
-// Lichievements service worker — app-shell caching for offline / installable PWA.
-// Bump CACHE when shipping asset changes to invalidate old caches.
-const CACHE = 'lichievements-v1';
+// Lichievements service worker.
+//
+// APP_VERSION is the "increment": bump it on a deploy to invalidate the offline
+// cache and force a clean install. In practice you rarely need to — the app code
+// (HTML / JS / CSS / manifest) is served **network-first**, so every online launch
+// already loads the latest files. That's what makes updates reach iOS PWAs, which
+// cannot be manually refreshed. Fonts and images stay cache-first for speed.
+const APP_VERSION = '2';
+const CACHE = 'lichievements-v' + APP_VERSION;
 
 const SHELL = [
   './',
@@ -38,35 +44,33 @@ self.addEventListener('activate', (e) => {
   );
 });
 
+// App code that changes on deploy → always try the network first.
+const isCode = (url) => url.pathname === '/' || /\.(html|js|css|webmanifest)$/.test(url.pathname);
+
 self.addEventListener('fetch', (e) => {
   const req = e.request;
   if (req.method !== 'GET') return;
 
   const url = new URL(req.url);
-  // Never touch cross-origin requests (Lichess API / OAuth must hit the network).
-  if (url.origin !== location.origin) return;
+  if (url.origin !== location.origin) return;   // Lichess API / OAuth must hit the network
+  if (url.pathname.endsWith('/sw.js')) return;  // never intercept the worker script itself
 
-  // HTML navigations: network-first so deploys are picked up, cache as offline fallback.
-  if (req.mode === 'navigate') {
+  // HTML + app code: network-first (fresh every online launch), cache as offline fallback.
+  if (req.mode === 'navigate' || isCode(url)) {
+    const key = req.mode === 'navigate' ? './index.html' : req;
     e.respondWith(
       fetch(req)
-        .then((res) => { const copy = res.clone(); caches.open(CACHE).then((c) => c.put('./index.html', copy)); return res; })
-        .catch(() => caches.match('./index.html'))
+        .then((res) => { const copy = res.clone(); caches.open(CACHE).then((c) => c.put(key, copy)).catch(() => {}); return res; })
+        .catch(() => caches.match(key))
     );
     return;
   }
 
-  // Same-origin assets: stale-while-revalidate — serve cache instantly (offline-
-  // friendly, fast) while fetching a fresh copy in the background for next time,
-  // so deploys are picked up without manual cache-version bumps.
+  // Fonts / images: cache-first with background refresh.
   e.respondWith(
     caches.match(req).then((hit) => {
       const network = fetch(req)
-        .then((res) => {
-          const copy = res.clone();
-          caches.open(CACHE).then((c) => c.put(req, copy)).catch(() => {});
-          return res;
-        })
+        .then((res) => { const copy = res.clone(); caches.open(CACHE).then((c) => c.put(req, copy)).catch(() => {}); return res; })
         .catch(() => hit);
       return hit || network;
     })

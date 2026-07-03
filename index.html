@@ -88,6 +88,16 @@
   <script type="module" src="js/main.js"></script>
   <script>
     if ('serviceWorker' in navigator) {
+      // Auto-reload once when an updated service worker takes control, so an
+      // already-open PWA (e.g. on iOS, which can't be manually refreshed) picks up
+      // a new deploy. Guarded so it never fires on the first install or loops.
+      let refreshing = false;
+      const hadController = !!navigator.serviceWorker.controller;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (refreshing || !hadController) return;
+        refreshing = true;
+        window.location.reload();
+      });
       window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
     }
   </script>
