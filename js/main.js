@@ -2,7 +2,7 @@
 // Lichievements — UI orchestration
 // ============================================================================
 
-import { CATEGORIES, ALL } from './achievements.js';
+import { CATEGORIES, ALL, ICONS } from './achievements.js';
 import { login, completeLoginIfRedirected, fetchAccount, revoke } from './oauth.js';
 
 const $ = (sel) => document.querySelector(sel);
@@ -127,11 +127,20 @@ function renderGrid() {
       locked.src = 'images/locked.png';
       locked.alt = 'Locked achievement';
 
-      const art = new Image();
-      art.className = 'art';
-      art.alt = a.title;
-      art.dataset.art = a.image;   // loaded only on unlock (keeps the locked view light)
-      art.loading = 'lazy';
+      let art;
+      if (a.image) {
+        art = new Image();
+        art.className = 'art';
+        art.alt = a.title;
+        art.dataset.art = a.image;   // loaded only on unlock (keeps the locked view light)
+        art.loading = 'lazy';
+      } else {
+        // Coloured placeholder tile with a centred line icon (real art comes later).
+        art = document.createElement('div');
+        art.className = 'art art-svg';
+        art.style.setProperty('--tile-color', a.color || '#555');
+        art.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true">${ICONS[a.svg] || ''}</svg>`;
+      }
 
       const ext = document.createElement('span');
       ext.className = 'ext';

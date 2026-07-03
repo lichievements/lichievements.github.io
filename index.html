@@ -6,6 +6,18 @@
   <title>lichievements</title>
   <meta name="description" content="Log in with Lichess and discover the achievements hidden in your games." />
   <link rel="icon" type="image/png" href="icon.png" />
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.webmanifest" />
+  <meta name="theme-color" content="#17130f" media="(prefers-color-scheme: dark)" />
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <!-- iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="lichievements" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+
   <link rel="preload" href="fonts/Inter-4.1/web/InterVariable.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="stylesheet" href="css/fonts.css" />
   <link rel="stylesheet" href="css/style.css" />
@@ -36,10 +48,12 @@
       <div id="statusbar" class="statusbar" hidden>
         <span class="user" id="status-user"></span>
         <span id="status-summary"></span>
-        <span class="count"><span id="status-unlocked">0</span> / <span id="status-total">0</span></span>
+        <span class="count-wrap"><span class="count"><span id="status-unlocked">0</span> / <span id="status-total">0</span></span> <span class="count-label">unlocked</span></span>
         <div class="progress indeterminate" id="progress" hidden><span id="progress-bar"></span></div>
-        <button id="reload-btn" class="btn btn-ghost" type="button" hidden>Reload</button>
-        <button id="logout-btn" class="btn btn-ghost" type="button">Log out</button>
+        <div class="statusbar-actions">
+          <button id="reload-btn" class="btn btn-ghost" type="button" hidden>Reload</button>
+          <button id="logout-btn" class="btn btn-ghost" type="button">Log out</button>
+        </div>
       </div>
     </header>
 
@@ -72,5 +86,10 @@
   </div>
 
   <script type="module" src="js/main.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+    }
+  </script>
 </body>
 </html>

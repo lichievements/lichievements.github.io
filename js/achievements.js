@@ -132,6 +132,17 @@ function collection(id, title, details, image, memberLines) {
 // Speed / variant helpers over /api/account perfs.
 const perfPlayed = (account, key) => (account.perfs?.[key]?.games || 0) > 0;
 
+// Highest *established* (non-provisional) rating across the standard time controls.
+const STD_PERFS = ['bullet', 'blitz', 'rapid', 'classical'];
+const bestRating = (a) => Math.max(0, ...STD_PERFS.map((p) => {
+  const x = a.perfs?.[p];
+  return x && !x.prov ? (x.rating || 0) : 0;
+}));
+const hasEstablished = (a) => STD_PERFS.some((p) => {
+  const x = a.perfs?.[p];
+  return x && !x.prov && (x.games || 0) > 0;
+});
+
 // ---------------------------------------------------------------------------
 // Registry, grouped into rendered categories.
 // ---------------------------------------------------------------------------
@@ -293,7 +304,99 @@ export const CATEGORIES = [
       { id: 'playtime', title: 'Time Well Spent', details: 'Spend at least one hour playing chess', image: 'images/playtime.png', scope: 'account', unlock: (a) => (a.playTime?.total || 0) >= 3600 },
     ],
   },
+
+  // ---- Categories below use coloured SVG placeholder tiles (real art later) ----
+  {
+    name: 'Ratings',
+    items: [
+      { id: 'rating-1500', title: 'Rising Star', details: 'Reach an established rating of 1500', svg: 'star', color: '#3b82f6', scope: 'account', unlock: (a) => bestRating(a) >= 1500 },
+      { id: 'rating-1800', title: 'Sharpshooter', details: 'Reach an established rating of 1800', svg: 'chart', color: '#6366f1', scope: 'account', unlock: (a) => bestRating(a) >= 1800 },
+      { id: 'rating-2000', title: 'Expert', details: 'Reach an established rating of 2000', svg: 'trophy', color: '#8b5cf6', scope: 'account', unlock: (a) => bestRating(a) >= 2000 },
+      { id: 'rating-2200', title: 'Master Class', details: 'Reach an established rating of 2200', svg: 'cap', color: '#a855f7', scope: 'account', unlock: (a) => bestRating(a) >= 2200 },
+      { id: 'rating-established', title: 'Established', details: 'Clear a provisional rating in any format', svg: 'verified', color: '#0ea5e9', scope: 'account', unlock: (a) => hasEstablished(a) },
+    ],
+  },
+  {
+    name: 'Records',
+    items: [
+      { id: 'win-1', title: 'First Win', details: 'Win your first game', svg: 'flag', color: '#22c55e', scope: 'account', unlock: (a) => (a.count?.win || 0) >= 1 },
+      { id: 'win-100', title: 'Hundred Wins', details: 'Win 100 games', svg: 'trophy', color: '#16a34a', scope: 'account', unlock: (a) => (a.count?.win || 0) >= 100 },
+      { id: 'win-1000', title: 'Conqueror', details: 'Win 1,000 games', svg: 'crown', color: '#15803d', scope: 'account', unlock: (a) => (a.count?.win || 0) >= 1000 },
+      { id: 'draw-1', title: 'Diplomat', details: 'Draw a game', svg: 'scale', color: '#14b8a6', scope: 'account', unlock: (a) => (a.count?.draw || 0) >= 1 },
+      { id: 'draw-100', title: 'Peacemaker', details: 'Draw 100 games', svg: 'scale', color: '#0d9488', scope: 'account', unlock: (a) => (a.count?.draw || 0) >= 100 },
+      { id: 'rated-1000', title: 'For the Record', details: 'Play 1,000 rated games', svg: 'chart', color: '#10b981', scope: 'account', unlock: (a) => (a.count?.rated || 0) >= 1000 },
+    ],
+  },
+  {
+    name: 'Puzzles',
+    items: [
+      { id: 'puzzle-solve', title: 'Puzzler', details: 'Solve a Lichess puzzle', svg: 'puzzle', color: '#f59e0b', scope: 'account', unlock: (a) => (a.perfs?.puzzle?.games || 0) >= 1 },
+      { id: 'puzzle-2000', title: 'Puzzle Expert', details: 'Reach a puzzle rating of 2000', svg: 'star', color: '#d97706', scope: 'account', unlock: (a) => (a.perfs?.puzzle?.games || 0) > 0 && (a.perfs?.puzzle?.rating || 0) >= 2000 },
+      { id: 'storm-play', title: 'Storm Chaser', details: 'Play Puzzle Storm', svg: 'fire', color: '#f97316', scope: 'account', unlock: (a) => (a.perfs?.storm?.runs || 0) >= 1 },
+      { id: 'storm-50', title: 'Eye of the Storm', details: 'Score 50 in Puzzle Storm', svg: 'fire', color: '#ea580c', scope: 'account', unlock: (a) => (a.perfs?.storm?.score || 0) >= 50 },
+      { id: 'racer-play', title: 'Puzzle Racer', details: 'Play Puzzle Racer', svg: 'bolt', color: '#fb923c', scope: 'account', unlock: (a) => (a.perfs?.racer?.runs || 0) >= 1 },
+      { id: 'streak-play', title: 'On a Streak', details: 'Play Puzzle Streak', svg: 'fire', color: '#f59e0b', scope: 'account', unlock: (a) => (a.perfs?.streak?.runs || 0) >= 1 },
+      { id: 'streak-50', title: 'Unbroken', details: 'Reach a streak of 50', svg: 'star', color: '#b45309', scope: 'account', unlock: (a) => (a.perfs?.streak?.score || 0) >= 50 },
+    ],
+  },
+  {
+    name: 'Profile & Community',
+    items: [
+      { id: 'profile-flag', title: 'Represent', details: 'Set your country or region flag', svg: 'flag', color: '#ec4899', scope: 'account', unlock: (a) => !!a.profile?.flag },
+      { id: 'profile-bio', title: 'Storyteller', details: 'Write a profile bio', svg: 'pencil', color: '#d946ef', scope: 'account', unlock: (a) => !!a.profile?.bio },
+      { id: 'profile-name', title: 'Face to the Name', details: 'Add your real name', svg: 'idcard', color: '#c026d3', scope: 'account', unlock: (a) => !!a.profile?.realName },
+      { id: 'profile-fide', title: 'Over the Board', details: 'Link a FIDE rating or ID', svg: 'chart', color: '#a21caf', scope: 'account', unlock: (a) => !!(a.profile?.fideRating || a.fideId) },
+      { id: 'account-title', title: 'Titled Player', details: 'Hold a Lichess title', svg: 'cap', color: '#7e22ce', scope: 'account', unlock: (a) => !!a.title },
+      { id: 'account-verified', title: 'Verified', details: 'Get a verified account', svg: 'verified', color: '#9333ea', scope: 'account', unlock: (a) => !!a.verified },
+      { id: 'account-flair', title: 'Flair', details: 'Choose a profile flair', svg: 'sparkles', color: '#e879f9', scope: 'account', unlock: (a) => !!a.flair },
+      { id: 'count-bookmark', title: 'Collector', details: 'Bookmark a game', svg: 'bookmark', color: '#db2777', scope: 'account', unlock: (a) => (a.count?.bookmark || 0) >= 1 },
+      { id: 'count-import', title: 'Archivist', details: 'Import a game', svg: 'import', color: '#be185d', scope: 'account', unlock: (a) => (a.count?.import || 0) >= 1 },
+      { id: 'account-streamer', title: 'Broadcaster', details: 'Be a Lichess streamer', svg: 'video', color: '#a21caf', scope: 'account', unlock: (a) => !!a.streamer },
+    ],
+  },
+  {
+    name: 'Dedication',
+    items: [
+      { id: 'playtime-24h', title: 'A Full Day', details: 'Play for a total of 24 hours', svg: 'clock', color: '#06b6d4', scope: 'account', unlock: (a) => (a.playTime?.total || 0) >= 86400 },
+      { id: 'playtime-100h', title: 'Centurion of Hours', details: 'Play for a total of 100 hours', svg: 'clock', color: '#0891b2', scope: 'account', unlock: (a) => (a.playTime?.total || 0) >= 360000 },
+      { id: 'playtime-1000h', title: 'Timeless', details: 'Play for a total of 1,000 hours', svg: 'hourglass', color: '#0e7490', scope: 'account', unlock: (a) => (a.playTime?.total || 0) >= 3600000 },
+      { id: 'tv-time', title: 'Prime Time', details: 'Be featured on Lichess TV', svg: 'tv', color: '#22d3ee', scope: 'account', unlock: (a) => (a.playTime?.tv || 0) >= 1 },
+    ],
+  },
+  {
+    name: 'Notable Games',
+    items: [
+      { id: 'miniature', title: 'Miniature', details: 'Win a game in 10 moves or fewer', svg: 'bolt', color: '#ef4444', scope: 'game', detect: (c) => c.won && c.san.length <= 20 },
+      { id: 'marathon', title: 'Marathon', details: 'Play a game of at least 60 moves', svg: 'hourglass', color: '#f43f5e', scope: 'game', detect: (c) => c.san.length >= 120 },
+      { id: 'scholars-mate', title: "Scholar's Mate", details: 'Checkmate in the first four moves with your queen', svg: 'trophy', color: '#e11d48', scope: 'game', detect: (c) => isMate(c) && c.san.length <= 8 && /^Qx?f[27]#$/.test(c.lastSan) },
+      { id: 'fools-mate', title: "Fool's Mate", details: 'Deliver the two-move fool’s mate', svg: 'star', color: '#be123c', scope: 'game', detect: (c) => isMate(c) && c.san.length <= 4 && c.lastSan === 'Qh4#' },
+    ],
+  },
 ];
 
 // Flat list, for the worker.
 export const ALL = CATEGORIES.flatMap((c) => c.items);
+
+// SVG line icons (heroicons-style) used by the coloured placeholder tiles.
+export const ICONS = {
+  star: '<path d="M11.48 3.5a.56.56 0 011.04 0l2.12 5.11a.56.56 0 00.48.35l5.52.44c.5.04.7.66.32.99l-4.2 3.6a.56.56 0 00-.18.56l1.28 5.38a.56.56 0 01-.84.61l-4.72-2.88a.56.56 0 00-.6 0L6.98 20.5a.56.56 0 01-.84-.6l1.29-5.4a.56.56 0 00-.18-.55l-4.2-3.6a.56.56 0 01.32-.99l5.52-.44a.56.56 0 00.47-.35L11.48 3.5z"/>',
+  chart: '<path d="M3 13.1c0-.62.5-1.13 1.13-1.13h2.24c.62 0 1.13.5 1.13 1.13v6.75c0 .62-.5 1.12-1.13 1.12H4.13A1.13 1.13 0 013 19.87V13.1zM9.75 8.63c0-.62.5-1.13 1.13-1.13h2.25c.62 0 1.12.5 1.12 1.13v11.24c0 .62-.5 1.13-1.12 1.13h-2.25a1.13 1.13 0 01-1.13-1.13V8.63zM16.5 4.13c0-.62.5-1.13 1.13-1.13h2.25c.62 0 1.12.5 1.12 1.13v15.74c0 .62-.5 1.13-1.12 1.13h-2.25a1.13 1.13 0 01-1.13-1.13V4.13z"/>',
+  trophy: '<path d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.38c0-.62-.5-1.12-1.12-1.12h-.88M7.5 18.75v-3.38c0-.62.5-1.12 1.13-1.12h.87m5-.01H9.5m5 0a7.45 7.45 0 01-.98-3.17M9.5 14.25a7.45 7.45 0 00.98-3.17M5.25 4.24c-.98.14-1.95.32-2.92.52A6 6 0 007.73 9.73M5.25 4.24V4.5c0 2.1.97 3.99 2.48 5.23M5.25 4.24V2.72C7.46 2.41 9.71 2.25 12 2.25c2.29 0 4.55.16 6.75.47v1.52M7.73 9.73a6.73 6.73 0 002.75 1.35m8.27-6.84V4.5c0 2.1-.97 3.99-2.48 5.23m2.48-5.49c.98.14 1.95.32 2.92.52a6 6 0 01-5.4 4.97m0 0a6.73 6.73 0 01-2.74 1.35m0 0a6.77 6.77 0 01-3.05 0"/>',
+  cap: '<path d="M4.26 10.15a60.4 60.4 0 00-.49 6.35A48.6 48.6 0 0112 20.9a48.6 48.6 0 018.23-4.4 60.5 60.5 0 00-.49-6.35m-15.48 0a50.6 50.6 0 00-2.66-.81A59.9 59.9 0 0112 3.49a59.9 59.9 0 0110.4 5.84c-.9.25-1.78.52-2.66.82m-15.48 0A50.7 50.7 0 0112 13.49a50.7 50.7 0 017.74-3.34M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.68A55.4 55.4 0 0112 8.44"/>',
+  verified: '<path d="M9 12.75L11.25 15 15 9.75m-3-7.04a12 12 0 01-8.4 3.29A12 12 0 003 9.75c0 5.59 3.82 10.29 9 11.62 5.18-1.33 9-6.03 9-11.62 0-1.31-.21-2.57-.6-3.75h-.15a12 12 0 01-8.25-3.29z"/>',
+  scale: '<path d="M12 3v17.25m0 0c-1.47 0-2.88.27-4.19.75M12 20.25c1.47 0 2.88.27 4.19.75M18.75 4.97A48.4 48.4 0 0012 4.5c-2.29 0-4.55.16-6.75.47m13.5 0c1.01.14 2.01.32 3 .52m-3-.52l2.62 10.73c.12.5-.11 1.03-.59 1.2a6 6 0 01-2.03.35 6 6 0 01-2.03-.35c-.48-.17-.71-.7-.59-1.2L18.75 4.97zm-16.5.52c.99-.2 1.99-.38 3-.52m0 0l2.62 10.73c.12.5-.11 1.03-.59 1.2a6 6 0 01-2.03.35 6 6 0 01-2.03-.35c-.48-.17-.71-.7-.59-1.2L5.25 4.97z"/>',
+  fire: '<path d="M15.36 5.21A8.25 8.25 0 0112 21 8.25 8.25 0 016.04 7.05 8.29 8.29 0 009 9.6a8.98 8.98 0 013.36-6.87 8.21 8.21 0 003 2.48z"/><path d="M12 18a3.75 3.75 0 00.5-7.47 5.99 5.99 0 00-1.93 3.55 5.97 5.97 0 01-2.13-1A3.75 3.75 0 0012 18z"/>',
+  puzzle: '<path d="M14.25 6.09c0-.36.19-.68.4-.96.22-.29.35-.63.35-1 0-1.04-1-1.88-2.25-1.88s-2.25.84-2.25 1.88c0 .37.13.71.35 1 .21.28.4.6.4.96a.64.64 0 01-.66.64c-1.4-.06-2.79-.16-4.16-.3.19 1.61.3 3.25.32 4.91a.66.66 0 01-.66.66c-.36 0-.68-.19-.96-.4-.29-.22-.63-.35-1-.35-1.04 0-1.88 1-1.88 2.25s.84 2.25 1.88 2.25c.37 0 .71-.13 1-.35.28-.21.6-.4.96-.4.3 0 .55.26.53.57-.11 1.7-.33 3.38-.64 5.06 1.52.19 3.06.31 4.62.35a.64.64 0 00.66-.64c0-.36-.19-.68-.4-.96-.22-.29-.35-.63-.35-1 0-1.04 1-1.88 2.25-1.88s2.25.84 2.25 1.88c0 .37-.13.71-.35 1-.21.28-.4.6-.4.96 0 .33.28.6.61.58a48 48 0 005.43-.63 48 48 0 00-.58-4.72.53.53 0 01.53-.57c.36 0 .68.19.96.4.29.22.63.35 1 .35 1.04 0 1.88-1 1.88-2.25s-.84-2.25-1.88-2.25c-.37 0-.71.13-1 .35-.28.21-.6.4-.96.4a.66.66 0 01-.66-.66c.16-1.78.28-3.57.37-5.36-1.89.34-3.81.57-5.77.69a.58.58 0 01-.61-.58z"/>',
+  bolt: '<path d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/>',
+  clock: '<path d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/>',
+  tv: '<path d="M6 20.25h12m-7.5-3v3m3-3v3m-10.13-3h17.25c.62 0 1.13-.5 1.13-1.13V4.88c0-.62-.5-1.13-1.13-1.13H3.37c-.62 0-1.12.5-1.12 1.13v11.25c0 .62.5 1.12 1.13 1.12z"/>',
+  flag: '<path d="M3 3v1.5M3 21v-6m0 0l2.77-.69a9 9 0 016.21.68l.11.05a9 9 0 006.09.71l3.11-.73a48.52 48.52 0 01-.01-10.5l-3.11.73a9 9 0 01-6.08-.71l-.11-.05a9 9 0 00-6.21-.68L3 4.5M3 15V4.5"/>',
+  pencil: '<path d="M16.86 4.49l1.69-1.69a1.88 1.88 0 112.65 2.65L10.58 16.07a4.5 4.5 0 01-1.9 1.13L6 18l.8-2.69a4.5 4.5 0 011.13-1.9l8.93-8.92zm0 0L19.5 7.13"/>',
+  idcard: '<path d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5zm6-10.13a1.88 1.88 0 11-3.75 0 1.88 1.88 0 013.75 0zm1.29 6.34a6.72 6.72 0 01-3.17.79 6.72 6.72 0 01-3.17-.79 3.38 3.38 0 016.34 0z"/>',
+  sparkles: '<path d="M9.81 15.9L9 18.75l-.81-2.85a4.5 4.5 0 00-3.09-3.09L2.25 12l2.85-.81a4.5 4.5 0 003.09-3.09L9 5.25l.81 2.85a4.5 4.5 0 003.09 3.09L15.75 12l-2.85.81a4.5 4.5 0 00-3.09 3.09zM18.26 8.72L18 9.75l-.26-1.03a3.38 3.38 0 00-2.46-2.46L14.25 6l1.03-.26a3.38 3.38 0 002.46-2.46L18 2.25l.26 1.03a3.38 3.38 0 002.46 2.46L21.75 6l-1.03.26a3.38 3.38 0 00-2.46 2.46z"/>',
+  bookmark: '<path d="M17.59 3.32c1.1.13 1.91 1.08 1.91 2.19V21L12 17.25 4.5 21V5.51c0-1.11.81-2.06 1.91-2.19a48.5 48.5 0 0111.18 0z"/>',
+  import: '<path d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/>',
+  video: '<path d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z"/>',
+  crown: '<path d="M3.5 8.5l3.75 3.5L12 5l4.75 7 3.75-3.5-1.5 10.5H5L3.5 8.5z"/>',
+  hourglass: '<path d="M6 3h12M6 21h12M8 3v3.5a4 4 0 004 4 4 4 0 004-4V3M8 21v-3.5a4 4 0 014-4 4 4 0 014 4V21"/>',
+};

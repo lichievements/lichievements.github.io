@@ -168,10 +168,20 @@ a { color: inherit; }
 .statusbar .user { font-weight: 600; color: var(--text); }
 .statusbar[hidden] { display: none; }
 
+.count-wrap { display: inline-flex; align-items: baseline; gap: 0.4em; }
 .count {
   font-family: 'JetBrains Mono', ui-monospace, monospace;
   color: var(--accent);
   font-variant-numeric: tabular-nums;
+}
+.count-label { color: var(--text-dim); }
+
+/* Reload / Log out sit on their own row below the status line. */
+.statusbar-actions {
+  flex-basis: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
 }
 
 /* Progress */
@@ -225,6 +235,7 @@ a { color: inherit; }
   letter-spacing: -0.01em;
 }
 .category-head .tally {
+  margin-left: auto; /* push the count to the right edge of the header */
   font-family: 'JetBrains Mono', ui-monospace, monospace;
   font-size: 0.8rem;
   color: var(--text-mute);
@@ -262,6 +273,25 @@ a { color: inherit; }
   object-fit: cover;
   display: block;
   transition: opacity 0.5s var(--ease), filter 0.5s var(--ease), transform 0.5s var(--ease);
+}
+
+/* SVG placeholder tiles: a coloured panel with a centred line icon. */
+.tile .art-svg {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: var(--tile-color, #555);
+  transition: opacity 0.5s var(--ease), transform 0.5s var(--ease);
+}
+.tile .art-svg svg {
+  width: 44%;
+  height: 44%;
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.95);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 /* Locked state: dim, desaturated */
