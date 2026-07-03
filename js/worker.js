@@ -115,27 +115,29 @@ async function evaluateExtra(username, token, achievements, account) {
   const auth = token ? { Authorization: `Bearer ${token}` } : {};
   const u = encodeURIComponent(username);
 
-  const [teams, tournaments, created, studies, following] = await Promise.all([
-    fetchJsonArray(`${LI}/api/team/of/${u}`, auth),
-    fetchNdjson(`${LI}/api/user/${u}/tournament/played?nb=1000`, auth),
-    fetchNdjson(`${LI}/api/user/${u}/tournament/created`, auth),
-    fetchNdjson(`${LI}/api/study/by/${u}`, auth),
-    fetchNdjson(`${LI}/api/rel/following`, auth),
-  ]);
+  // Lichess caps concurrent API requests (429 "Please only run 2 request(s) at a
+  // time"). The game stream already holds one connection open the whole time, so
+  // every supplementary call here is made strictly one at a time to stay within
+  // the cap. These are best-effort background lookups, so the extra latency of
+  // running them sequentially is fine.
+  const teams = await fetchJsonArray(`${LI}/api/team/of/${u}`, auth);
+  const tournaments = await fetchNdjson(`${LI}/api/user/${u}/tournament/played?nb=1000`, auth);
+  const created = await fetchNdjson(`${LI}/api/user/${u}/tournament/created`, auth);
+  const studies = await fetchNdjson(`${LI}/api/study/by/${u}`, auth);
+  const following = await fetchNdjson(`${LI}/api/rel/following`, auth);
 
   let arenaPoints = 0;
   for (const t of tournaments) arenaPoints += t.player?.score || 0;
 
   // Per-format performance stats (public) — one call per time control the user has
-  // actually played, run in parallel. We keep the best across formats.
+  // actually played, likewise strictly sequential. We keep the best across formats.
   const playedPerfs = PERF_KEYS.filter((k) => (account?.perfs?.[k]?.games || 0) > 0);
-  const perfStats = await Promise.all(playedPerfs.map((k) => fetchJson(`${LI}/api/user/${u}/perf/${k}`, auth)));
   const peak = { int: 0, gameId: null };
   let sessionGames = 0;
   let sessionTime = 0;
   let berserk = 0;
-  for (const ps of perfStats) {
-    const st = ps?.stat;
+  for (const k of playedPerfs) {
+    const st = (await fetchJson(`${LI}/api/user/${u}/perf/${k}`, auth))?.stat;
     if (!st) continue;
     const hi = st.highest?.int || 0;
     if (hi > peak.int) { peak.int = hi; peak.gameId = st.highest?.gameId || null; }
