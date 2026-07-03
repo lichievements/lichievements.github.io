@@ -178,7 +178,7 @@ export const CATEGORIES = [
       { id: 'flag-opponent', title: 'Be Quick', details: 'Win by flagging your opponent on time', image: 'images/flag-opponent.png', scope: 'game', detect: (c) => c.won && c.status === 'outoftime' },
       { id: 'survivor', title: 'Survivor', details: 'Win a game after being checked at least five times', image: 'images/survivor.png', scope: 'game', detect: (c) => c.won && c.checksByOpp >= 5 },
       { id: 'underachiever', title: 'Underachiever', details: 'Win a game in which you underpromoted a pawn', image: 'images/underachiever.png', scope: 'game', detect: (c) => c.won && c.userSan.some((m) => /=[RBN]/.test(m)) },
-      { id: 'kings-journey', title: "King's Journey", details: 'Win after your king reached the far side of the board', image: 'images/kings-journey.png', scope: 'game', needsBoard: true, detect: (c) => c.won && c.board.kingCrossed },
+      { id: 'kings-journey', title: "King's Journey", details: "Win after your king reaches the opponent's back rank (8th for White, 1st for Black)", image: 'images/kings-journey.png', scope: 'game', needsBoard: true, detect: (c) => c.won && c.board.kingCrossed },
     ],
   },
   {

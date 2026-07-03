@@ -186,7 +186,8 @@ function computeBoard(san, userWhite, scan) {
         }
       }
       if (q > maxQueens) maxQueens = q;
-      if (kingRank != null && (userWhite ? kingRank >= 5 : kingRank <= 4)) kingCrossed = true;
+      // "Far side" = the opponent's back rank: rank 8 for White, rank 1 for Black.
+      if (kingRank != null && (userWhite ? kingRank === 8 : kingRank === 1)) kingCrossed = true;
     }
 
     if (i === last) {
