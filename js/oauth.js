@@ -7,9 +7,11 @@ const AUTH_URL = `${LICHESS}/oauth`;
 const TOKEN_URL = `${LICHESS}/api/token`;
 const ACCOUNT_URL = `${LICHESS}/api/account`;
 
-// This app only needs to identify the user and read public account data, which
-// an empty-scope token already provides. Games are public, so no game scope.
-const SCOPE = '';
+// Identifying the user and reading public account data needs no scope. Two
+// extra achievement sources are private, so we request read-only access to
+// them: `study:read` (has the user authored a study?) and `follow:read`
+// (whom does the user follow?). Games, teams and tournaments stay public.
+const SCOPE = 'study:read follow:read';
 
 const REDIRECT_URI = location.origin + location.pathname;
 const CLIENT_ID = REDIRECT_URI; // arbitrary stable string; the deployed URL is convention

@@ -57,7 +57,9 @@ icon.png              # favicon
 1. On "Log in": generate random `code_verifier` + `state`, store in `sessionStorage`,
    compute S256 `code_challenge`, redirect to
    `https://lichess.org/oauth?response_type=code&client_id=<origin>&redirect_uri=<url>&code_challenge_method=S256&code_challenge=...&state=...`.
-   **Scope:** none required — an empty-scope token still returns `/api/account`.
+   **Scope:** `study:read follow:read` — needed only for the "created a study" and
+   "follow someone" achievements. All other endpoints (account, games, teams,
+   tournaments) work with an empty-scope token; these two read private data.
 2. On redirect back with `?code&state`: verify `state`, POST to
    `https://lichess.org/api/token` with `grant_type=authorization_code`, the `code`,
    `redirect_uri`, `client_id`, and the stored `code_verifier` → access token.
@@ -72,6 +74,15 @@ icon.png              # favicon
 - **`GET /api/account`** — cheap, one call. Powers all *account-scope* achievements
   with no game parsing: total games (`count.all`), games vs computer (`count.ai`),
   per-speed counts, total play time, account age / "birthday", patron status.
+- **Extra-scope endpoints** (*extra*-scope achievements) — small supplementary calls
+  made once in the worker, in parallel with the game stream; each is best-effort (a
+  missing scope or 4xx yields an empty list so only that achievement stays locked):
+  `GET /api/team/of/{u}` (teams joined), `GET /api/user/{u}/tournament/played`
+  (arenas: participation, podium, win, cumulative `player.score` points) and
+  `.../tournament/created` (hosting), `GET /api/study/by/{u}` (studies — needs
+  `study:read`), `GET /api/rel/following` (follows — needs `follow:read`).
+  **No blog API exists on Lichess**, so "write a blog post" is not detectable and is
+  omitted.
 - **`GET /api/games/user/{username}`** with `Accept: application/x-ndjson`,
   `moves=true&opening=true&tags=false&clocks=false&evals=false&pgnInJson=false`,
   `sort=dateAsc`. Streams one JSON object per game, each with:

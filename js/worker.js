@@ -30,14 +30,22 @@ async function run({ username, userId, token, account }) {
 
   // 1) Account-scope achievements — instant, no game data needed.
   const gameAchievements = [];
+  const extraAchievements = [];
   for (const a of ALL) {
     if (a.scope === 'account') {
       try { if (a.unlock(account)) post({ type: 'unlock', id: a.id, gameId: null }); }
       catch { /* ignore a bad detector */ }
+    } else if (a.scope === 'extra') {
+      extraAchievements.push(a);
     } else {
       gameAchievements.push({ def: a, state: a.init ? a.init() : null });
     }
   }
+
+  // 1b) Extra-scope achievements — fetched from supplementary endpoints in
+  // parallel with (and independently of) the game stream. Their unlocks may
+  // arrive after the 'done' of the game pass; main.js reveals them regardless.
+  if (extraAchievements.length) evaluateExtra(username, token, extraAchievements).catch(() => {});
 
   // Nothing game-based left to find? We're done.
   let locked = gameAchievements;
@@ -88,6 +96,71 @@ async function run({ username, userId, token, account }) {
   }
 
   post({ type: 'done', count });
+}
+
+// ---------------------------------------------------------------------------
+// Extra-scope achievements: teams joined, tournaments played/created, studies
+// authored, players followed. Each source is fetched best-effort — a missing
+// scope or a 4xx just yields an empty list, so its achievements stay locked
+// rather than breaking the others.
+// ---------------------------------------------------------------------------
+
+const LI = 'https://lichess.org';
+
+async function evaluateExtra(username, token, achievements) {
+  const auth = token ? { Authorization: `Bearer ${token}` } : {};
+  const u = encodeURIComponent(username);
+
+  const [teams, tournaments, created, studies, following] = await Promise.all([
+    fetchJsonArray(`${LI}/api/team/of/${u}`, auth),
+    fetchNdjson(`${LI}/api/user/${u}/tournament/played?nb=1000`, auth),
+    fetchNdjson(`${LI}/api/user/${u}/tournament/created`, auth),
+    fetchNdjson(`${LI}/api/study/by/${u}`, auth),
+    fetchNdjson(`${LI}/api/rel/following`, auth),
+  ]);
+
+  let arenaPoints = 0;
+  for (const t of tournaments) arenaPoints += t.player?.score || 0;
+
+  const extra = { teams, tournaments, created, studies, following, arenaPoints };
+  for (const a of achievements) {
+    try { if (a.unlock(extra)) post({ type: 'unlock', id: a.id, gameId: null }); }
+    catch { /* ignore a bad detector */ }
+  }
+}
+
+async function fetchJsonArray(url, auth) {
+  try {
+    const res = await fetch(url, { headers: { Accept: 'application/json', ...auth } });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return Array.isArray(data) ? data : [];
+  } catch { return []; }
+}
+
+async function fetchNdjson(url, auth) {
+  try {
+    const res = await fetch(url, { headers: { Accept: 'application/x-ndjson', ...auth } });
+    if (!res.ok || !res.body) return [];
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    const out = [];
+    let buffer = '';
+    while (true) {
+      const chunk = await reader.read();
+      if (chunk.done) break;
+      buffer += decoder.decode(chunk.value, { stream: true });
+      let nl;
+      while ((nl = buffer.indexOf('\n')) >= 0) {
+        const line = buffer.slice(0, nl).trim();
+        buffer = buffer.slice(nl + 1);
+        if (line) { try { out.push(JSON.parse(line)); } catch { /* skip */ } }
+      }
+    }
+    const tail = buffer.trim();
+    if (tail) { try { out.push(JSON.parse(tail)); } catch { /* skip */ } }
+    return out;
+  } catch { return []; }
 }
 
 // ---------------------------------------------------------------------------

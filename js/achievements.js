@@ -5,6 +5,9 @@
 //
 // Each achievement has a `scope`:
 //   'account'  -> unlock(account)            evaluated once from /api/account
+//   'extra'    -> unlock(extra)              evaluated once from supplementary
+//                                            endpoints (teams, tournaments,
+//                                            studies, following) — see worker.js
 //   'game'     -> detect(ctx, state)         evaluated per streamed game
 //
 // A game `detect` returns:
@@ -370,6 +373,29 @@ export const CATEGORIES = [
       { id: 'marathon', title: 'Marathon', details: 'Play a game of at least 60 moves', svg: 'hourglass', color: '#f43f5e', scope: 'game', detect: (c) => c.san.length >= 120 },
       { id: 'scholars-mate', title: "Scholar's Mate", details: 'Checkmate in the first four moves with your queen', svg: 'trophy', color: '#e11d48', scope: 'game', detect: (c) => isMate(c) && c.san.length <= 8 && /^Qx?f[27]#$/.test(c.lastSan) },
       { id: 'fools-mate', title: "Fool's Mate", details: 'Deliver the two-move fool’s mate', svg: 'star', color: '#be123c', scope: 'game', detect: (c) => isMate(c) && c.san.length <= 4 && c.lastSan === 'Qh4#' },
+    ],
+  },
+
+  // ---- Extra-scope categories: sourced from supplementary endpoints (worker.js).
+  {
+    name: 'Social',
+    items: [
+      { id: 'team-join', title: 'Team Player', details: 'Join a team', svg: 'idcard', color: '#4f46e5', scope: 'extra', unlock: (x) => x.teams.length >= 1 },
+      { id: 'team-three', title: 'Social Butterfly', details: 'Be a member of three teams at once', svg: 'sparkles', color: '#6366f1', scope: 'extra', unlock: (x) => x.teams.length >= 3 },
+      { id: 'follow-one', title: 'Fan', details: 'Follow another player', svg: 'star', color: '#7c3aed', scope: 'extra', unlock: (x) => x.following.length >= 1 },
+      { id: 'follow-ten', title: 'Networker', details: 'Follow ten players', svg: 'chart', color: '#8b5cf6', scope: 'extra', unlock: (x) => x.following.length >= 10 },
+      { id: 'study-write', title: 'Scholar', details: 'Create a study', svg: 'pencil', color: '#a855f7', scope: 'extra', unlock: (x) => x.studies.length >= 1 },
+    ],
+  },
+  {
+    name: 'Tournaments',
+    items: [
+      { id: 'arena-play', title: 'To the Arena', details: 'Play in an arena tournament', svg: 'bolt', color: '#eab308', scope: 'extra', unlock: (x) => x.tournaments.length >= 1 },
+      { id: 'arena-host', title: 'Host', details: 'Create your own tournament', svg: 'flag', color: '#f59e0b', scope: 'extra', unlock: (x) => x.created.length >= 1 },
+      { id: 'arena-podium', title: 'On the Podium', details: 'Finish in the top three of an arena', svg: 'cap', color: '#d97706', scope: 'extra', unlock: (x) => x.tournaments.some((t) => t.player?.rank >= 1 && t.player.rank <= 3) },
+      { id: 'arena-win', title: 'Arena Champion', details: 'Win an arena tournament', svg: 'trophy', color: '#f97316', scope: 'extra', unlock: (x) => x.tournaments.some((t) => t.player?.rank === 1) },
+      { id: 'arena-points-100', title: 'Point Collector', details: 'Score 100 arena points in total', svg: 'star', color: '#ea580c', scope: 'extra', unlock: (x) => x.arenaPoints >= 100 },
+      { id: 'arena-points-1000', title: 'Point Hoarder', details: 'Score 1,000 arena points in total', svg: 'crown', color: '#b45309', scope: 'extra', unlock: (x) => x.arenaPoints >= 1000 },
     ],
   },
 ];
