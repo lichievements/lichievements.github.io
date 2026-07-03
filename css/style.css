@@ -276,6 +276,7 @@ a { color: inherit; }
   color: var(--text-mute);
   font-variant-numeric: tabular-nums;
 }
+.category-head.complete .tally { color: var(--accent); }
 
 .grid {
   display: grid;
