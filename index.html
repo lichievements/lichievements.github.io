@@ -1,122 +1,67 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name='mobile-web-app-capable' content="yes"/>
-    <meta name='apple-mobile-web-app-capable' content="yes"/>
-    <meta name="theme-color" id="theme-color" content="#f1f3f5" />
-    <meta name="description" content="Achievements">
-    <meta name="keywords" content="chess, lichess, achievements">
-    <meta name="author" content="lichievements">
-    <title>lichievements</title>
-    <link rel="stylesheet" type="text/css" href="./style.css" />
-    <link rel="icon" type="image/png" href="./icon.png">
-    <link rel="apple-touch-icon" href="./icon.png" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!--<script type="text/javascript" src="./script.js"></script>-->
-  </head>
-  <body>
-    <header>
-      <h1><span style="font-weight: 300;">li</span><span style="color:#888;font-weight:100;">chievements</span></h1>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>lichievements</title>
+  <meta name="description" content="Log in with Lichess and discover the achievements hidden in your games." />
+  <link rel="icon" type="image/png" href="icon.png" />
+  <link rel="preload" href="fonts/Inter-4.1/web/InterVariable.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="css/fonts.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <script>
+    // Set the theme before first paint to avoid a flash.
+    (function () {
+      try {
+        var saved = localStorage.getItem('theme');
+        var theme = saved || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+        if (theme === 'light') document.documentElement.setAttribute('data-theme', 'light');
+      } catch (e) {}
+    })();
+  </script>
+</head>
+<body>
+  <button id="theme-toggle" class="theme-toggle" type="button" title="Toggle light / dark theme" aria-label="Toggle light or dark theme">
+    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" />
+    </svg>
+    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+    </svg>
+  </button>
+
+  <div class="wrap">
+    <header class="site-header">
+      <h1 class="logo"><strong>li</strong><span class="thin">chievements</span></h1>
+      <p class="tagline">Log in with Lichess and uncover the achievements hidden across your games.</p>
+
+      <button id="login-btn" class="btn btn-primary" type="button">
+        <svg class="logo-mark" viewBox="0 0 50 50" aria-hidden="true" fill="currentColor">
+          <path d="M38.5 22c-3.3 1.7-6.1 3-7.3 5.5-.4.8-.7 1.8-.8 3H14.9c-1.9 0-1.5-1.6-1-2.5.6-1.1 1.8-2 3.2-2.7 3.9-2 8.7-2.9 8.7-8.6 0-3.4-2.8-6.2-6.2-6.2S13.4 13.3 13.4 16.7c0 1.2.3 2.3.9 3.2-2.8 1.5-4.8 3.4-4.8 6.9 0 4.8 4.9 8.7 15.5 8.7 12.7 0 20-4.2 20-9.8 0-2.9-2.2-4.9-6.5-3.7z"/>
+        </svg>
+        Log in with Lichess
+      </button>
+
+      <div id="statusbar" class="statusbar" hidden>
+        <span class="user" id="status-user"></span>
+        <span id="status-summary"></span>
+        <span class="count"><span id="status-unlocked">0</span> / <span id="status-total">0</span></span>
+        <div class="progress indeterminate" id="progress" hidden><span id="progress-bar"></span></div>
+        <button id="logout-btn" class="btn btn-ghost" type="button">Log out</button>
+      </div>
     </header>
-    
-    <div class="input-button-container">
-      <input type="text" class="rounded-input" id="username" placeholder="Enter a lichess username..."><button class="rounded-button" onclick="checkAchievements();">GO</button>
-    </div>
-    
-    <div id="loading-div" style="text-align:center;"></div>
-    
-    <div id="achievements-container"></div>
-    <script type="module" src="./chess.js"></script>
-    <script type="module" src="./achievements.js"></script>
-    
-    <div id="summary"></div>
-      
-    <!-- Footer -->
-    
-    <div class="footer">
-      <a href="https://github.com/lichievements/lichievements.github.io/"><span class="footer-icon fa-brands fa-github"></span></a><span id="theme-btn" class="footer-icon fa-solid fa-moon"></span><a href="info.html"><span class="footer-icon fa-solid fa-circle-info"></span></a>
-    </div>
-    
-    <!-- Scripts -->
-    
-    <script>
-      //gets the button by ID from your HTML element
-      const themeBtn = document.getElementById("theme-btn");
-      //when you click that button
-      themeBtn.onclick = () => {
-        //the default class "fa-moon" switches to "fa-sun" on toggle
-        themeBtn.classList.toggle("fa-sun");
-        themeBtn.classList.toggle("fa-moon");
-        //after the switch on toggle, if your button contains "fa-sun" class
-        if (themeBtn.classList.contains("fa-sun")) {
-          //onclicking themeBtn, the changeTheme styling will be applied to the body of your HTML
-          document.body.classList.add("darkTheme");
-          document.documentElement.style.setProperty('--colorBodyBG', '#000000'); // dark background
-          document.documentElement.style.setProperty('--colorFont', '#d8dadc'); // dark-theme font
-          document.getElementById('theme-color').setAttribute('content', '#000000');
-          document.documentElement.style.setProperty('--colorInputButton', '#222222'); // dark-theme input
-        } 
-        else {
-          // onclicking themeBtn, applied changeTheme styling will be removed
-          document.body.classList.remove("darkTheme");
-          document.documentElement.style.setProperty('--colorBodyBG', '#f1f3f5');
-          document.documentElement.style.setProperty('--colorFont', '#444444');
-          document.getElementById('theme-color').setAttribute('content', '#f1f3f5');
-          document.documentElement.style.setProperty('--colorInputButton', '#ffffff'); 
-        }
-      }
-    </script>
-    <script>
-      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        // Dark mode is enabled
-        console.log('Dark mode is enabled');
-        document.getElementById('theme-btn').click();
-      } 
-      else {
-        // Dark mode is not enabled
-        console.log('Dark mode is not enabled');
-      }
-    </script>
-    <script>
-      // watch for light/dark changes
-      // Function to handle theme change
-      function handleThemeChange(event) {
-        const themeBtn = document.getElementById("theme-btn");
-        if (event.matches) {
-          // Dark mode is enabled
-          // Change your website's theme to dark mode
-          if (themeBtn.classList.contains("fa-moon")) {
-            document.getElementById('theme-btn').click();
-          }
-        } 
-        else {
-          // Dark mode is disabled
-          // Change your website's theme to light mode
-          if (themeBtn.classList.contains("fa-sun")) {
-            document.getElementById('theme-btn').click();
-          }
-        }
-      }
 
-      // Create a media query listener
-      const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      darkModeQuery.addListener(handleThemeChange);
+    <div id="error" class="error" hidden></div>
 
-      // Initial theme setup based on the user's preference
-      handleThemeChange(darkModeQuery);
-    </script>
-    <script>
-      document.getElementById('username').addEventListener('keyup', function(event) {
-        // Check if the key pressed is the Enter key
-        if (event.key === "Enter") {
-          // Prevent the form from being submitted if the input is inside a form
-          event.preventDefault();
-          // Call the getUserData function
-          checkAchievements();
-        }
-      });
-    </script>
-  </body>
+    <main id="grid-root" aria-live="polite"></main>
+
+    <footer class="site-footer">
+      <p>Not affiliated with Lichess. Your games are analysed entirely in your browser &mdash; nothing is stored.
+        Built on the <a href="https://lichess.org/api" target="_blank" rel="noopener">Lichess API</a>.</p>
+    </footer>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
 </html>
