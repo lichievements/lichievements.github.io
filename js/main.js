@@ -107,11 +107,17 @@ function renderGrid() {
     head.className = 'category-head';
     const h2 = document.createElement('h2');
     h2.textContent = cat.name;
+    const check = document.createElement('span');
+    check.className = 'done-check';
+    check.setAttribute('aria-hidden', 'true');
+    check.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>';
     const tally = document.createElement('span');
     tally.className = 'tally';
     tally.textContent = `0 / ${cat.items.length}`;
-    catMeta.get(cat.name).tallyEl = tally;
-    head.append(h2, tally);
+    const meta = catMeta.get(cat.name);
+    meta.tallyEl = tally;
+    meta.headEl = head;
+    head.append(h2, check, tally);
 
     const grid = document.createElement('div');
     grid.className = 'grid';
@@ -191,7 +197,11 @@ function unlock(id, gameId, color, ply, { animate = true, persist = true } = {})
   el.statusUnlocked.textContent = String(unlockedCount);
 
   const meta = catMeta.get(tile.dataset.cat);
-  if (meta) { meta.unlocked++; meta.tallyEl.textContent = `${meta.unlocked} / ${meta.total}`; }
+  if (meta) {
+    meta.unlocked++;
+    meta.tallyEl.textContent = `${meta.unlocked} / ${meta.total}`;
+    if (meta.unlocked === meta.total) meta.headEl.classList.add('complete');
+  }
 
   if (persist) { unlockedRecords.push({ id, gameId: gameId || null, color: color || null, ply: ply ?? null }); saveCache(); }
 }
@@ -209,7 +219,11 @@ function resetGrid() {
     const art = tile.querySelector('.art');
     if (art) art.removeAttribute('src');
   }
-  for (const meta of catMeta.values()) { meta.unlocked = 0; meta.tallyEl.textContent = `0 / ${meta.total}`; }
+  for (const meta of catMeta.values()) {
+    meta.unlocked = 0;
+    meta.tallyEl.textContent = `0 / ${meta.total}`;
+    meta.headEl.classList.remove('complete');
+  }
 }
 
 // Restore unlocked tiles from cache instantly (no reveal animation, no re-persist).
