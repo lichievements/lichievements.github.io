@@ -51,6 +51,11 @@ function initTileInteraction() {
   document.addEventListener('click', (e) => {
     if (!e.target.closest('.tile.revealed')) clearRevealed();
   });
+
+  // Scrolling the page also dismisses any revealed caption on touch devices.
+  window.addEventListener('scroll', () => {
+    if (document.querySelector('.tile.revealed')) clearRevealed();
+  }, { passive: true });
 }
 
 // --- Table of contents -----------------------------------------------------
