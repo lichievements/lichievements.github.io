@@ -504,18 +504,29 @@ a { color: inherit; }
 }
 .tier-steps-list li {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 8px;
   font-size: 0.82rem;
   color: var(--text-dim);
 }
 .tier-steps-list li.next { color: var(--text); }
+/* Title + description wrap together; the description falls to its own line only
+   when it doesn't fit inline. */
+.tier-step-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 0.35em;
+  row-gap: 2px;
+}
 .tier-step-desc { color: var(--text-mute); }
-.tier-step-desc::before { content: ':\00a0'; }
 .tier-check {
   flex: 0 0 auto;
   width: 15px;
   height: 15px;
+  margin-top: 2px; /* nudge to align with the first text line */
   border-radius: 50%;
   border: 1.5px solid var(--line);
 }
@@ -526,7 +537,7 @@ a { color: inherit; }
   mask: var(--check-mask) center / 15px 15px no-repeat;
 }
 .tier-target {
-  margin-left: auto;
+  flex: 0 0 auto;
   font-family: 'JetBrains Mono', ui-monospace, monospace;
   font-size: 0.72rem;
   font-variant-numeric: tabular-nums;

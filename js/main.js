@@ -405,21 +405,25 @@ function renderTierSteps(tile, def, have, value) {
     li.className = done ? 'done' : 'next';
     const chk = document.createElement('span');
     chk.className = 'tier-check';
+    // Title + description share a wrapping flex box, so the description drops to
+    // its own line only when it doesn't fit inline (colon trails the title).
+    const text = document.createElement('span');
+    text.className = 'tier-step-text';
     const t = document.createElement('span');
     t.className = 'tier-step-title';
-    t.textContent = steps[i].title;
-    li.append(chk, t);
+    t.textContent = steps[i].details ? `${steps[i].title}:` : steps[i].title;
+    text.append(t);
     if (steps[i].details) {
       const d = document.createElement('span');
       d.className = 'tier-step-desc';
       d.textContent = steps[i].details;
-      li.append(d);
+      text.append(d);
     }
     // Per-step tally, capped at the step's target: at/at when cleared, else value/at.
     const tg = document.createElement('span');
     tg.className = 'tier-target';
     tg.textContent = `${fmtNum(Math.min(value, steps[i].at))} / ${fmtNum(steps[i].at)}`;
-    li.append(tg);
+    li.append(chk, text, tg);
     ul.append(li);
   }
 
