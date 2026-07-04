@@ -1,6 +1,7 @@
 # Dev-only / reference files — not needed to run the deployed site
 lichess-api.json
 achievements_OLD.json
+openings/
 
 # Project docs: keep CLAUDE.md tracked for collaborators by default.
 # Uncomment the next line if you'd rather not publish it.
