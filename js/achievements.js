@@ -229,6 +229,7 @@ export const CATEGORIES = [
       { id: 'giant-slayer', title: 'Giant Slayer', details: 'Beat a titled player', svg: 'cap', color: '#0891b2', scope: 'game', detect: (c) => c.won && !!c.oppTitle && c.oppTitle !== 'BOT' },
       { id: 'comeback', title: 'Comeback King', details: 'Win after being down at least a rook (5 points of material) at some point', svg: 'trophy', color: '#f59e0b', scope: 'game', needsBoard: true, detect: (c) => c.won && c.board.minMaterialDiff <= -5 },
       { id: 'houdini', title: 'The Great Escape', details: 'Win after being down at least a full queen (9 points of material) at some point', svg: 'sparkles', color: '#ef4444', scope: 'game', needsBoard: true, detect: (c) => c.won && c.board.minMaterialDiff <= -9 },
+      { id: 'swindle', title: 'Swindle Your Way Out', details: 'Escape with a stalemate while at least 8 points of material behind', svg: 'scale', color: '#14b8a6', scope: 'game', needsBoard: true, detect: (c) => c.status === 'stalemate' && c.board.minMaterialDiff <= -8 },
       { id: 'win-streak-5', title: 'On Fire', details: 'Win five standard games in a row', svg: 'fire', color: '#f97316', scope: 'game', init: () => ({ cur: 0 }), detect: (c, s) => { s.cur = c.won ? s.cur + 1 : 0; return s.cur >= 5; } },
       { id: 'win-streak-10', title: 'Unstoppable', details: 'Win ten standard games in a row', svg: 'bolt', color: '#dc2626', scope: 'game', init: () => ({ cur: 0 }), detect: (c, s) => { s.cur = c.won ? s.cur + 1 : 0; return s.cur >= 10; } },
     ],
