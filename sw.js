@@ -5,12 +5,13 @@
 // (HTML / JS / CSS / manifest) is served **network-first**, so every online launch
 // already loads the latest files. That's what makes updates reach iOS PWAs, which
 // cannot be manually refreshed. Fonts and images stay cache-first for speed.
-const APP_VERSION = '2';
+const APP_VERSION = '3';
 const CACHE = 'lichievements-v' + APP_VERSION;
 
 const SHELL = [
   './',
   './index.html',
+  './hints.html',
   './manifest.webmanifest',
   './css/style.css',
   './css/fonts.css',
@@ -57,11 +58,11 @@ self.addEventListener('fetch', (e) => {
 
   // HTML + app code: network-first (fresh every online launch), cache as offline fallback.
   if (req.mode === 'navigate' || isCode(url)) {
-    const key = req.mode === 'navigate' ? './index.html' : req;
     e.respondWith(
       fetch(req)
-        .then((res) => { const copy = res.clone(); caches.open(CACHE).then((c) => c.put(key, copy)).catch(() => {}); return res; })
-        .catch(() => caches.match(key))
+        .then((res) => { const copy = res.clone(); caches.open(CACHE).then((c) => c.put(req, copy)).catch(() => {}); return res; })
+        // Fall back to the requested page (e.g. hints.html), else the app shell.
+        .catch(() => caches.match(req).then((hit) => hit || caches.match('./index.html')))
     );
     return;
   }
