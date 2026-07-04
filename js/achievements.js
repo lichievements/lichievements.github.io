@@ -349,6 +349,7 @@ export const CATEGORIES = [
         'e4 c5 Nf3 Qa5',                                      // Sicilian: Mongoose
         'd4 c5 d5 Na6',                                       // Benoni: Snail
         'd4 Nf6 c4 c5 d5 Ne4',                                // Vulture Defense
+        'f4',                                                 // Bird's Opening
       ]),
       // Champions — one opening named after each undisputed World Champion.
       collection('openings-champions', 'Hall of Champions', 'Play an opening named after each World Champion', 'openings-champions', [
