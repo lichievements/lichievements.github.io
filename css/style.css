@@ -686,7 +686,7 @@ a { color: inherit; }
   inset: 0;
 }
 @media (hover: hover) {
-  .hint-link:hover { border-color: var(--accent-2); }
+  .hint-link:hover { border-color: transparent; }
 }
 .hint-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .hints.has-progress .hint-openings li::before {
