@@ -222,7 +222,6 @@ export const CATEGORIES = [
   {
     name: 'Winning Feats',
     items: [
-      { id: 'flag-opponent', title: 'Be Quick', details: 'Win by flagging your opponent on time', image: 'images/flag-opponent.png', scope: 'game', detect: (c) => c.won && c.status === 'outoftime' },
       { id: 'survivor', title: 'Survivor', details: 'Win a game after being checked at least five times', image: 'images/survivor.png', scope: 'game', detect: (c) => c.won && c.checksByOpp >= 5 },
       { id: 'underachiever', title: 'Underachiever', details: 'Win a game in which you underpromoted a pawn', image: 'images/underachiever.png', scope: 'game', detect: (c) => c.won && c.userSan.some((m) => /=[RBN]/.test(m)) },
       { id: 'kings-journey', title: "King's Journey", details: "Win after your king reaches the opponent's back rank (8th for White, 1st for Black)", image: 'images/kings-journey.png', scope: 'game', needsBoard: true, detect: (c) => c.won && c.board.kingCrossed },
@@ -232,6 +231,18 @@ export const CATEGORIES = [
       { id: 'houdini', title: 'The Great Escape', details: 'Win after being down at least a full queen (9 points of material) at some point', svg: 'sparkles', color: '#ef4444', scope: 'game', needsBoard: true, detect: (c) => c.won && c.board.minMaterialDiff <= -9 },
       { id: 'win-streak-5', title: 'On Fire', details: 'Win five standard games in a row', svg: 'fire', color: '#f97316', scope: 'game', init: () => ({ cur: 0 }), detect: (c, s) => { s.cur = c.won ? s.cur + 1 : 0; return s.cur >= 5; } },
       { id: 'win-streak-10', title: 'Unstoppable', details: 'Win ten standard games in a row', svg: 'bolt', color: '#dc2626', scope: 'game', init: () => ({ cur: 0 }), detect: (c, s) => { s.cur = c.won ? s.cur + 1 : 0; return s.cur >= 10; } },
+    ],
+  },
+  {
+    // How the win was decided — from the game's `status` field (Lichess
+    // GameStatusName). Standard decisive finishes: mate, resign, outoftime
+    // (clock flag), timeout (opponent abandoned the game).
+    name: 'Win Conditions',
+    items: [
+      { id: 'win-checkmate', title: 'The Final Blow', details: 'Win a game by checkmate', svg: 'crown', color: '#eab308', scope: 'game', detect: (c) => c.won && c.status === 'mate' },
+      { id: 'win-resign', title: 'They Resigned', details: 'Win a game by your opponent resigning', svg: 'flag', color: '#ef4444', scope: 'game', detect: (c) => c.won && c.status === 'resign' },
+      { id: 'flag-opponent', title: 'Be Quick', details: "Win by flagging your opponent on time", image: 'images/flag-opponent.png', scope: 'game', detect: (c) => c.won && c.status === 'outoftime' },
+      { id: 'win-abandon', title: 'Left Behind', details: 'Win a game by your opponent abandoning it', svg: 'hourglass', color: '#8b5cf6', scope: 'game', detect: (c) => c.won && c.status === 'timeout' },
     ],
   },
   {
