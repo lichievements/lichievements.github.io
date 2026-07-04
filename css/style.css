@@ -252,6 +252,9 @@ a { color: inherit; }
 .toc-mode .theme-switch-row,
 .toc-mode .site-footer { display: none; }
 .toc-mode .grid { display: none; }
+/* List view re-declares .grid as display:flex at equal specificity, so hide it
+   with a more specific selector when both classes are on <body>. */
+.toc-mode.list-view .grid { display: none; }
 .toc-mode .category { padding-bottom: 0; }
 /* Same collapse on the hints page: keep only the section headings. */
 .toc-mode .hints-intro,
