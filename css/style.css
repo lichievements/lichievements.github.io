@@ -437,6 +437,67 @@ a { color: inherit; }
 .tile.unlocked[href] { cursor: pointer; }
 .tile:not([href]) { cursor: default; }
 
+/* --- List view ------------------------------------------------------------- */
+/* The grid re-flows into a stacked list of rows matching the hints page. The
+   same tiles are reused: the artwork hides and the caption becomes the always-
+   visible two-line row (title over details), with the ↗ cue kept for links. */
+.list-view .grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 16px;
+}
+.list-view .tile {
+  aspect-ratio: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  overflow: visible;
+}
+.list-view .tile:not(.unlocked) { opacity: 0.72; }
+
+/* No artwork in list view */
+.list-view .tile .locked,
+.list-view .tile .art,
+.list-view .tile .art-svg { display: none; }
+
+/* The caption stops being a hover overlay and becomes the static row body. */
+.list-view .tile .caption {
+  order: 1;
+  flex: 1 1 auto;
+  position: static;
+  inset: auto;
+  padding: 0;
+  background: none;
+  transform: none;
+  opacity: 1;
+  pointer-events: auto;
+  z-index: auto;
+}
+/* Theme-aware text (the overlay's cap-title/cap-sub are light-on-dark only). */
+.list-view .tile .caption h3 {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text);
+}
+.list-view .tile:not(.unlocked) .caption h3 { color: var(--text-dim); }
+.list-view .tile .caption p {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
+/* Link cue: hidden by default, shown static on the right for unlocked links. */
+.list-view .tile .ext { display: none; }
+.list-view .tile.unlocked[href] .ext {
+  display: grid;
+  order: 2;
+  position: static;
+  flex: 0 0 auto;
+  opacity: 1;
+  transform: none;
+}
+
 /* --- Footer ---------------------------------------------------------------- */
 
 .site-footer {
@@ -641,6 +702,11 @@ a { color: inherit; }
 .theme-toggle .icon-sun { display: none; }
 [data-theme='light'] .theme-toggle .icon-sun { display: block; }
 [data-theme='light'] .theme-toggle .icon-moon { display: none; }
+
+/* View toggle shows the current view's glyph (grid by default, list when active) */
+.view-toggle .icon-list { display: none; }
+.list-view .view-toggle .icon-list { display: block; }
+.list-view .view-toggle .icon-grid { display: none; }
 
 /* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {

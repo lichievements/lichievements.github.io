@@ -20,6 +20,7 @@ const el = {
   gridRoot: $('#grid-root'),
   error: $('#error'),
   themeToggle: $('#theme-toggle'),
+  viewToggle: $('#view-toggle'),
   reloadBtn: $('#reload-btn'),
 };
 
@@ -104,6 +105,22 @@ function initTheme() {
     // e.detail === 0 means keyboard activation; drop focus for pointer taps so no
     // outline lingers on touch devices, but keep it for keyboard users.
     if (e.detail) el.themeToggle.blur();
+  });
+}
+
+// --- View (grid / list) ----------------------------------------------------
+// The whole grid re-styles into a stacked list via a body class; the same tiles
+// are reused (see .list-view CSS). The choice persists per browser.
+
+const LS_VIEW = 'li_view';
+
+function initView() {
+  if (lsGet(LS_VIEW) === 'list') document.body.classList.add('list-view');
+  el.viewToggle.addEventListener('click', (e) => {
+    const list = !document.body.classList.contains('list-view');
+    document.body.classList.toggle('list-view', list);
+    lsSet(LS_VIEW, list ? 'list' : 'grid');
+    if (e.detail) el.viewToggle.blur();
   });
 }
 
@@ -413,6 +430,7 @@ function showError(msg) {
 
 async function boot() {
   initTheme();
+  initView();
   renderGrid();
   initTileInteraction();
   initToc();
