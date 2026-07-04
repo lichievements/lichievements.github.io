@@ -478,6 +478,17 @@ a { color: inherit; }
   color: var(--cap-sub);
   font-variant-numeric: tabular-nums;
 }
+/* n/N shown next to the title in list view only (grid uses the bar instead). */
+.tier-badge { display: none; }
+.list-view .tier-badge {
+  display: inline-block;
+  margin-left: 8px;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 0.72rem;
+  font-weight: 400;
+  color: var(--text-mute);
+  font-variant-numeric: tabular-nums;
+}
 
 /* --- List view ------------------------------------------------------------- */
 /* The grid re-flows into a stacked list of rows matching the hints page. The
@@ -520,8 +531,9 @@ a { color: inherit; }
 /* No artwork in list view */
 .list-view .tile .locked,
 .list-view .tile .art,
-.list-view .tile .art-svg,
-.list-view .tile .tier-progress { display: none; }
+.list-view .tile .art-svg { display: none; }
+/* No progress bar in list view (needs to out-specify the .unlocked show rule). */
+.list-view .tile.unlocked[data-tiered] .tier-progress { display: none; }
 
 /* The caption stops being a hover overlay and becomes the static row body. */
 .list-view .tile .caption {

@@ -261,7 +261,13 @@ function renderGrid() {
       const cap = document.createElement('div');
       cap.className = 'caption';
       const h3 = document.createElement('h3');
-      h3.textContent = a.title;
+      if (a.tiered) {
+        // Split title + an n/N badge (badge shown next to the title in list view).
+        h3.innerHTML = '<span class="tier-title"></span><span class="tier-badge"></span>';
+        h3.querySelector('.tier-title').textContent = a.title;
+      } else {
+        h3.textContent = a.title;
+      }
       const p = document.createElement('p');
       p.textContent = a.details;
       cap.append(h3, p);
@@ -315,15 +321,18 @@ function applyTier(id, value, { animate = false } = {}) {
   }
 
   const fill = tile.querySelector('.tier-fill');
-  const count = tile.querySelector('.tier-count');
-  const h3 = tile.querySelector('.caption h3');
+  const count = tile.querySelector('.tier-count');   // n/N in the grid bar
+  const badge = tile.querySelector('.tier-badge');   // n/N next to the title (list view)
+  const title = tile.querySelector('.tier-title');
   const p = tile.querySelector('.caption p');
   if (fill) fill.style.width = `${(have / steps.length) * 100}%`;
-  if (count) count.textContent = `${have} / ${steps.length}`;
+  const nOfN = `${have} / ${steps.length}`;
+  if (count) count.textContent = nOfN;
+  if (badge) badge.textContent = have ? nOfN : '';
 
   if (have === 0) {
     tile.classList.remove('unlocked');
-    if (h3) h3.textContent = def.title;
+    if (title) title.textContent = def.title;
     if (p) p.textContent = def.details;
     return;
   }
@@ -345,7 +354,7 @@ function applyTier(id, value, { animate = false } = {}) {
     tile.addEventListener('animationend', () => tile.classList.remove('revealing'), { once: true });
   }
 
-  if (h3) h3.textContent = cur.title;
+  if (title) title.textContent = cur.title;
   if (p) {
     const next = steps[have];
     const unit = def.unit ? ` ${def.unit}` : '';
@@ -422,9 +431,11 @@ function resetGrid() {
     // Tiered tiles: revert caption + progress bar to the base (locked) state.
     const def = defById.get(tile.dataset.id);
     if (def && def.tiered) {
-      const h3 = tile.querySelector('.caption h3');
+      const title = tile.querySelector('.tier-title');
+      const badge = tile.querySelector('.tier-badge');
       const p = tile.querySelector('.caption p');
-      if (h3) h3.textContent = def.title;
+      if (title) title.textContent = def.title;
+      if (badge) badge.textContent = '';
       if (p) p.textContent = def.details;
       const fill = tile.querySelector('.tier-fill');
       const count = tile.querySelector('.tier-count');
