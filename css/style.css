@@ -574,6 +574,14 @@ a { color: inherit; }
   margin: 16px 0 18px;
   line-height: 1.5;
 }
+/* Small footnote below a collection's list. */
+.hint-note-inline {
+  margin: 12px 0 0;
+  font-size: 0.82rem;
+  font-style: italic;
+  color: var(--text-mute);
+  line-height: 1.45;
+}
 .hint-openings {
   list-style: none;
   margin: 0;
