@@ -459,7 +459,7 @@ export const CATEGORIES = [
           { at: 100000, title: 'Legend', image: 'images/play-100000.png' },
         ],
       }),
-      { id: 'play-computer', title: 'Machine Challenger', details: 'Play a game against the computer', image: 'images/play-computer.png', scope: 'account', unlock: (a) => (a.count?.ai || 0) >= 1 },
+      { id: 'play-computer', title: 'Machine Challenger', details: 'Play a game against the computer', image: 'images/play-computer.png', scope: 'game', detect: (c) => !!c.oppAi },
       { id: 'account-age', title: 'Happy Birthday!', details: 'Have a Lichess account at least one year old', image: 'images/birthday.png', scope: 'account', unlock: (a) => a.createdAt && Date.now() - a.createdAt >= 365 * 864e5 },
     ],
   },

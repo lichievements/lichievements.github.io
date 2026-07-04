@@ -296,6 +296,7 @@ function analyseGame(game, uid, locked) {
     myRating: me.rating || null,
     oppRating: opp.rating || null,
     oppTitle: opp.user?.title || null, // 'GM', 'IM', ... or 'BOT'
+    oppAi: opp.aiLevel || null,        // Stockfish level (1-8) when the opponent is the AI
     board: ZERO_BOARD,
   };
 
