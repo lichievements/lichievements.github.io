@@ -510,6 +510,8 @@ a { color: inherit; }
   color: var(--text-dim);
 }
 .tier-steps-list li.next { color: var(--text); }
+.tier-step-desc { color: var(--text-mute); }
+.tier-step-desc::before { content: ':\00a0'; }
 .tier-check {
   flex: 0 0 auto;
   width: 15px;
