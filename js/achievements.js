@@ -26,6 +26,13 @@
 const W = 'white';
 const B = 'black';
 
+// The twenty legal first moves for White (16 pawn pushes + 4 knight moves),
+// used by the "Encyclopedia" collection and its hints-page progress breakdown.
+const FIRST_MOVES = [
+  'a3', 'a4', 'b3', 'b4', 'c3', 'c4', 'd3', 'd4', 'e3', 'e4',
+  'f3', 'f4', 'g3', 'g4', 'h3', 'h4', 'Na3', 'Nc3', 'Nf3', 'Nh3',
+];
+
 // Strip SAN annotations so opening lines compare cleanly.
 const bare = (s) => (s ? s.replace(/[+#!?]/g, '') : s);
 const startsWith = (arr, ch) => arr.some((m) => m[0] === ch);
@@ -149,6 +156,12 @@ function collection(id, title, details, image, memberLines) {
       }
       return state.left === 0;
     },
+    // Partial progress for the hints page: which member lines are done so far.
+    progress: (state) => ({
+      have: members.length - state.left,
+      need: members.length,
+      items: memberLines.map((line, i) => ({ key: line, done: state.done[i] })),
+    }),
   };
 }
 
@@ -243,10 +256,16 @@ export const CATEGORIES = [
   {
     name: 'Opening Collections',
     items: [
-      { id: 'openings-allwhite', title: 'Encyclopedia', details: 'Play all twenty possible first moves as White', image: 'images/openings-all20.png', scope: 'game', init: () => ({ moves: new Set() }), detect: (c, s) => {
-        if (c.color === W && c.san.length) s.moves.add(bare(c.san[0]));
-        return s.moves.size >= 20;
-      } },
+      { id: 'openings-allwhite', title: 'Encyclopedia', details: 'Play all twenty possible first moves as White', image: 'images/openings-all20.png', scope: 'game', init: () => ({ moves: new Set() }),
+        detect: (c, s) => {
+          if (c.color === W && c.san.length) s.moves.add(bare(c.san[0]));
+          return s.moves.size >= 20;
+        },
+        progress: (s) => ({
+          have: s.moves.size,
+          need: 20,
+          items: FIRST_MOVES.map((m) => ({ key: m, done: s.moves.has(m) })),
+        }) },
       // The Union — one opening per EU member state.
       collection('openings-eu', 'The Union', 'Play an opening corresponding to each EU member state', 'openings-eu', [
         'e4 e5 Nc3',                                          // AT Vienna Game

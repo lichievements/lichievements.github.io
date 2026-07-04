@@ -5,6 +5,7 @@
 // Messages out:
 //   { type:'unlock', id, gameId, color, ply }   (gameId null for account scope)
 //   { type:'progress', count }
+//   { type:'partial', id, progress }            (per-member progress, e.g. collections)
 //   { type:'done', count }
 //   { type:'error', message }
 // ============================================================================
@@ -48,6 +49,7 @@ async function run({ username, userId, token, account }) {
   if (extraAchievements.length) evaluateExtra(username, token, extraAchievements, account).catch(() => {});
 
   // Nothing game-based left to find? We're done.
+  const allGame = gameAchievements; // kept whole so partials survive early-exit filtering
   let locked = gameAchievements;
   if (!locked.length) { post({ type: 'done', count: 0 }); return; }
 
@@ -64,7 +66,7 @@ async function run({ username, userId, token, account }) {
   let buffer = '';
   let count = 0;
 
-  const finish = async () => { try { await reader.cancel(); } catch {} controller.abort(); post({ type: 'done', count }); };
+  const finish = async () => { try { await reader.cancel(); } catch {} controller.abort(); sendPartials(allGame); post({ type: 'done', count }); };
 
   while (true) {
     let chunk;
@@ -95,7 +97,19 @@ async function run({ username, userId, token, account }) {
     }
   }
 
+  sendPartials(allGame);
   post({ type: 'done', count });
+}
+
+// Emit per-member progress for any game achievement that exposes a `progress()`
+// (opening collections, Encyclopedia). Completed ones keep their final full state
+// even after being filtered out of `locked`, so this is accurate at stream end.
+function sendPartials(allGame) {
+  for (const g of allGame) {
+    if (!g.def.progress) continue;
+    try { post({ type: 'partial', id: g.def.id, progress: g.def.progress(g.state) }); }
+    catch { /* ignore a bad progress fn */ }
+  }
 }
 
 // ---------------------------------------------------------------------------

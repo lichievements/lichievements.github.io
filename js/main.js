@@ -113,6 +113,7 @@ let unlockedCount = 0;
 let token = null;
 let currentUserId = null;
 let unlockedRecords = [];      // [{ id, gameId, color, ply }] — persisted per user
+let partialRecords = {};       // id -> { have, need, items } — per-member progress
 let currentWorker = null;
 
 // --- Persistence (localStorage) --------------------------------------------
@@ -122,6 +123,7 @@ let currentWorker = null;
 const SS_TOKEN = 'li_token';
 const LS_USER = 'li_user';
 const cacheKey = (uid) => `li_unlocked:${uid}`;
+const partialKey = (uid) => `li_partial:${uid}`;
 
 function saveCache() {
   if (!currentUserId) return;
@@ -129,6 +131,11 @@ function saveCache() {
 }
 function loadCache(uid) {
   try { return JSON.parse(localStorage.getItem(cacheKey(uid)) || 'null'); } catch { return null; }
+}
+// Partial (per-member) progress for aggregate achievements — read by hints.html.
+function savePartial() {
+  if (!currentUserId) return;
+  try { localStorage.setItem(partialKey(currentUserId), JSON.stringify(partialRecords)); } catch {}
 }
 function lsGet(k) { try { return localStorage.getItem(k); } catch { return null; } }
 function lsSet(k, v) { try { localStorage.setItem(k, v); } catch {} }
@@ -303,7 +310,9 @@ function startAnalysis(account) {
   currentUserId = account.id;
   lsSet(LS_USER, account.id);
   resetGrid();
-  saveCache(); // overwrite any stale cache with an empty set for a fresh run
+  partialRecords = {};
+  saveCache();   // overwrite any stale cache with an empty set for a fresh run
+  savePartial(); // ditto for per-member progress
 
   showAccountBar(account);
   el.progress.hidden = false;
@@ -338,6 +347,9 @@ function startAnalysis(account) {
     if (m.type === 'unlock') {
       pending.push(m);
       if (!scheduled) { scheduled = true; requestAnimationFrame(flush); }
+    } else if (m.type === 'partial') {
+      partialRecords[m.id] = m.progress;
+      savePartial();
     } else if (m.type === 'progress') {
       setSummary(m.count);
       if (totalGames) {
@@ -385,7 +397,7 @@ async function logout() {
   const t = token;
   try {
     sessionStorage.removeItem(SS_TOKEN);
-    if (currentUserId) localStorage.removeItem(cacheKey(currentUserId));
+    if (currentUserId) { localStorage.removeItem(cacheKey(currentUserId)); localStorage.removeItem(partialKey(currentUserId)); }
     localStorage.removeItem(LS_USER);
   } catch {}
   if (t) await revoke(t);
