@@ -38,6 +38,9 @@ function initTileInteraction() {
 
   el.gridRoot.addEventListener('click', (e) => {
     if (!touch.matches) return; // pointer devices keep hover + single-click
+    // In list view the caption is always visible, so there's nothing to reveal:
+    // a tap should follow the link directly (no two-tap dance).
+    if (document.body.classList.contains('list-view')) return;
     const tile = e.target.closest('.tile');
     if (!tile) return;
     if (!tile.classList.contains('revealed')) {
