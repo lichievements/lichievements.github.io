@@ -456,20 +456,22 @@ a { color: inherit; }
 .hint-group {
   margin-bottom: clamp(32px, 5vw, 48px);
 }
+/* Match the index category headers (.category-head + its h2). */
 .hint-group h2 {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   gap: 12px;
-  font-size: clamp(1.3rem, 3.5vw, 1.7rem);
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  margin: 0 0 6px;
-  padding-bottom: 10px;
+  margin: 0;
+  padding: 12px 0 10px;
+  background: var(--bg);
   border-bottom: 1px solid var(--line);
+  font-size: clamp(1.05rem, 2.4vw, 1.4rem);
+  font-weight: 600;
+  letter-spacing: -0.01em;
 }
 .hint-desc {
   color: var(--text-dim);
-  margin: 0 0 18px;
+  margin: 16px 0 18px;
   line-height: 1.5;
 }
 .hint-openings {
