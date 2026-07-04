@@ -689,10 +689,19 @@ a { color: inherit; }
 
 /* Round icon buttons (theme toggle + GitHub), centered below the last grid --- */
 .theme-switch-row {
+  /* Stick to the bottom of the viewport while scrolling, then settle into place
+     above the footer once the page is scrolled all the way down. The gradient
+     fades scrolled content out behind the floating buttons but is invisible at
+     rest (it resolves to the page background). */
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
   display: flex;
   justify-content: center;
   gap: 12px;
   margin-top: clamp(8px, 3vw, 24px);
+  padding: 18px 0 14px;
+  background: linear-gradient(to bottom, transparent, var(--bg) 55%);
 }
 .icon-btn {
   width: 44px;
