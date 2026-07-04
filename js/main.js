@@ -262,9 +262,10 @@ function renderGrid() {
       cap.className = 'caption';
       const h3 = document.createElement('h3');
       if (a.tiered) {
-        // Split title + an n/N badge (badge shown next to the title in list view).
-        h3.innerHTML = '<span class="tier-title"></span><span class="tier-badge"></span>';
-        h3.querySelector('.tier-title').textContent = a.title;
+        const tt = document.createElement('span');
+        tt.className = 'tier-title'; // current tier title (grid caption)
+        tt.textContent = a.title;
+        h3.append(tt);
       } else {
         h3.textContent = a.title;
       }
@@ -275,12 +276,16 @@ function renderGrid() {
       tile.append(locked, art, ext, cap);
 
       if (a.tiered) {
-        // A segmented progress bar + n/N, shown once at least one tier is reached.
+        // Grid: a segmented progress bar + n/N, shown once a tier is reached.
         const prog = document.createElement('div');
         prog.className = 'tier-progress';
         prog.setAttribute('aria-hidden', 'true');
         prog.innerHTML = '<span class="tier-bar"><span class="tier-fill"></span></span><span class="tier-count"></span>';
         tile.append(prog);
+        // List: a multi-line ladder (one line per cleared step + the next target).
+        const stepsEl = document.createElement('div');
+        stepsEl.className = 'tier-steps';
+        tile.append(stepsEl);
         tile.dataset.tiered = '1';
       }
 
@@ -294,6 +299,10 @@ function renderGrid() {
 
   el.gridRoot.append(frag);
   el.statusTotal.textContent = String(grandTotal);
+
+  // Seed tiered tiles with their base (0-value) caption + ladder so the list view
+  // isn't blank before any analysis/restore.
+  for (const id of tieredIds) applyTier(id, 0);
 }
 
 // Apply a tiered achievement's current value: upgrade the art to the highest
@@ -322,13 +331,12 @@ function applyTier(id, value, { animate = false } = {}) {
 
   const fill = tile.querySelector('.tier-fill');
   const count = tile.querySelector('.tier-count');   // n/N in the grid bar
-  const badge = tile.querySelector('.tier-badge');   // n/N next to the title (list view)
   const title = tile.querySelector('.tier-title');
   const p = tile.querySelector('.caption p');
   if (fill) fill.style.width = `${(have / steps.length) * 100}%`;
-  const nOfN = `${have} / ${steps.length}`;
-  if (count) count.textContent = nOfN;
-  if (badge) badge.textContent = have ? nOfN : '';
+  if (count) count.textContent = `${have} / ${steps.length}`;
+
+  renderTierSteps(tile, def, have, value);   // list-view multi-line ladder
 
   if (have === 0) {
     tile.classList.remove('unlocked');
@@ -368,6 +376,50 @@ function applyTier(id, value, { animate = false } = {}) {
     tile.target = '_blank';
     tile.rel = 'noopener';
   }
+}
+
+// Build the list-view ladder: the group title + a line per cleared step (each
+// checked) plus the next in-progress target. Hidden in grid view via CSS.
+function renderTierSteps(tile, def, have, value) {
+  const el = tile.querySelector('.tier-steps');
+  if (!el) return;
+  const steps = def.steps;
+  el.textContent = '';
+
+  const head = document.createElement('div');
+  head.className = 'tier-steps-head';
+  const ht = document.createElement('span');
+  ht.className = 'tier-steps-title';
+  ht.textContent = def.title;
+  const hc = document.createElement('span');
+  hc.className = 'tier-steps-count';
+  hc.textContent = `${have} / ${steps.length}`;
+  head.append(ht, hc);
+
+  const ul = document.createElement('ul');
+  ul.className = 'tier-steps-list';
+  const unit = def.unit ? ` ${def.unit}` : '';
+  for (let i = 0; i < steps.length; i++) {
+    const done = i < have;
+    if (!done && i !== have) break; // only cleared steps + the single next target
+    const li = document.createElement('li');
+    li.className = done ? 'done' : 'next';
+    const chk = document.createElement('span');
+    chk.className = 'tier-check';
+    const t = document.createElement('span');
+    t.className = 'tier-step-title';
+    t.textContent = steps[i].title;
+    li.append(chk, t);
+    if (!done) {
+      const tg = document.createElement('span');
+      tg.className = 'tier-target';
+      tg.textContent = `${fmtNum(value)} / ${fmtNum(steps[i].at)}${unit}`;
+      li.append(tg);
+    }
+    ul.append(li);
+  }
+
+  el.append(head, ul);
 }
 
 function unlock(id, gameId, color, ply, { animate = true, persist = true } = {}) {
@@ -428,20 +480,9 @@ function resetGrid() {
     tile.removeAttribute('rel');
     const art = tile.querySelector('.art');
     if (art) art.removeAttribute('src');
-    // Tiered tiles: revert caption + progress bar to the base (locked) state.
+    // Tiered tiles: rebuild the base (0-value) caption, bar and ladder.
     const def = defById.get(tile.dataset.id);
-    if (def && def.tiered) {
-      const title = tile.querySelector('.tier-title');
-      const badge = tile.querySelector('.tier-badge');
-      const p = tile.querySelector('.caption p');
-      if (title) title.textContent = def.title;
-      if (badge) badge.textContent = '';
-      if (p) p.textContent = def.details;
-      const fill = tile.querySelector('.tier-fill');
-      const count = tile.querySelector('.tier-count');
-      if (fill) fill.style.width = '0%';
-      if (count) count.textContent = `0 / ${def.steps.length}`;
-    }
+    if (def && def.tiered) applyTier(tile.dataset.id, 0);
   }
   for (const meta of catMeta.values()) {
     meta.unlocked = 0;

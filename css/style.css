@@ -478,16 +478,58 @@ a { color: inherit; }
   color: var(--cap-sub);
   font-variant-numeric: tabular-nums;
 }
-/* n/N shown next to the title in list view only (grid uses the bar instead). */
-.tier-badge { display: none; }
-.list-view .tier-badge {
-  display: inline-block;
-  margin-left: 8px;
+/* List-view ladder: one line per cleared step + the next target. Hidden in grid
+   (which uses the art + bottom bar instead). */
+.tier-steps { display: none; }
+.tier-steps-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.tier-steps-title { font-weight: 500; color: var(--text); }
+.tier-steps-count {
+  margin-left: auto;
   font-family: 'JetBrains Mono', ui-monospace, monospace;
   font-size: 0.72rem;
-  font-weight: 400;
   color: var(--text-mute);
   font-variant-numeric: tabular-nums;
+}
+.tier-steps-list {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.tier-steps-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  color: var(--text-dim);
+}
+.tier-steps-list li.next { color: var(--text); }
+.tier-check {
+  flex: 0 0 auto;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 1.5px solid var(--line);
+}
+.tier-steps-list li.done .tier-check {
+  border: none;
+  background-color: var(--accent);
+  -webkit-mask: var(--check-mask) center / 15px 15px no-repeat;
+  mask: var(--check-mask) center / 15px 15px no-repeat;
+}
+.tier-target {
+  margin-left: auto;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 0.72rem;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 /* --- List view ------------------------------------------------------------- */
@@ -570,6 +612,13 @@ a { color: inherit; }
   opacity: 1;
   transform: none;
 }
+
+/* Tiered tiles in list view use the multi-line ladder instead of the single
+   caption line and the row-level check (each step carries its own check). */
+.list-view .tile[data-tiered] .tier-steps { display: block; order: 1; flex: 1 1 auto; }
+.list-view .tile[data-tiered] .caption { display: none; }
+.list-view .tile[data-tiered]::before { display: none; }
+.list-view .tile[data-tiered] { align-items: flex-start; }
 
 /* --- Footer ---------------------------------------------------------------- */
 
