@@ -457,6 +457,24 @@ a { color: inherit; }
 }
 .list-view .tile:not(.unlocked) { opacity: 0.72; }
 
+/* Leading status marker, same as the hints page: an empty circle when locked,
+   an accent check (colour follows the theme) once unlocked. */
+.list-view .tile::before {
+  content: '';
+  order: 0;
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1.5px solid var(--line);
+}
+.list-view .tile.unlocked::before {
+  border: none;
+  background-color: var(--accent);
+  -webkit-mask: var(--check-mask) center / 18px 18px no-repeat;
+  mask: var(--check-mask) center / 18px 18px no-repeat;
+}
+
 /* No artwork in list view */
 .list-view .tile .locked,
 .list-view .tile .art,
