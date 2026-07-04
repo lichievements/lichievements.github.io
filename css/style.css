@@ -713,6 +713,10 @@ a { color: inherit; }
   background: var(--bg);
   border-top: 1px solid var(--line);
 }
+/* Narrow phones: extra bottom padding so the sticky row clears the home-bar. */
+@media (max-width: 439.98px) {
+  .theme-switch-row { padding-bottom: 34px; }
+}
 .icon-btn {
   width: 44px;
   height: 44px;
