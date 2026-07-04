@@ -478,10 +478,9 @@ a { color: inherit; }
   gap: 10px;
 }
 .hint-openings li {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 4px 14px;
+  display: grid;
+  grid-template-columns: 1fr; /* title on the first line, moves on the second */
+  row-gap: 3px;
   padding: 10px 14px;
   background: var(--bg-tile);
   border: 1px solid var(--line);
@@ -489,15 +488,12 @@ a { color: inherit; }
 }
 .hint-name {
   font-weight: 500;
-  flex: 1 1 14ch;
-  min-width: 14ch;
 }
 .hint-openings .moves {
   font-family: 'JetBrains Mono', ui-monospace, monospace;
   font-size: 0.82rem;
   color: var(--accent);
   word-spacing: 0.15em;
-  flex: 2 1 auto;
 }
 
 /* Encyclopedia: the twenty first moves as individual chips. */
@@ -544,20 +540,24 @@ a { color: inherit; }
 }
 
 /* Completed members: a leading check + accent tint. The marker only appears on
-   the has-progress page, so the logged-out reference list stays unmarked. */
-.hints.has-progress .hint-openings li,
-.hints.has-progress .move-chip {
-  position: relative;
+   the has-progress page, so the logged-out reference list stays unmarked. It sits
+   in its own column, spanning both the title and moves rows. */
+.hints.has-progress .hint-openings li {
+  grid-template-columns: auto 1fr;
+  column-gap: 12px;
+  align-items: center;
 }
+.hints.has-progress .hint-name,
+.hints.has-progress .hint-openings .moves { grid-column: 2; }
 .hints.has-progress .hint-openings li::before {
   content: '';
-  flex: 0 0 auto;
+  grid-column: 1;
+  grid-row: 1 / -1;
+  align-self: center;
   width: 18px;
   height: 18px;
-  margin-right: 2px;
   border-radius: 50%;
   border: 1.5px solid var(--line);
-  align-self: center;
 }
 .hints.has-progress .hint-openings li.is-done::before {
   border: none;
