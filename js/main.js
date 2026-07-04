@@ -228,11 +228,17 @@ function renderGrid() {
 
       let art;
       if (a.tiered) {
-        // Tiered tiles pick their art per reached step (set by applyTier).
-        art = new Image();
-        art.className = 'art';
-        art.alt = a.title;
-        art.loading = 'lazy';
+        // Tiered tiles pick their art per reached step (set by applyTier). A ladder
+        // is either all-image or all-SVG-placeholder, decided by its first step.
+        if (a.steps[0] && a.steps[0].image) {
+          art = new Image();
+          art.className = 'art';
+          art.alt = a.title;
+          art.loading = 'lazy';
+        } else {
+          art = document.createElement('div');
+          art.className = 'art art-svg';
+        }
       } else if (a.image) {
         art = new Image();
         art.className = 'art';
@@ -324,7 +330,14 @@ function applyTier(id, value, { animate = false } = {}) {
 
   const cur = steps[have - 1];
   const art = tile.querySelector('.art');
-  if (art) art.src = cur.image;
+  if (art) {
+    if (cur.image) {
+      art.src = cur.image;
+    } else if (cur.svg) {
+      art.style.setProperty('--tile-color', cur.color || '#555');
+      art.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true">${ICONS[cur.svg] || ''}</svg>`;
+    }
+  }
   const wasUnlocked = tile.classList.contains('unlocked');
   tile.classList.add('unlocked');
   if (animate && !wasUnlocked) {
