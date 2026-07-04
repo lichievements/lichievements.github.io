@@ -226,6 +226,35 @@
     })();
   </script>
   <script>
+    // Table of contents: tapping any heading collapses the page to a stacked list
+    // of section titles; tapping again restores the content and brings the tapped
+    // heading to the top. Mirrors initToc() in js/main.js.
+    (function () {
+      var heads = document.querySelectorAll('.hint-group h2');
+      var collapsed = false;
+      function toggle(h2) {
+        collapsed = !collapsed;
+        document.body.classList.toggle('toc-mode', collapsed);
+        heads.forEach(function (h) { h.setAttribute('aria-expanded', String(!collapsed)); });
+        requestAnimationFrame(function () {
+          if (collapsed) window.scrollTo(0, 0);
+          else h2.scrollIntoView({ block: 'start' });
+        });
+      }
+      heads.forEach(function (h2) {
+        h2.setAttribute('role', 'button');
+        h2.tabIndex = 0;
+        h2.setAttribute('aria-expanded', 'true');
+        h2.addEventListener('click', function () { toggle(h2); });
+        h2.addEventListener('keydown', function (e) {
+          if (e.key !== 'Enter' && e.key !== ' ') return;
+          e.preventDefault(); // Space would otherwise scroll the page
+          toggle(h2);
+        });
+      });
+    })();
+  </script>
+  <script>
     // Minimal theme toggle (mirrors js/main.js initTheme); this page has no module.
     (function () {
       var btn = document.getElementById('theme-toggle');
