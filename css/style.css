@@ -441,6 +441,44 @@ a { color: inherit; }
 .tile.unlocked[href] { cursor: pointer; }
 .tile:not([href]) { cursor: default; }
 
+/* Tiered (multi-step) tile: a segmented progress bar pinned to the bottom edge,
+   shown once at least one tier is reached. The caption (higher z-index) covers it
+   on hover to reveal the current tier + next target. */
+.tier-progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  display: none;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 10px 8px;
+  background: var(--cap-grad);
+  pointer-events: none;
+}
+.tile.unlocked[data-tiered] .tier-progress { display: flex; }
+.tier-bar {
+  flex: 1;
+  height: 5px;
+  border-radius: 999px;
+  background: rgba(128, 128, 128, 0.4);
+  overflow: hidden;
+}
+.tier-fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--accent);
+  transition: width 0.4s var(--ease);
+}
+.tier-count {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 0.62rem;
+  color: var(--cap-sub);
+  font-variant-numeric: tabular-nums;
+}
+
 /* --- List view ------------------------------------------------------------- */
 /* The grid re-flows into a stacked list of rows matching the hints page. The
    same tiles are reused: the artwork hides and the caption becomes the always-
@@ -482,7 +520,8 @@ a { color: inherit; }
 /* No artwork in list view */
 .list-view .tile .locked,
 .list-view .tile .art,
-.list-view .tile .art-svg { display: none; }
+.list-view .tile .art-svg,
+.list-view .tile .tier-progress { display: none; }
 
 /* The caption stops being a hover overlay and becomes the static row body. */
 .list-view .tile .caption {

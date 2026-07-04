@@ -176,6 +176,25 @@ function collection(id, title, details, image, memberLines) {
   };
 }
 
+// Multi-step (tiered) achievement: one tile that climbs a ladder of thresholds.
+// `measure(source)` returns the current numeric value (source = the account or
+// extra object, per scope). Each step is { at, title, image }. The tile shows the
+// highest reached step and progress toward the next; every reached step counts
+// toward the totals. Progress rides the same `partial` channel as collections, so
+// it persists and restores without re-analysis.
+function tiered({ id, title, details, scope, measure, steps, link, unit }) {
+  return {
+    id, title, details, scope, steps, measure, link, unit,
+    tiered: true,
+    progress: (value) => ({
+      have: steps.reduce((n, s) => n + (value >= s.at ? 1 : 0), 0),
+      need: steps.length,
+      value,
+      items: steps.map((s) => ({ key: String(s.at), at: s.at, title: s.title, done: value >= s.at })),
+    }),
+  };
+}
+
 // Speed / variant helpers over /api/account perfs.
 const perfPlayed = (account, key) => (account.perfs?.[key]?.games || 0) > 0;
 
@@ -428,12 +447,18 @@ export const CATEGORIES = [
   {
     name: 'Milestones',
     items: [
-      { id: 'play-1', title: 'First Blood', details: 'Play your first game', image: 'images/play-1.png', scope: 'account', unlock: (a) => (a.count?.all || 0) >= 1 },
-      { id: 'play-10', title: 'Getting Started', details: 'Play 10 games', image: 'images/play-10.png', scope: 'account', unlock: (a) => (a.count?.all || 0) >= 10 },
-      { id: 'play-100', title: 'Centurion', details: 'Play 100 games', image: 'images/play-100.png', scope: 'account', unlock: (a) => (a.count?.all || 0) >= 100 },
-      { id: 'play-1000', title: 'Devotee', details: 'Play 1,000 games', image: 'images/play-1000.png', scope: 'account', unlock: (a) => (a.count?.all || 0) >= 1000 },
-      { id: 'play-10000', title: 'Veteran', details: 'Play 10,000 games', image: 'images/play-10000.png', scope: 'account', unlock: (a) => (a.count?.all || 0) >= 10000 },
-      { id: 'play-100000', title: 'Legend', details: 'Play 100,000 games', image: 'images/play-100000.png', scope: 'account', unlock: (a) => (a.count?.all || 0) >= 100000 },
+      tiered({
+        id: 'play', title: 'Games Played', details: 'Climb from your first game to Legend', scope: 'account', unit: 'games',
+        measure: (a) => a.count?.all || 0, link: 'https://lichess.org/@/{u}/all',
+        steps: [
+          { at: 1, title: 'First Blood', image: 'images/play-1.png' },
+          { at: 10, title: 'Getting Started', image: 'images/play-10.png' },
+          { at: 100, title: 'Centurion', image: 'images/play-100.png' },
+          { at: 1000, title: 'Devotee', image: 'images/play-1000.png' },
+          { at: 10000, title: 'Veteran', image: 'images/play-10000.png' },
+          { at: 100000, title: 'Legend', image: 'images/play-100000.png' },
+        ],
+      }),
       { id: 'play-computer', title: 'Machine Challenger', details: 'Play a game against the computer', image: 'images/play-computer.png', scope: 'account', unlock: (a) => (a.count?.ai || 0) >= 1 },
       { id: 'account-age', title: 'Happy Birthday!', details: 'Have a Lichess account at least one year old', image: 'images/birthday.png', scope: 'account', unlock: (a) => a.createdAt && Date.now() - a.createdAt >= 365 * 864e5 },
     ],

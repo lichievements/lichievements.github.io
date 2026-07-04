@@ -129,6 +129,11 @@ function initView() {
 
 const tiles = new Map();       // id -> <a> element
 const catMeta = new Map();     // category name -> { total, unlocked, tallyEl }
+const defById = new Map(ALL.map((a) => [a.id, a]));
+const tieredIds = new Set(ALL.filter((a) => a.tiered).map((a) => a.id));
+const tierHave = new Map();     // tiered id -> steps currently counted (avoids double-count)
+const countOf = (a) => (a.tiered ? a.steps.length : 1); // each reached step counts
+const fmtNum = (n) => n.toLocaleString('en-US');
 let unlockedCount = 0;
 let token = null;
 let currentUserId = null;
@@ -157,6 +162,18 @@ function savePartial() {
   if (!currentUserId) return;
   try { localStorage.setItem(partialKey(currentUserId), JSON.stringify(partialRecords)); } catch {}
 }
+function loadPartial(uid) {
+  try { return JSON.parse(localStorage.getItem(partialKey(uid)) || 'null'); } catch { return null; }
+}
+// Restore tiered tiles instantly from cached progress (no re-analysis).
+function restoreTiers(uid) {
+  const p = loadPartial(uid);
+  if (!p) return;
+  partialRecords = p;
+  for (const id of tieredIds) {
+    if (p[id] && typeof p[id].value === 'number') applyTier(id, p[id].value, { animate: false });
+  }
+}
 function lsGet(k) { try { return localStorage.getItem(k); } catch { return null; } }
 function lsSet(k, v) { try { localStorage.setItem(k, v); } catch {} }
 
@@ -165,8 +182,12 @@ function lsSet(k, v) { try { localStorage.setItem(k, v); } catch {} }
 function renderGrid() {
   const frag = document.createDocumentFragment();
 
+  let grandTotal = 0;
+
   for (const cat of CATEGORIES) {
-    catMeta.set(cat.name, { total: cat.items.length, unlocked: 0, tallyEl: null });
+    const catTotal = cat.items.reduce((n, a) => n + countOf(a), 0);
+    grandTotal += catTotal;
+    catMeta.set(cat.name, { total: catTotal, unlocked: 0, tallyEl: null });
 
     const section = document.createElement('section');
     section.className = 'category';
@@ -184,7 +205,7 @@ function renderGrid() {
     check.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>';
     const tally = document.createElement('span');
     tally.className = 'tally';
-    tally.textContent = `0 / ${cat.items.length}`;
+    tally.textContent = `0 / ${catTotal}`;
     const meta = catMeta.get(cat.name);
     meta.tallyEl = tally;
     meta.headEl = head;
@@ -206,7 +227,13 @@ function renderGrid() {
       locked.alt = 'Locked achievement';
 
       let art;
-      if (a.image) {
+      if (a.tiered) {
+        // Tiered tiles pick their art per reached step (set by applyTier).
+        art = new Image();
+        art.className = 'art';
+        art.alt = a.title;
+        art.loading = 'lazy';
+      } else if (a.image) {
         art = new Image();
         art.className = 'art';
         art.alt = a.title;
@@ -234,6 +261,17 @@ function renderGrid() {
       cap.append(h3, p);
 
       tile.append(locked, art, ext, cap);
+
+      if (a.tiered) {
+        // A segmented progress bar + n/N, shown once at least one tier is reached.
+        const prog = document.createElement('div');
+        prog.className = 'tier-progress';
+        prog.setAttribute('aria-hidden', 'true');
+        prog.innerHTML = '<span class="tier-bar"><span class="tier-fill"></span></span><span class="tier-count"></span>';
+        tile.append(prog);
+        tile.dataset.tiered = '1';
+      }
+
       grid.append(tile);
       tiles.set(a.id, tile);
     }
@@ -243,7 +281,71 @@ function renderGrid() {
   }
 
   el.gridRoot.append(frag);
-  el.statusTotal.textContent = String(ALL.length);
+  el.statusTotal.textContent = String(grandTotal);
+}
+
+// Apply a tiered achievement's current value: upgrade the art to the highest
+// reached step, advance the progress bar, update the caption (current tier +
+// next target) and the counters (each reached step counts once).
+function applyTier(id, value, { animate = false } = {}) {
+  const tile = tiles.get(id);
+  const def = defById.get(id);
+  if (!tile || !def || !def.tiered) return;
+  const steps = def.steps;
+  let have = 0;
+  for (const s of steps) if (value >= s.at) have++;
+
+  const prev = tierHave.get(id) || 0;
+  if (have !== prev) {
+    unlockedCount += have - prev;
+    el.statusUnlocked.textContent = String(unlockedCount);
+    const meta = catMeta.get(tile.dataset.cat);
+    if (meta) {
+      meta.unlocked += have - prev;
+      meta.tallyEl.textContent = `${meta.unlocked} / ${meta.total}`;
+      meta.headEl.classList.toggle('complete', meta.unlocked === meta.total);
+    }
+    tierHave.set(id, have);
+  }
+
+  const fill = tile.querySelector('.tier-fill');
+  const count = tile.querySelector('.tier-count');
+  const h3 = tile.querySelector('.caption h3');
+  const p = tile.querySelector('.caption p');
+  if (fill) fill.style.width = `${(have / steps.length) * 100}%`;
+  if (count) count.textContent = `${have} / ${steps.length}`;
+
+  if (have === 0) {
+    tile.classList.remove('unlocked');
+    if (h3) h3.textContent = def.title;
+    if (p) p.textContent = def.details;
+    return;
+  }
+
+  const cur = steps[have - 1];
+  const art = tile.querySelector('.art');
+  if (art) art.src = cur.image;
+  const wasUnlocked = tile.classList.contains('unlocked');
+  tile.classList.add('unlocked');
+  if (animate && !wasUnlocked) {
+    tile.classList.add('revealing');
+    tile.addEventListener('animationend', () => tile.classList.remove('revealing'), { once: true });
+  }
+
+  if (h3) h3.textContent = cur.title;
+  if (p) {
+    const next = steps[have];
+    const unit = def.unit ? ` ${def.unit}` : '';
+    p.textContent = next
+      ? `Next: ${next.title} — ${fmtNum(value)} / ${fmtNum(next.at)}${unit}`
+      : `Maxed out — ${fmtNum(value)}${unit}`;
+  }
+
+  if (def.link && (!def.link.includes('{u}') || currentUserId)) {
+    tile.href = def.link.replace('{u}', encodeURIComponent(currentUserId || ''));
+    tile.target = '_blank';
+    tile.rel = 'noopener';
+  }
 }
 
 function unlock(id, gameId, color, ply, { animate = true, persist = true } = {}) {
@@ -295,6 +397,7 @@ function unlock(id, gameId, color, ply, { animate = true, persist = true } = {})
 function resetGrid() {
   unlockedRecords = [];
   unlockedCount = 0;
+  tierHave.clear();
   el.statusUnlocked.textContent = '0';
   for (const tile of tiles.values()) {
     tile.classList.remove('unlocked', 'revealing', 'revealed');
@@ -303,6 +406,18 @@ function resetGrid() {
     tile.removeAttribute('rel');
     const art = tile.querySelector('.art');
     if (art) art.removeAttribute('src');
+    // Tiered tiles: revert caption + progress bar to the base (locked) state.
+    const def = defById.get(tile.dataset.id);
+    if (def && def.tiered) {
+      const h3 = tile.querySelector('.caption h3');
+      const p = tile.querySelector('.caption p');
+      if (h3) h3.textContent = def.title;
+      if (p) p.textContent = def.details;
+      const fill = tile.querySelector('.tier-fill');
+      const count = tile.querySelector('.tier-count');
+      if (fill) fill.style.width = '0%';
+      if (count) count.textContent = `0 / ${def.steps.length}`;
+    }
   }
   for (const meta of catMeta.values()) {
     meta.unlocked = 0;
@@ -370,6 +485,7 @@ function startAnalysis(account) {
     } else if (m.type === 'partial') {
       partialRecords[m.id] = m.progress;
       savePartial();
+      if (tieredIds.has(m.id)) applyTier(m.id, m.progress.value, { animate: true });
     } else if (m.type === 'progress') {
       setSummary(m.count);
       if (totalGames) {
@@ -463,6 +579,7 @@ async function boot() {
       if (cached && cached.length) {
         showRestored(account.username); // reload kept our achievements — show them instantly
         restoreCached(cached);
+        restoreTiers(account.id);
       } else {
         startAnalysis(account);         // first visit for this user
       }
@@ -481,6 +598,7 @@ async function boot() {
       currentUserId = lastUser;
       showRestored(lastUser);
       restoreCached(cached);
+      restoreTiers(lastUser);
     }
   }
   // otherwise: logged-out landing view (login button visible)

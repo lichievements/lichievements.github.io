@@ -34,8 +34,12 @@ async function run({ username, userId, token, account }) {
   const extraAchievements = [];
   for (const a of ALL) {
     if (a.scope === 'account') {
-      try { if (a.unlock(account)) post({ type: 'unlock', id: a.id, gameId: null }); }
-      catch { /* ignore a bad detector */ }
+      if (a.tiered) {
+        try { post({ type: 'partial', id: a.id, progress: a.progress(a.measure(account)) }); } catch { /* ignore */ }
+      } else {
+        try { if (a.unlock(account)) post({ type: 'unlock', id: a.id, gameId: null }); }
+        catch { /* ignore a bad detector */ }
+      }
     } else if (a.scope === 'extra') {
       extraAchievements.push(a);
     } else {
@@ -178,6 +182,10 @@ async function evaluateExtra(username, token, achievements, account) {
     peak, sessionGames, sessionTime, berserk, puzzleThemeMax, puzzlePerformance,
   };
   for (const a of achievements) {
+    if (a.tiered) {
+      try { post({ type: 'partial', id: a.id, progress: a.progress(a.measure(extra)) }); } catch { /* ignore */ }
+      continue;
+    }
     try {
       const r = a.unlock(extra);
       if (r) post({ type: 'unlock', id: a.id, gameId: (r && r.gameId) || null });
