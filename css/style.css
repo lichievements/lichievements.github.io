@@ -649,12 +649,19 @@ a { color: inherit; }
    the has-progress page, so the logged-out reference list stays unmarked. It sits
    in its own column, spanning both the title and moves rows. */
 .hints.has-progress .hint-openings li {
+  position: relative; /* anchor for the stretched link below */
   grid-template-columns: auto 1fr auto;
   column-gap: 12px;
   align-items: center;
 }
 .hints.has-progress .hint-name,
 .hints.has-progress .hint-openings .moves { grid-column: 2; }
+/* A completed member with a game link: the whole row is clickable, like an
+   unlocked tile on the index page. */
+.hint-openings li.has-link { cursor: pointer; }
+@media (hover: hover) {
+  .hint-openings li.has-link:hover { border-color: var(--accent-2); }
+}
 
 /* Deep link to the game where a member first appeared (added by hints.html). */
 .hint-link {
@@ -671,6 +678,12 @@ a { color: inherit; }
   color: var(--accent);
   text-decoration: none;
   font-size: 0.8rem;
+}
+/* Stretch the link's hit area over the whole row (Bootstrap-style stretched link). */
+.hint-link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
 }
 @media (hover: hover) {
   .hint-link:hover { border-color: var(--accent-2); }

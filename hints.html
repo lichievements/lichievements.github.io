@@ -304,6 +304,7 @@
           a.setAttribute('aria-label', 'Open the game where this unlocked on Lichess');
           a.textContent = '↗';
           el.appendChild(a);
+          el.classList.add('has-link'); // whole row becomes clickable (see .hint-link::after)
         });
 
         var badge = document.createElement('span');
