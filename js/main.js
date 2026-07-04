@@ -409,13 +409,11 @@ function renderTierSteps(tile, def, have, value) {
     const t = document.createElement('span');
     t.className = 'tier-step-title';
     t.textContent = steps[i].title;
-    li.append(chk, t);
-    if (!done) {
-      const tg = document.createElement('span');
-      tg.className = 'tier-target';
-      tg.textContent = `${fmtNum(value)} / ${fmtNum(steps[i].at)}${unit}`;
-      li.append(tg);
-    }
+    // Per-step tally, capped at the step's target: at/at when cleared, else value/at.
+    const tg = document.createElement('span');
+    tg.className = 'tier-target';
+    tg.textContent = `${fmtNum(Math.min(value, steps[i].at))} / ${fmtNum(steps[i].at)}${unit}`;
+    li.append(chk, t, tg);
     ul.append(li);
   }
 

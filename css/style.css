@@ -527,10 +527,11 @@ a { color: inherit; }
   margin-left: auto;
   font-family: 'JetBrains Mono', ui-monospace, monospace;
   font-size: 0.72rem;
-  color: var(--accent);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
+.tier-steps-list li.done .tier-target { color: var(--accent); }   /* N/N — complete */
+.tier-steps-list li.next .tier-target { color: var(--text-mute); } /* n/N — pending */
 
 /* --- List view ------------------------------------------------------------- */
 /* The grid re-flows into a stacked list of rows matching the hints page. The
