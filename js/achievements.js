@@ -148,19 +148,30 @@ function collection(id, title, details, image, memberLines) {
     details,
     image: `images/${image}.png`,
     scope: 'game',
-    init: () => ({ done: new Array(members.length).fill(false), left: members.length }),
+    init: () => ({ done: new Array(members.length).fill(false), at: new Array(members.length).fill(null), left: members.length }),
     detect: (ctx, state) => {
       for (let i = 0; i < members.length; i++) {
         if (state.done[i]) continue;
-        if (prefixMatch(ctx.san, members[i])) { state.done[i] = true; state.left--; }
+        if (prefixMatch(ctx.san, members[i])) {
+          state.done[i] = true;
+          state.left--;
+          // Remember the first game that showed this member, for a hints-page link.
+          state.at[i] = { gameId: ctx.gameId, color: ctx.color, ply: members[i].length };
+        }
       }
       return state.left === 0;
     },
-    // Partial progress for the hints page: which member lines are done so far.
+    // Partial progress for the hints page: which member lines are done so far,
+    // each carrying the game where it first appeared (for a deep link).
     progress: (state) => ({
       have: members.length - state.left,
       need: members.length,
-      items: memberLines.map((line, i) => ({ key: line, done: state.done[i] })),
+      items: memberLines.map((line, i) => {
+        const at = state.at[i];
+        return at
+          ? { key: line, done: state.done[i], gameId: at.gameId, color: at.color, ply: at.ply }
+          : { key: line, done: state.done[i] };
+      }),
     }),
   };
 }

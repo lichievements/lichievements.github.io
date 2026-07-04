@@ -277,15 +277,33 @@
         var prog = partial[id];
         var full = !!unlockedIds[id];
 
-        // Which member keys are done.
+        // Which member keys are done, plus the game each was first seen in.
         var done = {};
+        var at = {};
         if (full) keyed.forEach(function (el) { done[el.getAttribute('data-key')] = true; });
         else if (prog && prog.items) prog.items.forEach(function (it) { if (it.done) done[it.key] = true; });
+        if (prog && prog.items) prog.items.forEach(function (it) { if (it.gameId) at[it.key] = it; });
 
         var have = full ? need : (prog && typeof prog.have === 'number' ? prog.have : Object.keys(done).length);
 
         keyed.forEach(function (el) {
-          if (done[el.getAttribute('data-key')]) el.classList.add('is-done');
+          var key = el.getAttribute('data-key');
+          if (!done[key]) return;
+          el.classList.add('is-done');
+          // Link the row to the exact game where this member first appeared.
+          var it = at[key];
+          if (!it) return;
+          var href = 'https://lichess.org/' + it.gameId;
+          if (it.color) href += '/' + it.color;
+          if (typeof it.ply === 'number') href += '#' + (it.ply + 1);
+          var a = document.createElement('a');
+          a.className = 'hint-link';
+          a.href = href;
+          a.target = '_blank';
+          a.rel = 'noopener';
+          a.setAttribute('aria-label', 'Open the game where this unlocked on Lichess');
+          a.textContent = '↗';
+          el.appendChild(a);
         });
 
         var badge = document.createElement('span');
