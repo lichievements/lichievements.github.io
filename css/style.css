@@ -260,6 +260,7 @@ a { color: inherit; }
 .toc-mode .hints-intro,
 .toc-mode .hints-note,
 .toc-mode .hint-desc,
+.toc-mode .hint-note-inline,
 .toc-mode .hint-openings,
 .toc-mode .move-chips { display: none; }
 .toc-mode .hint-group { margin-bottom: 0; }
