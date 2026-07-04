@@ -300,6 +300,9 @@ export const CATEGORIES = [
         'e4 e5 Nf3 Nc6 Bb5 Nf6 Nxe5',                         // Ruy Lopez: Halloween Attack
         'e4 e5 Nf3 Nc6 Nc3 Nf6 Nxe5',                         // Four Knights: Halloween Gambit
         'e4 e5 Nc3 Nf6 Bc4 Nxe4',                             // Vienna: Frankenstein-Dracula
+        'e4 c5 Nf3 d6 d4 cxd4 Nxd4 Nf6 Nc3 a6 Bg5 e6 f4 Qb6', // Najdorf: Poisoned Pawn
+        'e4 e6 d4 d5 Nc3 Bb4 e5 c5 a3 Bxc3+ bxc3 Ne7 Qg4 Qc7', // French Winawer: Poisoned Pawn
+        'd4 Nf6 Bg5 c5 d5 Qb6 Nc3',                           // Trompowsky: Poisoned Pawn
       ]),
       collection('openings-fantasy', 'Fierce Fantasy', 'Play fantasy-themed openings', 'openings-fantasy', [
         'e4 f6 d4 b6 c4 Bb7',                                 // Owen: Unicorn Variation
@@ -307,6 +310,41 @@ export const CATEGORIES = [
         'd4 Nf6 c4 g5',                                       // Indian: Medusa Gambit
         'e4 c6 d4 d5 Nf3 dxe4 Ng5',                           // Caro-Kann: Ulysses Gambit
         'e4 c6 d4 d5 Nc3 dxe4 Nxe4 Nf6 Ng5 h6 Nxf7',         // Caro-Kann: Alien Gambit
+        'e4 e5 Nc3 Nf6 Bc4 Nxe4 Qh5 Nd6 Bb3 Be7',            // Vienna: Monster Declined
+      ]),
+      // The Zoo — one opening per animal.
+      collection('openings-zoo', 'The Zoo', 'Play an opening for each animal', 'openings-zoo', [
+        'e4 e5 Nf3 d5',                                       // Elephant Gambit
+        'd4 Nf6 Nf3 c5 d5 c4',                                // Benoni: Hawk
+        'd4 e5 dxe5 Qh4',                                     // Englund: Mosquito Gambit
+        'e4 g6 d4 Bg7 Nc3 d5',                                // Modern: Lizard Defense
+        'd4 Nf6 Bg5 Ne4 h4',                                  // Trompowsky: Raptor
+        'e4 f6 d4 Kf7',                                       // Fried Fox Defense
+        'c4 Nf6 b4',                                          // English Orangutan
+        'd4 e6 c4 Bb4+',                                      // Kangaroo Defense
+        'e4 Nh6',                                             // Hippopotamus Defense
+        'a4 e5 h4',                                           // Ware: Crab Variation
+        'e4 e5 c4',                                           // English: The Whale
+        'd4 g6 c4 Bg7 e4 c5 d5 Qa5+',                         // Pterodactyl: Central
+      ]),
+      // Champions — one opening named after each undisputed World Champion.
+      collection('openings-champions', 'Hall of Champions', 'Play an opening named after each World Champion', 'openings-champions', [
+        'e4 e6 e5',                                           // Steinitz Attack
+        'd4 Nf6 c4 e6 Nc3 d5 Bg5 Be7 e3 Ne4',                // Lasker Defense
+        'd4 Nf6 c4 e6 Nf3 d5 Bg5 h6',                         // Capablanca Variation
+        'e4 Nf6',                                             // Alekhine Defense
+        'e4 c6 b3',                                           // Euwe Attack
+        'e4 c6 d4 d5 e5 c5',                                  // Botvinnik-Carls Defense
+        'Nf3 Nf6 g3 g6 b4',                                  // Smyslov Variation
+        'e4 c5 f4 d5 exd5 Nf6',                               // Tal Gambit
+        'd4 Nf6 c4 e6 Nf3 b6 a3',                             // Petrosian Variation
+        'Nf3 Nf6 g3 b5',                                      // Spassky Variation
+        'e4 e5 f4 exf4 Nf3 d6',                               // Fischer Defense
+        'e4 c6 d4 d5 Nd2 dxe4 Nxe4 Nd7',                      // Karpov Variation
+        'd4 Nf6 c4 e6 Nf3 b6 Nc3',                            // Kasparov Variation
+        'c4 e5 Nc3 Bb4',                                      // Kramnik-Shirov Counterattack
+        'e4 e6 d4 d5 Nc3 Nf6 e5 Nfd7 Nce2',                  // Shirov-Anand Variation
+        'e4 c5 Nc3 d6 d4 cxd4 Qxd4 Nc6 Qd2',                 // Carlsen Variation
       ]),
       collection('openings-beverages', 'Blissful Beverages', 'Play beverage-themed openings', 'openings-beverages', [
         'd4 Nf6 c4 c5 d5 b5 cxb5 a6 Nc3 axb5 e4 b4 Nb5 d6 Bc4', // Benko: Nescafe Frappe Attack
