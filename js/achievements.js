@@ -312,7 +312,8 @@ export const CATEGORIES = [
         'e4 c6 d4 d5 Nc3 dxe4 Nxe4 Nf6 Ng5 h6 Nxf7',         // Caro-Kann: Alien Gambit
         'e4 e5 Nc3 Nf6 Bc4 Nxe4 Qh5 Nd6 Bb3 Be7',            // Vienna: Monster Declined
       ]),
-      // The Zoo — one opening per animal.
+      // The Zoo — one opening per animal. Includes every animal-named opening that
+      // also appears as an individual tile in Openings: White / Openings: Black.
       collection('openings-zoo', 'The Zoo', 'Play an opening for each animal', 'openings-zoo', [
         'e4 e5 Nf3 d5',                                       // Elephant Gambit
         'd4 Nf6 Nf3 c5 d5 c4',                                // Benoni: Hawk
@@ -326,6 +327,28 @@ export const CATEGORIES = [
         'a4 e5 h4',                                           // Ware: Crab Variation
         'e4 e5 c4',                                           // English: The Whale
         'd4 g6 c4 Bg7 e4 c5 d5 Qa5+',                         // Pterodactyl: Central
+        'e4 c5 Nc3 Nc6 Nge2',                                // Sicilian: Chameleon
+        'e4 d6 d4 Nf6 f3',                                    // Lion's Jaw
+        'c4 f5 Nc3 Nf6 e4 fxe4 g4',                           // English: Porcupine
+        'e4 e5 Nc3 Bc5 Qg4',                                  // Giraffe Attack
+        'e4 e5 d4 exd4 f4 Bc5 Nf3 Nc6 c3',                    // Crocodile Variation
+        'e4 e5 Nf3 f5 g4',                                    // Lobster Gambit
+        'Nf3 d5 c4 d4 Rg1',                                  // Penguin Variation
+        'e4 e5 Nf3 Nc6 d3 f5 exf5',                           // Clam Gambit
+        'd4 d5 e4 dxe4 Nc3 Nf6 f3 exf3 Nxf3 g6 Bc4 Bg7 h4',  // Mad Dog Attack
+        'e4 c6 Nc3 d5 d3 dxe4 Bg5',                           // Scorpion-Horus Gambit
+        'e4 e5 Bd3',                                          // Tortoise Opening
+        'c4 Nf6 Nc3 e6',                                      // English: Hedgehog
+        'd4 d6 c4 e5',                                        // English Rat
+        'e4 g6 Bc4 Bg7 Qf3 e6 d4 Bxd4',                       // Monkey's Bum
+        'e4 Nf6 e5 Nd5 c4 Nf4',                               // The Squirrel
+        'e4 e5 Nf3 d5 Nxe5 dxe4 Bc4 Qg5',                     // Elephant: Wasp
+        'd4 d5 e4 dxe4 Nc3 Nf6 f3 Nc6',                       // Lamb Defense
+        'f4 f5 d4 d5',                                        // Double Duck
+        'c4 g6',                                              // English: Great Snake
+        'e4 c5 Nf3 Qa5',                                      // Sicilian: Mongoose
+        'd4 c5 d5 Na6',                                       // Benoni: Snail
+        'd4 Nf6 c4 c5 d5 Ne4',                                // Vulture Defense
       ]),
       // Champions — one opening named after each undisputed World Champion.
       collection('openings-champions', 'Hall of Champions', 'Play an opening named after each World Champion', 'openings-champions', [
