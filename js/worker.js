@@ -254,7 +254,7 @@ function boardPlan(locked, lastBare) {
     if (!l.def.needsBoard) continue;
     if (l.def.id === 'en-passant-mate') epMate = true;
     else if (l.def.id === 'en-passant') epAny = true;
-    else scan = true; // queen-party, king's journey, comeback, houdini need per-ply board state
+    else scan = true; // queen-party, king's journey, comeback, swindle need per-ply board state
   }
   if (scan) return { replay: true, scan: true };       // full walk covers ep too
   if (epAny) return { replay: true, scan: false };      // any move might be en passant
@@ -309,6 +309,14 @@ function analyseGame(game, uid, locked) {
     if (l.done) continue;
     let res;
     try { res = l.def.detect(ctx, l.state); } catch { res = false; }
+    if (l.def.tiered) {
+      // Game-scope ladders only accumulate (their `detect` returns false and the
+      // final value is posted by sendPartials). Retire one once every tier is
+      // reached so it stops holding the stream open / forcing the board scan.
+      const top = l.def.steps[l.def.steps.length - 1].at;
+      if (l.state && l.state.max >= top) l.done = true;
+      continue;
+    }
     if (!res) continue;
     const ply = res && typeof res === 'object' && Number.isInteger(res.ply) ? res.ply : san.length - 1;
     l.done = true;

@@ -162,6 +162,33 @@ function tiered({ id, title, details, scope, measure, steps, link, unit }) {
   };
 }
 
+// A game-scope tiered ladder. `track(ctx, state)` returns this game's numeric
+// value (or null/undefined to skip the game); the tile keeps the running MAXIMUM
+// across the whole history, climbing the ladder as bigger values turn up (e.g.
+// longest win streak, deepest deficit recovered, most promotions in one game).
+// Unlike ordinary game detectors these never fire an unlock mid-stream — `detect`
+// only accumulates and returns false; the worker feeds them every game and posts
+// their `progress` once the stream ends (see worker.js / sendPartials), which
+// main.js routes through applyTier just like an account/extra ladder.
+function gameTiered({ id, title, details, steps, track, needsBoard = false, link }) {
+  const value = (state) => (state ? state.max : 0);
+  return {
+    id, title, details, scope: 'game', tiered: true, needsBoard, steps, link,
+    init: () => ({ max: 0, cur: 0 }),
+    detect: (ctx, state) => {
+      const v = track(ctx, state);
+      if (typeof v === 'number' && v > state.max) state.max = v;
+      return false;
+    },
+    progress: (state) => ({
+      have: steps.reduce((n, s) => n + (value(state) >= s.at ? 1 : 0), 0),
+      need: steps.length,
+      value: value(state),
+      items: steps.map((s) => ({ key: String(s.at), at: s.at, title: s.title, done: value(state) >= s.at })),
+    }),
+  };
+}
+
 // Speed / variant helpers over /api/account perfs.
 const perfPlayed = (account, key) => (account.perfs?.[key]?.games || 0) > 0;
 
@@ -241,11 +268,28 @@ export const CATEGORIES = [
       { id: 'kings-journey', title: "King's Journey", details: "Win after your king reaches the opponent's back rank (8th for White, 1st for Black)", image: 'images/kings-journey.png', scope: 'game', needsBoard: true, detect: (c) => c.won && c.board.kingCrossed },
       { id: 'underdog', title: 'Underdog', details: 'Beat an opponent rated at least 200 points above you', svg: 'chart', color: '#0ea5e9', scope: 'game', detect: (c) => c.won && c.oppRating && c.myRating && (c.oppRating - c.myRating) >= 200 },
       { id: 'giant-slayer', title: 'Giant Slayer', details: 'Beat a titled player', svg: 'cap', color: '#0891b2', scope: 'game', detect: (c) => c.won && !!c.oppTitle && c.oppTitle !== 'BOT' },
-      { id: 'comeback', title: 'Comeback King', details: 'Win after being down at least a rook (5 points of material) at some point', svg: 'trophy', color: '#f59e0b', scope: 'game', needsBoard: true, detect: (c) => c.won && c.board.minMaterialDiff <= -5 },
-      { id: 'houdini', title: 'The Great Escape', details: 'Win after being down at least a full queen (9 points of material) at some point', svg: 'sparkles', color: '#ef4444', scope: 'game', needsBoard: true, detect: (c) => c.won && c.board.minMaterialDiff <= -9 },
+      gameTiered({
+        id: 'comeback', title: 'Comeback', details: 'Win from a losing material deficit', needsBoard: true,
+        link: 'https://lichess.org/@/{u}/all',
+        track: (c) => (c.won ? -c.board.minMaterialDiff : null),
+        steps: [
+          { at: 3, title: 'Turnaround', details: 'Win after being down a minor piece (3 points)', svg: 'scale', color: '#f59e0b' },
+          { at: 5, title: 'Comeback King', details: 'Win after being down a rook (5 points)', svg: 'trophy', color: '#f97316' },
+          { at: 9, title: 'The Great Escape', details: 'Win after being down a queen (9 points)', svg: 'sparkles', color: '#ef4444' },
+        ],
+      }),
       { id: 'swindle', title: 'Swindle Your Way Out', details: 'Escape with a stalemate while at least 8 points of material behind', svg: 'scale', color: '#14b8a6', scope: 'game', needsBoard: true, detect: (c) => c.status === 'stalemate' && c.board.minMaterialDiff <= -8 },
-      { id: 'win-streak-5', title: 'On Fire', details: 'Win five standard games in a row', svg: 'fire', color: '#f97316', scope: 'game', init: () => ({ cur: 0 }), detect: (c, s) => { s.cur = c.won ? s.cur + 1 : 0; return s.cur >= 5; } },
-      { id: 'win-streak-10', title: 'Unstoppable', details: 'Win ten standard games in a row', svg: 'bolt', color: '#dc2626', scope: 'game', init: () => ({ cur: 0 }), detect: (c, s) => { s.cur = c.won ? s.cur + 1 : 0; return s.cur >= 10; } },
+      gameTiered({
+        id: 'win-streak', title: 'Win Streak', details: 'String wins together without a loss',
+        link: 'https://lichess.org/@/{u}/all',
+        track: (c, s) => { s.cur = c.won ? s.cur + 1 : 0; return s.cur; },
+        steps: [
+          { at: 3, title: 'Hat Trick', details: 'Win three games in a row', svg: 'fire', color: '#fb923c' },
+          { at: 5, title: 'On Fire', details: 'Win five games in a row', svg: 'fire', color: '#f97316' },
+          { at: 10, title: 'Unstoppable', details: 'Win ten games in a row', svg: 'bolt', color: '#dc2626' },
+          { at: 25, title: 'Juggernaut', details: 'Win twenty-five games in a row', svg: 'bolt', color: '#991b1b' },
+        ],
+      }),
     ],
   },
   {
@@ -278,8 +322,16 @@ export const CATEGORIES = [
         return false;
       } },
       { id: 'en-passant', title: 'En Passant', details: 'Capture a pawn en passant', svg: 'bolt', color: '#22c55e', scope: 'game', needsBoard: true, detect: (c) => c.board.epAny },
-      { id: 'promote-three', title: 'Promotion Spree', details: 'Promote three or more pawns in a single game', svg: 'sparkles', color: '#8b5cf6', scope: 'game', detect: (c) => c.userSan.filter((m) => m.includes('=')).length >= 3 },
-      { id: 'promote-eight', title: 'Eight is Enough', details: 'Promote all eight of your pawns in a single game', svg: 'crown', color: '#a855f7', scope: 'game', detect: (c) => c.userSan.filter((m) => m.includes('=')).length >= 8 },
+      gameTiered({
+        id: 'promotions', title: 'Promotions', details: 'Promote several pawns in a single game',
+        track: (c) => c.userSan.filter((m) => m.includes('=')).length,
+        steps: [
+          { at: 2, title: 'Twice Promoted', details: 'Promote two pawns in one game', svg: 'sparkles', color: '#8b5cf6' },
+          { at: 3, title: 'Promotion Spree', details: 'Promote three pawns in one game', svg: 'sparkles', color: '#7c3aed' },
+          { at: 5, title: 'Promotion Frenzy', details: 'Promote five pawns in one game', svg: 'crown', color: '#6d28d9' },
+          { at: 8, title: 'Eight is Enough', details: 'Promote all eight pawns in one game', svg: 'crown', color: '#a855f7' },
+        ],
+      }),
     ],
   },
   {
