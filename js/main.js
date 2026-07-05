@@ -545,9 +545,15 @@ function applyTier(id, value, { animate = false } = {}) {
   }
 
   // Grid caption: the achievement name (bold), then the current tier as
-  // "name: description" below (mirrors a list-view row).
+  // "name: description" below (mirrors a list-view row). When a tier shares the
+  // achievement's name (e.g. Time Controls, Marathon) drop the repeat and show
+  // just the description.
   if (title) title.textContent = def.title;
-  if (p) p.textContent = cur.details ? `${cur.title}: ${cur.details}` : cur.title;
+  if (p) {
+    p.textContent = (cur.title !== def.title && cur.details)
+      ? `${cur.title}: ${cur.details}`
+      : (cur.details || cur.title);
+  }
 
   if (def.link && (!def.link.includes('{u}') || currentUserId)) {
     tile.href = def.link.replace('{u}', encodeURIComponent(currentUserId || ''));
