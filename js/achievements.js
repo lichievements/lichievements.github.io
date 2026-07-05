@@ -180,12 +180,25 @@ function speedTier(id, key, label, image) {
   });
 }
 
-// Highest *established* (non-provisional) rating across the standard time controls.
+// A per-format peak-rating ladder, sourced from the worker's per-format highest
+// rating (extra scope). A format the user has never played stays fully locked.
+function ratingTier(key, label) {
+  return tiered({
+    id: `rating-${key.toLowerCase()}`, title: `${label} Rating`,
+    details: `Reach new peak ${label} ratings`, scope: 'extra',
+    measure: (x) => x.peakByPerf?.[key] || 0,
+    link: `https://lichess.org/@/{u}/perf/${key.toLowerCase()}`,
+    steps: [
+      { at: 1500, title: 'Rising Star', details: `Reach a ${label} rating of 1500`, svg: 'star', color: '#3b82f6' },
+      { at: 1800, title: 'Sharpshooter', details: `Reach a ${label} rating of 1800`, svg: 'chart', color: '#6366f1' },
+      { at: 2000, title: 'Expert', details: `Reach a ${label} rating of 2000`, svg: 'trophy', color: '#8b5cf6' },
+      { at: 2200, title: 'Master Class', details: `Reach a ${label} rating of 2200`, svg: 'cap', color: '#a855f7' },
+    ],
+  });
+}
+
+// Whether any standard time control has an established (non-provisional) rating.
 const STD_PERFS = ['bullet', 'blitz', 'rapid', 'classical'];
-const bestRating = (a) => Math.max(0, ...STD_PERFS.map((p) => {
-  const x = a.perfs?.[p];
-  return x && !x.prov ? (x.rating || 0) : 0;
-}));
 const hasEstablished = (a) => STD_PERFS.some((p) => {
   const x = a.perfs?.[p];
   return x && !x.prov && (x.games || 0) > 0;
@@ -450,26 +463,11 @@ export const CATEGORIES = [
   {
     name: 'Ratings',
     items: [
-      tiered({
-        id: 'rating', title: 'Rating Climb', details: 'Reach ever-higher established ratings', scope: 'account',
-        measure: (a) => bestRating(a), link: 'https://lichess.org/stat/rating/distribution/blitz',
-        steps: [
-          { at: 1500, title: 'Rising Star', details: 'Reach an established rating of 1500', svg: 'star', color: '#3b82f6' },
-          { at: 1800, title: 'Sharpshooter', details: 'Reach an established rating of 1800', svg: 'chart', color: '#6366f1' },
-          { at: 2000, title: 'Expert', details: 'Reach an established rating of 2000', svg: 'trophy', color: '#8b5cf6' },
-          { at: 2200, title: 'Master Class', details: 'Reach an established rating of 2200', svg: 'cap', color: '#a855f7' },
-        ],
-      }),
+      ratingTier('bullet', 'Bullet'),
+      ratingTier('blitz', 'Blitz'),
+      ratingTier('rapid', 'Rapid'),
+      ratingTier('classical', 'Classical'),
       { id: 'rating-established', title: 'Established', details: 'Clear a provisional rating in any format', svg: 'verified', color: '#0ea5e9', scope: 'account', unlock: (a) => hasEstablished(a) },
-      tiered({
-        id: 'peak', title: 'Peak Rating', details: 'Reach new peak ratings in any format', scope: 'extra',
-        measure: (x) => x.peak?.int || 0, link: 'https://lichess.org/@/{u}',
-        steps: [
-          { at: 2000, title: 'New Heights', details: 'Reach a peak rating of 2000', svg: 'trophy', color: '#7c3aed' },
-          { at: 2200, title: 'Mountaineer', details: 'Reach a peak rating of 2200', svg: 'crown', color: '#6d28d9' },
-          { at: 2400, title: 'Summit', details: 'Reach a peak rating of 2400', svg: 'star', color: '#5b21b6' },
-        ],
-      }),
     ],
   },
   {

@@ -151,6 +151,7 @@ async function evaluateExtra(username, token, achievements, account) {
   // actually played, likewise strictly sequential. We keep the best across formats.
   const playedPerfs = PERF_KEYS.filter((k) => (account?.perfs?.[k]?.games || 0) > 0);
   const peak = { int: 0, gameId: null };
+  const peakByPerf = {};   // per-format highest rating, for the per-format rating ladders
   let sessionGames = 0;
   let sessionTime = 0;
   let berserk = 0;
@@ -158,6 +159,7 @@ async function evaluateExtra(username, token, achievements, account) {
     const st = (await fetchJson(`${LI}/api/user/${u}/perf/${k}`, auth))?.stat;
     if (!st) continue;
     const hi = st.highest?.int || 0;
+    peakByPerf[k] = hi;
     if (hi > peak.int) { peak.int = hi; peak.gameId = st.highest?.gameId || null; }
     sessionGames = Math.max(sessionGames, st.playStreak?.nb?.max?.v || 0);
     sessionTime = Math.max(sessionTime, st.playStreak?.time?.max?.v || 0);
@@ -179,7 +181,7 @@ async function evaluateExtra(username, token, achievements, account) {
 
   const extra = {
     teams, tournaments, created, studies, following, arenaPoints,
-    peak, sessionGames, sessionTime, berserk, puzzleThemeMax, puzzlePerformance,
+    peak, peakByPerf, sessionGames, sessionTime, berserk, puzzleThemeMax, puzzlePerformance,
   };
   for (const a of achievements) {
     if (a.tiered) {
