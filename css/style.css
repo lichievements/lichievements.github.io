@@ -567,6 +567,12 @@ a { color: inherit; }
 @media (hover: none) {
   .tier-step-link { opacity: 0.4; }
 }
+/* Touch devices: the whole row is a tap target, so give each step some vertical
+   padding to make individual rows comfortably (and unambiguously) tappable. Keep
+   the check top-aligned with the title on rows whose description wraps. */
+@media (pointer: coarse) {
+  .tier-steps-list li { padding: 6px 0; }
+}
 
 /* --- List view ------------------------------------------------------------- */
 /* The grid re-flows into a stacked list of rows matching the hints page. The
