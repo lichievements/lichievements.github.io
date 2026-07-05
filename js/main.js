@@ -431,6 +431,7 @@ function renderTierSteps(tile, def, have, value, items) {
 
   const ul = document.createElement('ul');
   ul.className = 'tier-steps-list';
+  let hasLinks = false; // does any cleared step deep-link to a game?
   for (let i = 0; i < steps.length; i++) {
     const done = i < have;
     if (!done && i !== have) break; // only cleared steps + the single next target
@@ -463,6 +464,7 @@ function renderTierSteps(tile, def, have, value, items) {
       // Cleared step with a known source game: make the whole row deep-link to it.
       // The ↗ is only revealed on hover (see CSS) so the dense rows stay uncluttered.
       const it = items[i];
+      hasLinks = true;
       li.classList.add('has-game');
       li.dataset.href = `https://lichess.org/${it.gameId}${it.color ? `/${it.color}` : ''}${Number.isInteger(it.ply) ? `#${it.ply + 1}` : ''}`;
       const cue = document.createElement('span');
@@ -475,6 +477,8 @@ function renderTierSteps(tile, def, have, value, items) {
   }
 
   el.append(head, ul);
+  // Tiles whose tiers deep-link to games get the grid-view ladder popover (CSS).
+  tile.classList.toggle('has-tier-links', hasLinks);
 }
 
 function unlock(id, gameId, color, ply, { animate = true, persist = true } = {}) {

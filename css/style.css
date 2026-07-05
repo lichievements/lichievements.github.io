@@ -574,6 +574,30 @@ a { color: inherit; }
   .tier-steps-list li { padding: 6px 0; }
 }
 
+/* Grid view: a tiered tile whose tiers deep-link to games reveals the very same
+   clickable ladder as an in-tile overlay on hover / tap (reusing the list-view
+   rows and the delegated row-click handler), so per-tier game links are reachable
+   in grid view too. It's clipped to the tile's rounded corners and replaces the
+   caption. `has-tier-links` is set in main.js when any step carries a game. */
+body:not(.list-view) .tile[data-tiered].has-tier-links .tier-steps {
+  display: block;
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  padding: 10px 12px;
+  background: var(--bg-tile);
+  overflow-y: auto;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s var(--ease);
+}
+body:not(.list-view) .tile[data-tiered].has-tier-links .caption { display: none; }
+@media (hover: hover) {
+  body:not(.list-view) .tile[data-tiered].has-tier-links:hover .tier-steps { opacity: 1; pointer-events: auto; }
+}
+body:not(.list-view) .tile[data-tiered].has-tier-links.revealed .tier-steps,
+body:not(.list-view) .tile[data-tiered].has-tier-links:focus-visible .tier-steps { opacity: 1; pointer-events: auto; }
+
 /* --- List view ------------------------------------------------------------- */
 /* The grid re-flows into a stacked list of rows matching the hints page. The
    same tiles are reused: the artwork hides and the caption becomes the always-
