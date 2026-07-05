@@ -436,11 +436,14 @@ function renderTierSteps(tile, def, have, value) {
       d.textContent = steps[i].details;
       text.append(d);
     }
-    // Per-step tally, capped at the step's target: at/at when cleared, else value/at.
-    const tg = document.createElement('span');
-    tg.className = 'tier-target';
-    tg.textContent = `${fmtNum(Math.min(value, steps[i].at))} / ${fmtNum(steps[i].at)}`;
-    li.append(chk, text, tg);
+    li.append(chk, text);
+    // Per-step tally only on the in-progress step; cleared steps drop it.
+    if (!done) {
+      const tg = document.createElement('span');
+      tg.className = 'tier-target';
+      tg.textContent = `${fmtNum(Math.min(value, steps[i].at))} / ${fmtNum(steps[i].at)}`;
+      li.append(tg);
+    }
     ul.append(li);
   }
 
