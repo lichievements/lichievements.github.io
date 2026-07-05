@@ -475,12 +475,44 @@ export const CATEGORIES = [
   {
     name: 'Records',
     items: [
-      { id: 'win-1', title: 'First Win', details: 'Win your first game', svg: 'flag', color: '#22c55e', scope: 'account', unlock: (a) => (a.count?.win || 0) >= 1 },
-      { id: 'win-100', title: 'Hundred Wins', details: 'Win 100 games', svg: 'trophy', color: '#16a34a', scope: 'account', unlock: (a) => (a.count?.win || 0) >= 100 },
-      { id: 'win-1000', title: 'Conqueror', details: 'Win 1,000 games', svg: 'crown', color: '#15803d', scope: 'account', unlock: (a) => (a.count?.win || 0) >= 1000 },
-      { id: 'draw-1', title: 'Diplomat', details: 'Draw a game', svg: 'scale', color: '#14b8a6', scope: 'account', unlock: (a) => (a.count?.draw || 0) >= 1 },
-      { id: 'draw-100', title: 'Peacemaker', details: 'Draw 100 games', svg: 'scale', color: '#0d9488', scope: 'account', unlock: (a) => (a.count?.draw || 0) >= 100 },
-      { id: 'rated-1000', title: 'For the Record', details: 'Play 1,000 rated games', svg: 'chart', color: '#10b981', scope: 'account', unlock: (a) => (a.count?.rated || 0) >= 1000 },
+      tiered({
+        id: 'wins', title: 'Wins', details: 'Rack up ever more wins', scope: 'account', unit: 'wins',
+        measure: (a) => a.count?.win || 0, link: 'https://lichess.org/@/{u}',
+        steps: [
+          { at: 1, title: 'First Win', details: 'Win your first game', svg: 'flag', color: '#22c55e' },
+          { at: 10, title: 'Ten Wins', details: 'Win 10 games', svg: 'star', color: '#16a34a' },
+          { at: 100, title: 'Hundred Wins', details: 'Win 100 games', svg: 'trophy', color: '#15803d' },
+          { at: 1000, title: 'Conqueror', details: 'Win 1,000 games', svg: 'crown', color: '#166534' },
+        ],
+      }),
+      tiered({
+        id: 'losses', title: 'Losses', details: 'Every loss is a lesson', scope: 'account', unit: 'losses',
+        measure: (a) => a.count?.loss || 0, link: 'https://lichess.org/@/{u}',
+        steps: [
+          { at: 1, title: 'Lesson Learned', details: 'Lose a game', svg: 'flag', color: '#f43f5e' },
+          { at: 10, title: 'Battle-Scarred', details: 'Lose 10 games', svg: 'bolt', color: '#e11d48' },
+          { at: 100, title: 'Hardened', details: 'Lose 100 games', svg: 'chart', color: '#be123c' },
+          { at: 1000, title: 'Thick Skin', details: 'Lose 1,000 games', svg: 'fire', color: '#9f1239' },
+        ],
+      }),
+      tiered({
+        id: 'draws', title: 'Draws', details: 'Share the point', scope: 'account', unit: 'draws',
+        measure: (a) => a.count?.draw || 0, link: 'https://lichess.org/@/{u}',
+        steps: [
+          { at: 1, title: 'Diplomat', details: 'Draw a game', svg: 'scale', color: '#14b8a6' },
+          { at: 10, title: 'Mediator', details: 'Draw 10 games', svg: 'scale', color: '#0d9488' },
+          { at: 100, title: 'Peacemaker', details: 'Draw 100 games', svg: 'scale', color: '#0f766e' },
+        ],
+      }),
+      tiered({
+        id: 'rated', title: 'Rated Games', details: 'Put your rating on the line', scope: 'account', unit: 'games',
+        measure: (a) => a.count?.rated || 0, link: 'https://lichess.org/@/{u}',
+        steps: [
+          { at: 100, title: 'On the Record', details: 'Play 100 rated games', svg: 'chart', color: '#10b981' },
+          { at: 1000, title: 'For the Record', details: 'Play 1,000 rated games', svg: 'chart', color: '#059669' },
+          { at: 10000, title: 'Rated Veteran', details: 'Play 10,000 rated games', svg: 'chart', color: '#047857' },
+        ],
+      }),
     ],
   },
   {
