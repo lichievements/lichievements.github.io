@@ -464,7 +464,7 @@ function renderTierSteps(tile, def, have, value, items) {
       // The ↗ is only revealed on hover (see CSS) so the dense rows stay uncluttered.
       const it = items[i];
       li.classList.add('has-game');
-      li.dataset.href = `https://lichess.org/${it.gameId}${it.color ? `/${it.color}` : ''}`;
+      li.dataset.href = `https://lichess.org/${it.gameId}${it.color ? `/${it.color}` : ''}${Number.isInteger(it.ply) ? `#${it.ply + 1}` : ''}`;
       const cue = document.createElement('span');
       cue.className = 'tier-step-link';
       cue.textContent = '↗';

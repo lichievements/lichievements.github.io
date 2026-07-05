@@ -239,7 +239,7 @@ async function fetchNdjson(url, auth) {
 
 // ---------------------------------------------------------------------------
 
-const ZERO_BOARD = { maxQueens: 0, kingCrossed: false, epMate: false, epAny: false, minMaterialDiff: 0, queenAllEdges: false };
+const ZERO_BOARD = { maxQueens: 0, kingCrossed: false, epMate: false, epAny: false, minMaterialDiff: 0, minMaterialDiffPly: -1, queenAllEdges: false };
 const EP_LAST = /^[a-h]x[a-h][36]$/; // a pawn capture landing on the en-passant rank
 const PIECE_VALUE = { p: 1, n: 3, b: 3, r: 5, q: 9, k: 0 };
 
@@ -342,6 +342,7 @@ function computeBoard(san, userWhite, scan) {
   let epMate = false;
   let epAny = false;
   let minMaterialDiff = 0; // most negative (user material − opponent material) over the game
+  let minMaterialDiffPly = -1; // the ply at which that deepest deficit was reached
   const last = san.length - 1;
 
   // Running deltas from the (materially even) start position.
@@ -390,12 +391,12 @@ function computeBoard(san, userWhite, scan) {
       // Sample the material deficit only after the user's own moves, so a queen
       // trade in progress (down a queen until the recapture) isn't mistaken for a
       // sacrifice — only a genuine standing deficit counts.
-      if (byUser && diff < minMaterialDiff) minMaterialDiff = diff;
+      if (byUser && diff < minMaterialDiff) { minMaterialDiff = diff; minMaterialDiffPly = i; }
     }
 
     if (i === last) {
       if (byUser && (mv.flags & EP_CAPTURE) && chess.isCheckmate()) epMate = true;
     }
   }
-  return { maxQueens, kingCrossed, epMate, epAny, minMaterialDiff, queenAllEdges: queenEdges === 15 };
+  return { maxQueens, kingCrossed, epMate, epAny, minMaterialDiff, minMaterialDiffPly, queenAllEdges: queenEdges === 15 };
 }

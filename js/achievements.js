@@ -176,13 +176,17 @@ function gameTiered({ id, title, details, steps, track, needsBoard = false, link
     id, title, details, scope: 'game', tiered: true, needsBoard, steps, link,
     init: () => ({ max: 0, cur: 0, at: new Array(steps.length).fill(null) }),
     detect: (ctx, state) => {
-      const v = track(ctx, state);
-      if (typeof v !== 'number') return false;
+      // `track` may return a plain number, or { value, ply } to also deep-link to
+      // the deciding move (e.g. the point of deepest deficit for a comeback).
+      const r = track(ctx, state);
+      const v = typeof r === 'number' ? r : (r && typeof r.value === 'number' ? r.value : null);
+      if (v === null) return false;
+      const ply = (r && Number.isInteger(r.ply) && r.ply >= 0) ? r.ply : null;
       if (v > state.max) state.max = v;
       // Games arrive in date order, so the first one to reach a tier owns that
       // tier's deep link (which game unlocked "promote 5 pawns", etc.).
       for (let i = 0; i < steps.length; i++) {
-        if (!state.at[i] && v >= steps[i].at) state.at[i] = { gameId: ctx.gameId, color: ctx.color };
+        if (!state.at[i] && v >= steps[i].at) state.at[i] = { gameId: ctx.gameId, color: ctx.color, ply };
       }
       return false;
     },
@@ -193,7 +197,10 @@ function gameTiered({ id, title, details, steps, track, needsBoard = false, link
       items: steps.map((s, i) => {
         const at = state ? state.at[i] : null;
         const base = { key: String(s.at), at: s.at, title: s.title, done: value(state) >= s.at };
-        return at ? { ...base, gameId: at.gameId, color: at.color } : base;
+        if (!at) return base;
+        const linked = { ...base, gameId: at.gameId, color: at.color };
+        if (Number.isInteger(at.ply)) linked.ply = at.ply;
+        return linked;
       }),
     }),
   };
@@ -283,7 +290,7 @@ export const CATEGORIES = [
       gameTiered({
         id: 'comeback', title: 'Comeback', details: 'Win from a losing material deficit', needsBoard: true,
         link: 'https://lichess.org/@/{u}/all',
-        track: (c) => (c.won ? -c.board.minMaterialDiff : null),
+        track: (c) => (c.won ? { value: -c.board.minMaterialDiff, ply: c.board.minMaterialDiffPly } : null),
         steps: [
           { at: 3, title: 'Turnaround', details: 'Win after being down a minor piece (3 points)', svg: 'scale', color: '#f59e0b' },
           { at: 5, title: 'Comeback King', details: 'Win after being down a rook (5 points)', svg: 'trophy', color: '#f97316' },
