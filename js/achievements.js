@@ -455,7 +455,16 @@ export const CATEGORIES = [
         ],
       }),
       { id: 'play-computer', title: 'Machine Challenger', details: 'Play a game against the computer', image: 'images/play-computer.png', scope: 'game', detect: (c) => !!c.oppAi },
-      { id: 'account-age', title: 'Happy Birthday!', details: 'Have a Lichess account at least one year old', image: 'images/birthday.png', scope: 'account', unlock: (a) => a.createdAt && Date.now() - a.createdAt >= 365 * 864e5 },
+      tiered({
+        id: 'account-age', title: 'Account Age', details: 'Stick around, year after year', scope: 'account', unit: 'years',
+        measure: (a) => (a.createdAt ? Math.floor((Date.now() - a.createdAt) / (365 * 864e5)) : 0),
+        link: 'https://lichess.org/@/{u}',
+        steps: [
+          { at: 1, title: 'Happy Birthday!', details: 'Have an account at least one year old', image: 'images/birthday.png' },
+          { at: 5, title: 'Loyal Member', details: 'Have an account at least five years old', image: 'images/birthday.png' },
+          { at: 10, title: 'Veteran Member', details: 'Have an account at least ten years old', image: 'images/birthday.png' },
+        ],
+      }),
     ],
   },
 
@@ -516,15 +525,53 @@ export const CATEGORIES = [
   {
     name: 'Puzzles',
     items: [
-      { id: 'puzzle-solve', title: 'Puzzler', details: 'Solve a Lichess puzzle', svg: 'puzzle', color: '#f59e0b', scope: 'account', unlock: (a) => (a.perfs?.puzzle?.games || 0) >= 1 },
-      { id: 'puzzle-2000', title: 'Puzzle Expert', details: 'Reach a puzzle rating of 2000', svg: 'star', color: '#d97706', scope: 'account', unlock: (a) => (a.perfs?.puzzle?.games || 0) > 0 && (a.perfs?.puzzle?.rating || 0) >= 2000 },
-      { id: 'storm-play', title: 'Storm Chaser', details: 'Play Puzzle Storm', image: 'images/puzzle-storm.png', scope: 'account', unlock: (a) => (a.perfs?.storm?.runs || 0) >= 1 },
-      { id: 'storm-50', title: 'Eye of the Storm', details: 'Score 50 in Puzzle Storm', image: 'images/puzzle-storm-score.png', scope: 'account', unlock: (a) => (a.perfs?.storm?.score || 0) >= 50 },
-      { id: 'racer-play', title: 'Puzzle Racer', details: 'Play Puzzle Racer', image: 'images/puzzle-racer.png', scope: 'account', unlock: (a) => (a.perfs?.racer?.runs || 0) >= 1 },
-      { id: 'racer-50', title: 'Photo Finish', details: 'Score 50 in Puzzle Racer', image: 'images/puzzle-racer-score.png', scope: 'account', unlock: (a) => (a.perfs?.racer?.score || 0) >= 50 },
-      { id: 'streak-play', title: 'On a Streak', details: 'Play Puzzle Streak', image: 'images/puzzle-streak.png', scope: 'account', unlock: (a) => (a.perfs?.streak?.runs || 0) >= 1 },
-      { id: 'streak-50', title: 'Unbroken', details: 'Reach a streak of 50', image: 'images/puzzle-streak-score.png', scope: 'account', unlock: (a) => (a.perfs?.streak?.score || 0) >= 50 },
-      { id: 'storm-100', title: 'Storm Master', details: 'Score 100 in Puzzle Storm', svg: 'fire', color: '#c2410c', scope: 'account', unlock: (a) => (a.perfs?.storm?.score || 0) >= 100 },
+      tiered({
+        id: 'puzzle-solve', title: 'Puzzles Solved', details: 'Work your way through the puzzle trainer', scope: 'account', unit: 'puzzles',
+        measure: (a) => a.perfs?.puzzle?.games || 0, link: 'https://lichess.org/training',
+        steps: [
+          { at: 1, title: 'Puzzler', details: 'Solve a Lichess puzzle', svg: 'puzzle', color: '#f59e0b' },
+          { at: 10, title: 'Puzzle Habit', details: 'Solve 10 puzzles', svg: 'puzzle', color: '#ea9a06' },
+          { at: 100, title: 'Puzzle Buff', details: 'Solve 100 puzzles', svg: 'puzzle', color: '#d97706' },
+          { at: 1000, title: 'Puzzle Addict', details: 'Solve 1,000 puzzles', svg: 'puzzle', color: '#b45309' },
+          { at: 10000, title: 'Puzzle Machine', details: 'Solve 10,000 puzzles', svg: 'puzzle', color: '#92400e' },
+        ],
+      }),
+      tiered({
+        id: 'puzzle-rating', title: 'Puzzle Rating', details: 'Climb the puzzle-trainer rating', scope: 'account',
+        measure: (a) => ((a.perfs?.puzzle?.games || 0) > 0 ? (a.perfs?.puzzle?.rating || 0) : 0), link: 'https://lichess.org/training',
+        steps: [
+          { at: 1500, title: 'Sharp Eye', details: 'Reach a puzzle rating of 1500', svg: 'star', color: '#f59e0b' },
+          { at: 2000, title: 'Puzzle Expert', details: 'Reach a puzzle rating of 2000', svg: 'star', color: '#d97706' },
+          { at: 2500, title: 'Puzzle Master', details: 'Reach a puzzle rating of 2500', svg: 'star', color: '#b45309' },
+        ],
+      }),
+      tiered({
+        id: 'storm', title: 'Puzzle Storm', details: 'Chase a higher Puzzle Storm score', scope: 'account',
+        measure: (a) => a.perfs?.storm?.score || 0, link: 'https://lichess.org/storm',
+        steps: [
+          { at: 1, title: 'Storm Chaser', details: 'Play Puzzle Storm', image: 'images/puzzle-storm.png' },
+          { at: 50, title: 'Eye of the Storm', details: 'Score 50 in Puzzle Storm', image: 'images/puzzle-storm.png' },
+          { at: 100, title: 'Storm Master', details: 'Score 100 in Puzzle Storm', image: 'images/puzzle-storm.png' },
+        ],
+      }),
+      tiered({
+        id: 'racer', title: 'Puzzle Racer', details: 'Chase a higher Puzzle Racer score', scope: 'account',
+        measure: (a) => a.perfs?.racer?.score || 0, link: 'https://lichess.org/racer',
+        steps: [
+          { at: 1, title: 'Puzzle Racer', details: 'Play Puzzle Racer', image: 'images/puzzle-racer.png' },
+          { at: 50, title: 'Photo Finish', details: 'Score 50 in Puzzle Racer', image: 'images/puzzle-racer.png' },
+          { at: 100, title: 'Pole Position', details: 'Score 100 in Puzzle Racer', image: 'images/puzzle-racer.png' },
+        ],
+      }),
+      tiered({
+        id: 'streak', title: 'Puzzle Streak', details: 'Extend your Puzzle Streak', scope: 'account',
+        measure: (a) => a.perfs?.streak?.score || 0, link: 'https://lichess.org/streak',
+        steps: [
+          { at: 1, title: 'On a Streak', details: 'Play Puzzle Streak', image: 'images/puzzle-streak.png' },
+          { at: 50, title: 'Unbroken', details: 'Reach a streak of 50', image: 'images/puzzle-streak.png' },
+          { at: 100, title: 'Untouchable', details: 'Reach a streak of 100', image: 'images/puzzle-streak.png' },
+        ],
+      }),
       { id: 'puzzle-theme', title: 'Theme Hunter', details: 'Solve at least 50 puzzles of a single theme', svg: 'puzzle', color: '#ca8a04', scope: 'extra', unlock: (x) => x.puzzleThemeMax >= 50 },
       { id: 'puzzle-performance', title: 'Tactician', details: 'Reach a puzzle performance of 2200', svg: 'star', color: '#a16207', scope: 'extra', unlock: (x) => x.puzzlePerformance >= 2200 },
     ],
@@ -548,10 +595,16 @@ export const CATEGORIES = [
   {
     name: 'Dedication',
     items: [
-      { id: 'playtime', title: 'Time Well Spent', details: 'Spend at least one hour playing chess', image: 'images/playtime.png', scope: 'account', unlock: (a) => (a.playTime?.total || 0) >= 3600 },
-      { id: 'playtime-24h', title: 'A Full Day', details: 'Play for a total of 24 hours', image: 'images/play-time.png', scope: 'account', unlock: (a) => (a.playTime?.total || 0) >= 86400 },
-      { id: 'playtime-100h', title: 'Centurion of Hours', details: 'Play for a total of 100 hours', svg: 'clock', color: '#0891b2', scope: 'account', unlock: (a) => (a.playTime?.total || 0) >= 360000 },
-      { id: 'playtime-1000h', title: 'Timeless', details: 'Play for a total of 1,000 hours', svg: 'hourglass', color: '#0e7490', scope: 'account', unlock: (a) => (a.playTime?.total || 0) >= 3600000 },
+      tiered({
+        id: 'playtime', title: 'Time Played', details: 'Rack up hours at the board', scope: 'account', unit: 'hours',
+        measure: (a) => Math.floor((a.playTime?.total || 0) / 3600), link: 'https://lichess.org/@/{u}',
+        steps: [
+          { at: 1, title: 'Time Well Spent', details: 'Play for one hour total', image: 'images/playtime.png' },
+          { at: 24, title: 'A Full Day', details: 'Play for 24 hours total', image: 'images/playtime.png' },
+          { at: 100, title: 'Centurion of Hours', details: 'Play for 100 hours total', image: 'images/playtime.png' },
+          { at: 1000, title: 'Timeless', details: 'Play for 1,000 hours total', image: 'images/playtime.png' },
+        ],
+      }),
       { id: 'tv-time', title: 'Prime Time', details: 'Be featured on Lichess TV', image: 'images/tv.png', scope: 'account', unlock: (a) => (a.playTime?.tv || 0) >= 1 },
       { id: 'session-games', title: 'Grinder', details: 'Play at least 20 games in a single sitting', svg: 'fire', color: '#0e7490', scope: 'extra', unlock: (x) => x.sessionGames >= 20 },
       { id: 'session-time', title: 'Iron Player', details: 'Play for two hours in a single sitting', svg: 'hourglass', color: '#155e75', scope: 'extra', unlock: (x) => x.sessionTime >= 7200 },
@@ -572,10 +625,24 @@ export const CATEGORIES = [
   {
     name: 'Social',
     items: [
-      { id: 'team-join', title: 'Team Player', details: 'Join a team', svg: 'idcard', color: '#4f46e5', scope: 'extra', unlock: (x) => x.teams.length >= 1 },
-      { id: 'team-three', title: 'Social Butterfly', details: 'Be a member of three teams at once', svg: 'sparkles', color: '#6366f1', scope: 'extra', unlock: (x) => x.teams.length >= 3 },
-      { id: 'follow-one', title: 'Fan', details: 'Follow another player', svg: 'star', color: '#7c3aed', scope: 'extra', unlock: (x) => x.following.length >= 1 },
-      { id: 'follow-ten', title: 'Networker', details: 'Follow ten players', svg: 'chart', color: '#8b5cf6', scope: 'extra', unlock: (x) => x.following.length >= 10 },
+      tiered({
+        id: 'teams', title: 'Teams', details: 'Join the community', scope: 'extra', unit: 'teams',
+        measure: (x) => x.teams.length, link: 'https://lichess.org/team',
+        steps: [
+          { at: 1, title: 'Team Player', details: 'Join a team', svg: 'idcard', color: '#4f46e5' },
+          { at: 3, title: 'Social Butterfly', details: 'Be a member of three teams', svg: 'sparkles', color: '#6366f1' },
+          { at: 10, title: 'Team Spirit', details: 'Be a member of ten teams', svg: 'sparkles', color: '#818cf8' },
+        ],
+      }),
+      tiered({
+        id: 'follow', title: 'Following', details: 'Build your network', scope: 'extra', unit: 'players',
+        measure: (x) => x.following.length, link: 'https://lichess.org/@/{u}/following',
+        steps: [
+          { at: 1, title: 'Fan', details: 'Follow another player', svg: 'star', color: '#7c3aed' },
+          { at: 10, title: 'Networker', details: 'Follow ten players', svg: 'chart', color: '#8b5cf6' },
+          { at: 50, title: 'Connector', details: 'Follow fifty players', svg: 'sparkles', color: '#a78bfa' },
+        ],
+      }),
       { id: 'study-write', title: 'Scholar', details: 'Create a study', image: 'images/study.png', scope: 'extra', unlock: (x) => x.studies.length >= 1 },
     ],
   },
@@ -586,10 +653,25 @@ export const CATEGORIES = [
       { id: 'arena-host', title: 'Host', details: 'Create your own tournament', svg: 'flag', color: '#f59e0b', scope: 'extra', unlock: (x) => x.created.length >= 1 },
       { id: 'arena-podium', title: 'On the Podium', details: 'Finish in the top three of an arena', svg: 'cap', color: '#d97706', scope: 'extra', unlock: (x) => x.tournaments.some((t) => t.player?.rank >= 1 && t.player.rank <= 3) },
       { id: 'arena-win', title: 'Arena Champion', details: 'Win an arena tournament', svg: 'trophy', color: '#f97316', scope: 'extra', unlock: (x) => x.tournaments.some((t) => t.player?.rank === 1) },
-      { id: 'arena-points-100', title: 'Point Collector', details: 'Score 100 arena points in total', svg: 'star', color: '#ea580c', scope: 'extra', unlock: (x) => x.arenaPoints >= 100 },
-      { id: 'arena-points-1000', title: 'Point Hoarder', details: 'Score 1,000 arena points in total', svg: 'crown', color: '#b45309', scope: 'extra', unlock: (x) => x.arenaPoints >= 1000 },
-      { id: 'berserk-1', title: 'Berserker', details: 'Berserk a tournament game', svg: 'bolt', color: '#dc2626', scope: 'extra', unlock: (x) => x.berserk >= 1 },
-      { id: 'berserk-100', title: 'Berserk Fanatic', details: 'Berserk 100 tournament games', svg: 'fire', color: '#b91c1c', scope: 'extra', unlock: (x) => x.berserk >= 100 },
+      tiered({
+        id: 'arena-points', title: 'Arena Points', details: 'Pile up arena points over time', scope: 'extra', unit: 'points',
+        measure: (x) => x.arenaPoints, link: 'https://lichess.org/@/{u}/tournaments',
+        steps: [
+          { at: 100, title: 'Point Collector', details: 'Score 100 arena points in total', svg: 'star', color: '#ea580c' },
+          { at: 1000, title: 'Point Hoarder', details: 'Score 1,000 arena points in total', svg: 'crown', color: '#b45309' },
+          { at: 10000, title: 'Point Tycoon', details: 'Score 10,000 arena points in total', svg: 'trophy', color: '#7c2d12' },
+        ],
+      }),
+      tiered({
+        id: 'berserk', title: 'Berserk', details: 'Halve your clock, double the glory', scope: 'extra', unit: 'games',
+        measure: (x) => x.berserk, link: 'https://lichess.org/@/{u}/tournaments',
+        steps: [
+          { at: 1, title: 'Berserker', details: 'Berserk a tournament game', svg: 'bolt', color: '#dc2626' },
+          { at: 10, title: 'Berserk Regular', details: 'Berserk 10 tournament games', svg: 'bolt', color: '#c81e1e' },
+          { at: 100, title: 'Berserk Fanatic', details: 'Berserk 100 tournament games', svg: 'fire', color: '#b91c1c' },
+          { at: 1000, title: 'Berserk Legend', details: 'Berserk 1,000 tournament games', svg: 'fire', color: '#991b1b' },
+        ],
+      }),
     ],
   },
 ];
@@ -602,19 +684,7 @@ export const ALL = CATEGORIES.flatMap((c) => c.items);
 // (see main.js). Applied onto the achievement objects below.
 const LINKS = {
   // Social
-  'team-join': 'https://lichess.org/team/me',
-  'team-three': 'https://lichess.org/team/me',
-  'follow-one': 'https://lichess.org/@/{u}/following',
-  'follow-ten': 'https://lichess.org/@/{u}/following',
   'study-write': 'https://lichess.org/study/mine/updated',
-  // Puzzles
-  'storm-play': 'https://lichess.org/storm',
-  'storm-50': 'https://lichess.org/storm',
-  'storm-100': 'https://lichess.org/storm',
-  'racer-play': 'https://lichess.org/racer',
-  'racer-50': 'https://lichess.org/racer',
-  'streak-play': 'https://lichess.org/streak',
-  'streak-50': 'https://lichess.org/streak',
   // Ratings (Lichess shows where your rating sits in the distribution)
   'rating-established': 'https://lichess.org/stat/rating/distribution/blitz',
   // Profile & Community
