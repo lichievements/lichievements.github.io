@@ -110,8 +110,12 @@ a { color: inherit; }
   margin: 0;
   user-select: none;
 }
-.logo strong { font-weight: 500; }
+.logo strong { font-weight: 500; transition: color 0.2s var(--ease); }
 .logo .thin  { font-weight: 200; color: var(--text-dim); }
+/* Hovering anywhere on the wordmark tints the bold "li" with the accent. */
+@media (hover: hover) {
+  .logo:hover strong { color: var(--accent); }
+}
 
 .tagline {
   margin: 0;
