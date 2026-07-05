@@ -239,7 +239,7 @@ async function fetchNdjson(url, auth) {
 
 // ---------------------------------------------------------------------------
 
-const ZERO_BOARD = { maxQueens: 0, kingCrossed: false, epMate: false, epAny: false, minMaterialDiff: 0 };
+const ZERO_BOARD = { maxQueens: 0, kingCrossed: false, epMate: false, epAny: false, minMaterialDiff: 0, queenAllEdges: false };
 const EP_LAST = /^[a-h]x[a-h][36]$/; // a pawn capture landing on the en-passant rank
 const PIECE_VALUE = { p: 1, n: 3, b: 3, r: 5, q: 9, k: 0 };
 
@@ -347,6 +347,7 @@ function computeBoard(san, userWhite, scan) {
   // Running deltas from the (materially even) start position.
   let diff = 0;        // user material − opponent material
   let userQueens = 1;  // both sides start with one queen; we track only the user's
+  let queenEdges = 0;  // bitmask of board edges a user queen has visited: a-file|h-file|8th|1st
 
   for (let i = 0; i <= last; i++) {
     let mv;
@@ -371,6 +372,15 @@ function computeBoard(san, userWhite, scan) {
         else diff -= gain;
       }
       if (userQueens > maxQueens) maxQueens = userQueens;
+      // Which board edges a user queen touches: whenever a user queen moves (or a
+      // pawn promotes to one), flag any edge its destination square sits on.
+      if (byUser && (mv.piece === 'q' || mv.promotion === 'q')) {
+        const f = mv.to & 0xf, rr = mv.to >> 4;
+        if (f === 0) queenEdges |= 1;   // a-file
+        if (f === 7) queenEdges |= 2;   // h-file
+        if (rr === 0) queenEdges |= 4;  // 8th rank
+        if (rr === 7) queenEdges |= 8;  // 1st rank
+      }
       // The user king only changes square on its own moves; 0x88 rank index 0 is
       // rank 8, index 7 is rank 1 — the opponent's back rank is 0 for White, 7 for Black.
       if (byUser && mv.piece === 'k') {
@@ -387,5 +397,5 @@ function computeBoard(san, userWhite, scan) {
       if (byUser && (mv.flags & EP_CAPTURE) && chess.isCheckmate()) epMate = true;
     }
   }
-  return { maxQueens, kingCrossed, epMate, epAny, minMaterialDiff };
+  return { maxQueens, kingCrossed, epMate, epAny, minMaterialDiff, queenAllEdges: queenEdges === 15 };
 }
