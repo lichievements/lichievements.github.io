@@ -165,6 +165,21 @@ function tiered({ id, title, details, scope, measure, steps, link, unit }) {
 // Speed / variant helpers over /api/account perfs.
 const perfPlayed = (account, key) => (account.perfs?.[key]?.games || 0) > 0;
 
+// A tiered "play N games in this time control" ladder (1 / 10 / 100), sourced from
+// the per-perf game count in /api/account. All three steps share the format's art.
+function speedTier(id, key, label, image) {
+  return tiered({
+    id, title: label, details: `Play ${label} games`, scope: 'account', unit: 'games',
+    measure: (a) => a.perfs?.[key]?.games || 0,
+    link: `https://lichess.org/@/{u}/perf/${key.toLowerCase()}`,
+    steps: [
+      { at: 1, title: label, details: `Play a ${label} game`, image },
+      { at: 10, title: `${label} Regular`, details: `Play 10 ${label} games`, image },
+      { at: 100, title: `${label} Devotee`, details: `Play 100 ${label} games`, image },
+    ],
+  });
+}
+
 // Highest *established* (non-provisional) rating across the standard time controls.
 const STD_PERFS = ['bullet', 'blitz', 'rapid', 'classical'];
 const bestRating = (a) => Math.max(0, ...STD_PERFS.map((p) => {
@@ -390,12 +405,12 @@ export const CATEGORIES = [
   {
     name: 'Time Controls',
     items: [
-      { id: 'play-ultrabullet', title: 'UltraBullet', details: 'Play an UltraBullet game', image: 'images/rated-ultrabullet.png', scope: 'account', unlock: (a) => perfPlayed(a, 'ultraBullet') },
-      { id: 'play-bullet', title: 'Bullet', details: 'Play a Bullet game', image: 'images/rated-bullet.png', scope: 'account', unlock: (a) => perfPlayed(a, 'bullet') },
-      { id: 'play-blitz', title: 'Blitz', details: 'Play a Blitz game', image: 'images/rated-blitz.png', scope: 'account', unlock: (a) => perfPlayed(a, 'blitz') },
-      { id: 'play-rapid', title: 'Rapid', details: 'Play a Rapid game', image: 'images/rated-rapid.png', scope: 'account', unlock: (a) => perfPlayed(a, 'rapid') },
-      { id: 'play-classical', title: 'Classical', details: 'Play a Classical game', image: 'images/rated-classical.png', scope: 'account', unlock: (a) => perfPlayed(a, 'classical') },
-      { id: 'play-correspondence', title: 'Correspondence', details: 'Play a Correspondence game', image: 'images/rated-correspondence.png', scope: 'account', unlock: (a) => perfPlayed(a, 'correspondence') },
+      speedTier('play-ultrabullet', 'ultraBullet', 'UltraBullet', 'images/rated-ultrabullet.png'),
+      speedTier('play-bullet', 'bullet', 'Bullet', 'images/rated-bullet.png'),
+      speedTier('play-blitz', 'blitz', 'Blitz', 'images/rated-blitz.png'),
+      speedTier('play-rapid', 'rapid', 'Rapid', 'images/rated-rapid.png'),
+      speedTier('play-classical', 'classical', 'Classical', 'images/rated-classical.png'),
+      speedTier('play-correspondence', 'correspondence', 'Correspondence', 'images/rated-correspondence.png'),
     ],
   },
   {
