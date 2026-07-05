@@ -678,7 +678,16 @@ export const CATEGORIES = [
     name: 'Notable Games',
     items: [
       { id: 'miniature', title: 'Miniature', details: 'Win a game in 10 moves or fewer', svg: 'bolt', color: '#ef4444', scope: 'game', detect: (c) => c.won && c.san.length <= 20 },
-      { id: 'marathon', title: 'Marathon', details: 'Play a game of at least 60 moves', svg: 'hourglass', color: '#f43f5e', scope: 'game', detect: (c) => c.san.length >= 120 },
+      gameTiered({
+        id: 'marathon', title: 'Marathon', details: 'Play ever-longer games',
+        track: (c) => Math.floor(c.san.length / 2), // full moves in the game
+        steps: [
+          { at: 60, title: 'Marathon', details: 'Play a game of at least 60 moves', svg: 'hourglass', color: '#fb7185' },
+          { at: 80, title: 'Endurance', details: 'Play a game of at least 80 moves', svg: 'hourglass', color: '#f43f5e' },
+          { at: 100, title: 'Ultramarathon', details: 'Play a game of at least 100 moves', svg: 'hourglass', color: '#e11d48' },
+          { at: 120, title: 'The Long Haul', details: 'Play a game of at least 120 moves', svg: 'hourglass', color: '#be123c' },
+        ],
+      }),
       { id: 'scholars-mate', title: "Scholar's Mate", details: 'Checkmate in the first four moves with your queen', svg: 'trophy', color: '#e11d48', scope: 'game', detect: (c) => isMate(c) && c.san.length <= 8 && /^Qx?f[27]#$/.test(c.lastSan) },
       { id: 'fools-mate', title: "Fool's Mate", details: 'Deliver the two-move fool’s mate', svg: 'star', color: '#be123c', scope: 'game', detect: (c) => isMate(c) && c.san.length <= 4 && c.lastSan === 'Qh4#' },
       { id: 'night-owl', title: 'Night Owl', details: 'Play a game between midnight and 5 a.m. your local time', svg: 'clock', color: '#6366f1', scope: 'game', detect: (c) => { const h = new Date(c.createdAt).getHours(); return h >= 0 && h < 5; } },
