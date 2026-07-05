@@ -574,29 +574,9 @@ a { color: inherit; }
   .tier-steps-list li { padding: 6px 0; }
 }
 
-/* Grid view: a tiered tile whose tiers deep-link to games reveals the very same
-   clickable ladder as an in-tile overlay on hover / tap (reusing the list-view
-   rows and the delegated row-click handler), so per-tier game links are reachable
-   in grid view too. It's clipped to the tile's rounded corners and replaces the
-   caption. `has-tier-links` is set in main.js when any step carries a game. */
-body:not(.list-view) .tile[data-tiered].has-tier-links .tier-steps {
-  display: block;
-  position: absolute;
-  inset: 0;
-  z-index: 3;
-  padding: 10px 12px;
-  background: var(--bg-tile);
-  overflow-y: auto;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s var(--ease);
-}
-body:not(.list-view) .tile[data-tiered].has-tier-links .caption { display: none; }
-@media (hover: hover) {
-  body:not(.list-view) .tile[data-tiered].has-tier-links:hover .tier-steps { opacity: 1; pointer-events: auto; }
-}
-body:not(.list-view) .tile[data-tiered].has-tier-links.revealed .tier-steps,
-body:not(.list-view) .tile[data-tiered].has-tier-links:focus-visible .tier-steps { opacity: 1; pointer-events: auto; }
+/* Grid view: tiles whose tiers deep-link to games (has-tier-links, set in main.js)
+   get a subtle cue that tapping opens the tier modal. */
+body:not(.list-view) .tile[data-tiered].has-tier-links { cursor: pointer; }
 
 /* --- List view ------------------------------------------------------------- */
 /* The grid re-flows into a stacked list of rows matching the hints page. The
@@ -947,6 +927,112 @@ body:not(.list-view) .tile[data-tiered].has-tier-links:focus-visible .tier-steps
 .view-toggle .icon-list { display: none; }
 .list-view .view-toggle .icon-list { display: block; }
 .list-view .view-toggle .icon-grid { display: none; }
+
+/* --- Tier modal (grid view) ------------------------------------------------ */
+/* A lightbox for browsing a tiered achievement's earned tiers: the tier image
+   with prev/next arrows either side, its text below; the image links to the game
+   that unlocked that tier. Opened by tapping a has-tier-links tile; Esc closes. */
+.tier-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.62);
+  animation: tier-modal-in 0.18s var(--ease);
+}
+.tier-modal[hidden] { display: none; }
+@keyframes tier-modal-in { from { opacity: 0; } to { opacity: 1; } }
+.tier-modal-body {
+  position: relative;
+  width: 100%;
+  max-width: 380px;
+  padding: 20px;
+  text-align: center;
+  background: var(--bg-tile);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45);
+}
+.tier-modal-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: none;
+  background: none;
+  border-radius: 8px;
+  color: var(--text-mute);
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.tier-modal-close:hover { color: var(--text); background: var(--line); }
+.tier-modal-stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.tier-modal-nav {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  border-radius: 50%;
+  color: var(--text);
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: border-color 0.15s var(--ease), color 0.15s var(--ease);
+}
+.tier-modal-nav:hover:not([disabled]) { border-color: var(--accent); color: var(--accent); }
+.tier-modal-nav[disabled] { opacity: 0.28; cursor: default; }
+.tier-modal-art {
+  position: relative;
+  flex: 0 0 auto;
+  width: min(60vw, 220px);
+  aspect-ratio: 1 / 1;
+  border-radius: var(--radius);
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: var(--tile-color, #555);
+  text-decoration: none;
+}
+.tier-modal-art img { width: 100%; height: 100%; object-fit: cover; }
+.tier-modal-art svg {
+  width: 44%;
+  height: 44%;
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.95);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.tier-modal-art .ext {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.9rem;
+}
+.tier-modal-label {
+  margin: 16px 0 2px;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-mute);
+}
+.tier-modal-title { margin: 0 0 4px; font-size: 1.05rem; font-weight: 600; color: var(--text); }
+.tier-modal-desc { margin: 0; font-size: 0.85rem; color: var(--text-dim); line-height: 1.4; }
 
 /* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {

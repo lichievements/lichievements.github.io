@@ -40,6 +40,18 @@ function clearRevealed() {
 function initTileInteraction() {
   const touch = matchMedia('(hover: none)');
 
+  // Grid view: tapping a tiered tile that deep-links its tiers opens the tier
+  // modal instead of following the tile's own link / revealing the caption.
+  // Registered first so stopImmediatePropagation pre-empts the handlers below.
+  el.gridRoot.addEventListener('click', (e) => {
+    if (document.body.classList.contains('list-view')) return;
+    const tile = e.target.closest('.tile[data-tiered].has-tier-links');
+    if (!tile) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    openTierModal(tile.dataset.id);
+  });
+
   // A cleared tier row can deep-link to the game that unlocked it. The tile is
   // itself an <a>, so we can't nest a real link inside; instead the row carries a
   // data-href and this handler opens it, overriding the tile's own navigation.
@@ -75,6 +87,120 @@ function initTileInteraction() {
   window.addEventListener('scroll', () => {
     if (document.querySelector('.tile.revealed')) clearRevealed();
   }, { passive: true });
+}
+
+// --- Tier modal (grid view) ------------------------------------------------
+// A lightbox for browsing a tiered achievement's earned tiers: the tier image
+// flanked by prev/next arrows, its text below; the image links to the game that
+// unlocked that tier. Built once and reused for every tile.
+
+let tmEls = null;             // cached modal elements
+let tmTiers = [];             // [{ step, game, group }] for cleared, game-linked tiers
+let tmIdx = 0;                // current tier index
+let tmReturn = null;          // element to refocus on close
+
+function initTierModal() {
+  const modal = document.createElement('div');
+  modal.className = 'tier-modal';
+  modal.hidden = true;
+  modal.setAttribute('role', 'dialog');
+  modal.setAttribute('aria-modal', 'true');
+  modal.setAttribute('aria-label', 'Achievement tier');
+  modal.innerHTML =
+    '<div class="tier-modal-body" tabindex="-1">'
+    + '<button class="tier-modal-close" type="button" aria-label="Close">✕</button>'
+    + '<div class="tier-modal-stage">'
+    + '<button class="tier-modal-nav tier-modal-prev" type="button" aria-label="Previous tier">‹</button>'
+    + '<a class="tier-modal-art" target="_blank" rel="noopener"><span class="ext" aria-hidden="true">↗</span></a>'
+    + '<button class="tier-modal-nav tier-modal-next" type="button" aria-label="Next tier">›</button>'
+    + '</div>'
+    + '<p class="tier-modal-label"></p>'
+    + '<h3 class="tier-modal-title"></h3>'
+    + '<p class="tier-modal-desc"></p>'
+    + '</div>';
+  document.body.append(modal);
+  tmEls = {
+    modal,
+    body: modal.querySelector('.tier-modal-body'),
+    art: modal.querySelector('.tier-modal-art'),
+    prev: modal.querySelector('.tier-modal-prev'),
+    next: modal.querySelector('.tier-modal-next'),
+    label: modal.querySelector('.tier-modal-label'),
+    title: modal.querySelector('.tier-modal-title'),
+    desc: modal.querySelector('.tier-modal-desc'),
+    close: modal.querySelector('.tier-modal-close'),
+  };
+  tmEls.prev.addEventListener('click', () => stepTierModal(-1));
+  tmEls.next.addEventListener('click', () => stepTierModal(1));
+  tmEls.close.addEventListener('click', closeTierModal);
+  modal.addEventListener('click', (e) => { if (e.target === modal) closeTierModal(); }); // backdrop
+}
+
+function openTierModal(id) {
+  if (!tmEls) return;
+  const def = defById.get(id);
+  const prog = partialRecords[id];
+  if (!def || !def.tiered || !prog || !prog.items) return;
+  const tiers = [];
+  for (let i = 0; i < def.steps.length; i++) {
+    const it = prog.items[i];
+    if (it && it.done && it.gameId) tiers.push({ step: def.steps[i], game: it, group: def.title });
+  }
+  if (!tiers.length) return;
+  tmTiers = tiers;
+  tmIdx = tiers.length - 1; // start on the highest tier reached (what the tile shows)
+  tmReturn = document.activeElement;
+  renderTierModal();
+  tmEls.modal.hidden = false;
+  document.addEventListener('keydown', onTierModalKey);
+  tmEls.body.focus();
+}
+
+function renderTierModal() {
+  const { step, game, group } = tmTiers[tmIdx];
+  const { art, prev, next, label, title, desc } = tmEls;
+  // Art: image or coloured SVG icon, matching the tile. Keep the ↗ cue in place.
+  art.querySelectorAll('img, svg').forEach((n) => n.remove());
+  if (step.image) {
+    art.style.removeProperty('--tile-color');
+    const img = new Image();
+    img.src = step.image; img.alt = step.title;
+    art.prepend(img);
+  } else {
+    art.style.setProperty('--tile-color', step.color || '#555');
+    art.insertAdjacentHTML('afterbegin', `<svg viewBox="0 0 24 24" aria-hidden="true">${ICONS[step.svg] || ''}</svg>`);
+  }
+  // Deep link to the game that unlocked this tier.
+  let href = `https://lichess.org/${game.gameId}`;
+  if (game.color) href += `/${game.color}`;
+  if (Number.isInteger(game.ply)) href += `#${game.ply + 1}`;
+  art.href = href;
+  label.textContent = `${group} · ${tmIdx + 1} / ${tmTiers.length}`;
+  title.textContent = step.title;
+  desc.textContent = step.details || '';
+  prev.disabled = tmIdx === 0;
+  next.disabled = tmIdx === tmTiers.length - 1;
+}
+
+function stepTierModal(delta) {
+  const n = tmIdx + delta;
+  if (n < 0 || n >= tmTiers.length) return;
+  tmIdx = n;
+  renderTierModal();
+}
+
+function closeTierModal() {
+  if (!tmEls || tmEls.modal.hidden) return;
+  tmEls.modal.hidden = true;
+  document.removeEventListener('keydown', onTierModalKey);
+  if (tmReturn && tmReturn.focus) tmReturn.focus();
+  tmReturn = null;
+}
+
+function onTierModalKey(e) {
+  if (e.key === 'Escape') { e.preventDefault(); closeTierModal(); }
+  else if (e.key === 'ArrowLeft') { e.preventDefault(); stepTierModal(-1); }
+  else if (e.key === 'ArrowRight') { e.preventDefault(); stepTierModal(1); }
 }
 
 // --- Table of contents -----------------------------------------------------
@@ -685,6 +811,7 @@ async function boot() {
   initView();
   renderGrid();
   initTileInteraction();
+  initTierModal();
   initToc();
   jumpToHash();
   window.addEventListener('hashchange', jumpToHash);
