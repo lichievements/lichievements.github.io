@@ -117,12 +117,29 @@ function initTheme() {
 
 const LS_VIEW = 'li_view';
 
+// The category section currently anchored at the top of the viewport — the one
+// the reader is looking at. Used to keep the same section in view across a
+// grid/list toggle (the two layouts differ, so raw scroll position won't match).
+function topmostCategory() {
+  const sections = document.querySelectorAll('.category');
+  let best = null;
+  for (const s of sections) {
+    const r = s.getBoundingClientRect();
+    // First section whose bottom is still below the top edge: it's on screen.
+    if (r.bottom > 1) { best = s; break; }
+  }
+  return best;
+}
+
 function initView() {
   if (lsGet(LS_VIEW) === 'list') document.body.classList.add('list-view');
   el.viewToggle.addEventListener('click', (e) => {
     const list = !document.body.classList.contains('list-view');
+    const anchor = topmostCategory();
     document.body.classList.toggle('list-view', list);
     lsSet(LS_VIEW, list ? 'list' : 'grid');
+    // Re-anchor the same section once the new layout has settled.
+    if (anchor) requestAnimationFrame(() => anchor.scrollIntoView({ block: 'start' }));
     if (e.detail) el.viewToggle.blur();
   });
 }
