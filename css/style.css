@@ -394,6 +394,9 @@ a { color: inherit; }
   line-height: 1.2;
   color: var(--cap-title);
 }
+/* Tiered tiles: the achievement name reads as the bold heading (the tier name +
+   description sits in the sub-line below). */
+.tile .caption .tier-title { font-weight: 700; }
 .tile .caption p {
   margin: 0;
   font-size: 0.72rem;
@@ -574,9 +577,9 @@ a { color: inherit; }
   .tier-steps-list li { padding: 6px 0; }
 }
 
-/* Grid view: tiles whose tiers deep-link to games (has-tier-links, set in main.js)
-   get a subtle cue that tapping opens the tier modal. */
-body:not(.list-view) .tile[data-tiered].has-tier-links { cursor: pointer; }
+/* Grid view: an unlocked tiered tile (has-tiers, set in main.js) opens the tier
+   modal on tap, so cue it as clickable. */
+body:not(.list-view) .tile[data-tiered].has-tiers { cursor: pointer; }
 
 /* --- List view ------------------------------------------------------------- */
 /* The grid re-flows into a stacked list of rows matching the hints page. The
@@ -931,7 +934,8 @@ body:not(.list-view) .tile[data-tiered].has-tier-links { cursor: pointer; }
 /* --- Tier modal (grid view) ------------------------------------------------ */
 /* A lightbox for browsing a tiered achievement's earned tiers: the tier image
    with prev/next arrows either side, its text below; the image links to the game
-   that unlocked that tier. Opened by tapping a has-tier-links tile; Esc closes. */
+   that unlocked that tier (account ladders link to the achievement page instead).
+   Opened by tapping any unlocked tiered (has-tiers) tile; Esc closes. */
 .tier-modal {
   position: fixed;
   inset: 0;
@@ -1033,6 +1037,21 @@ body:not(.list-view) .tile[data-tiered].has-tier-links { cursor: pointer; }
 }
 .tier-modal-title { margin: 0 0 4px; font-size: 1.05rem; font-weight: 600; color: var(--text); }
 .tier-modal-desc { margin: 0; font-size: 0.85rem; color: var(--text-dim); line-height: 1.4; }
+/* Tiers with no destination (account/extra with no link): plain image, no ↗. */
+.tier-modal-art.no-link { cursor: default; }
+.tier-modal-art.no-link .ext { display: none; }
+
+/* Directional fade/slide when paging between tiers (added per step in main.js). */
+.tier-modal-body.slide-next .tier-modal-art,
+.tier-modal-body.slide-next .tier-modal-label,
+.tier-modal-body.slide-next .tier-modal-title,
+.tier-modal-body.slide-next .tier-modal-desc { animation: tm-page-next 0.22s var(--ease); }
+.tier-modal-body.slide-prev .tier-modal-art,
+.tier-modal-body.slide-prev .tier-modal-label,
+.tier-modal-body.slide-prev .tier-modal-title,
+.tier-modal-body.slide-prev .tier-modal-desc { animation: tm-page-prev 0.22s var(--ease); }
+@keyframes tm-page-next { from { opacity: 0; transform: translateX(18px); } to { opacity: 1; transform: none; } }
+@keyframes tm-page-prev { from { opacity: 0; transform: translateX(-18px); } to { opacity: 1; transform: none; } }
 
 /* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {

@@ -45,7 +45,7 @@ function initTileInteraction() {
   // Registered first so stopImmediatePropagation pre-empts the handlers below.
   el.gridRoot.addEventListener('click', (e) => {
     if (document.body.classList.contains('list-view')) return;
-    const tile = e.target.closest('.tile[data-tiered].has-tier-links');
+    const tile = e.target.closest('.tile[data-tiered].has-tiers');
     if (!tile) return;
     e.preventDefault();
     e.stopImmediatePropagation();
@@ -95,7 +95,8 @@ function initTileInteraction() {
 // unlocked that tier. Built once and reused for every tile.
 
 let tmEls = null;             // cached modal elements
-let tmTiers = [];             // [{ step, game, group }] for cleared, game-linked tiers
+let tmDef = null;             // the tiered achievement being browsed
+let tmTiers = [];             // [{ step, game }] for the cleared tiers
 let tmIdx = 0;                // current tier index
 let tmReturn = null;          // element to refocus on close
 
@@ -141,12 +142,14 @@ function openTierModal(id) {
   const def = defById.get(id);
   const prog = partialRecords[id];
   if (!def || !def.tiered || !prog || !prog.items) return;
+  // Every cleared tier is browsable; a game-scope tier also carries a deep link.
   const tiers = [];
   for (let i = 0; i < def.steps.length; i++) {
     const it = prog.items[i];
-    if (it && it.done && it.gameId) tiers.push({ step: def.steps[i], game: it, group: def.title });
+    if (it && it.done) tiers.push({ step: def.steps[i], game: it });
   }
   if (!tiers.length) return;
+  tmDef = def;
   tmTiers = tiers;
   tmIdx = tiers.length - 1; // start on the highest tier reached (what the tile shows)
   tmReturn = document.activeElement;
@@ -156,8 +159,24 @@ function openTierModal(id) {
   tmEls.body.focus();
 }
 
+// Where a tier's image should link: the game that unlocked it (game ladders), else
+// the achievement's own page (account/extra ladders), else nowhere.
+function tierModalHref(game) {
+  if (game.gameId) {
+    let href = `https://lichess.org/${game.gameId}`;
+    if (game.color) href += `/${game.color}`;
+    if (Number.isInteger(game.ply)) href += `#${game.ply + 1}`;
+    return href;
+  }
+  const link = tmDef && tmDef.link;
+  if (link && (!link.includes('{u}') || currentUserId)) {
+    return link.replace('{u}', encodeURIComponent(currentUserId || ''));
+  }
+  return null;
+}
+
 function renderTierModal() {
-  const { step, game, group } = tmTiers[tmIdx];
+  const { step, game } = tmTiers[tmIdx];
   const { art, prev, next, label, title, desc } = tmEls;
   // Art: image or coloured SVG icon, matching the tile. Keep the ↗ cue in place.
   art.querySelectorAll('img, svg').forEach((n) => n.remove());
@@ -170,12 +189,10 @@ function renderTierModal() {
     art.style.setProperty('--tile-color', step.color || '#555');
     art.insertAdjacentHTML('afterbegin', `<svg viewBox="0 0 24 24" aria-hidden="true">${ICONS[step.svg] || ''}</svg>`);
   }
-  // Deep link to the game that unlocked this tier.
-  let href = `https://lichess.org/${game.gameId}`;
-  if (game.color) href += `/${game.color}`;
-  if (Number.isInteger(game.ply)) href += `#${game.ply + 1}`;
-  art.href = href;
-  label.textContent = `${group} · ${tmIdx + 1} / ${tmTiers.length}`;
+  const href = tierModalHref(game);
+  if (href) { art.href = href; art.classList.remove('no-link'); }
+  else { art.removeAttribute('href'); art.classList.add('no-link'); }
+  label.textContent = `${tmDef.title} · ${tmIdx + 1} / ${tmTiers.length}`;
   title.textContent = step.title;
   desc.textContent = step.details || '';
   prev.disabled = tmIdx === 0;
@@ -187,11 +204,17 @@ function stepTierModal(delta) {
   if (n < 0 || n >= tmTiers.length) return;
   tmIdx = n;
   renderTierModal();
+  // Restart the directional fade/slide animation on the swapped-in content.
+  const body = tmEls.body;
+  body.classList.remove('slide-next', 'slide-prev');
+  void body.offsetWidth; // reflow so the animation replays
+  body.classList.add(delta < 0 ? 'slide-prev' : 'slide-next');
 }
 
 function closeTierModal() {
   if (!tmEls || tmEls.modal.hidden) return;
   tmEls.modal.hidden = true;
+  tmEls.body.classList.remove('slide-next', 'slide-prev');
   document.removeEventListener('keydown', onTierModalKey);
   if (tmReturn && tmReturn.focus) tmReturn.focus();
   tmReturn = null;
@@ -521,14 +544,10 @@ function applyTier(id, value, { animate = false } = {}) {
     tile.addEventListener('animationend', () => tile.classList.remove('revealing'), { once: true });
   }
 
-  if (title) title.textContent = cur.title;
-  if (p) {
-    const next = steps[have];
-    const unit = def.unit ? ` ${def.unit}` : '';
-    p.textContent = next
-      ? `Next: ${next.title} — ${fmtNum(value)} / ${fmtNum(next.at)}${unit}`
-      : `Maxed out — ${fmtNum(value)}${unit}`;
-  }
+  // Grid caption: the achievement name (bold), then the current tier as
+  // "name: description" below (mirrors a list-view row).
+  if (title) title.textContent = def.title;
+  if (p) p.textContent = cur.details ? `${cur.title}: ${cur.details}` : cur.title;
 
   if (def.link && (!def.link.includes('{u}') || currentUserId)) {
     tile.href = def.link.replace('{u}', encodeURIComponent(currentUserId || ''));
@@ -557,7 +576,6 @@ function renderTierSteps(tile, def, have, value, items) {
 
   const ul = document.createElement('ul');
   ul.className = 'tier-steps-list';
-  let hasLinks = false; // does any cleared step deep-link to a game?
   for (let i = 0; i < steps.length; i++) {
     const done = i < have;
     if (!done && i !== have) break; // only cleared steps + the single next target
@@ -590,7 +608,6 @@ function renderTierSteps(tile, def, have, value, items) {
       // Cleared step with a known source game: make the whole row deep-link to it.
       // The ↗ is only revealed on hover (see CSS) so the dense rows stay uncluttered.
       const it = items[i];
-      hasLinks = true;
       li.classList.add('has-game');
       li.dataset.href = `https://lichess.org/${it.gameId}${it.color ? `/${it.color}` : ''}${Number.isInteger(it.ply) ? `#${it.ply + 1}` : ''}`;
       const cue = document.createElement('span');
@@ -603,8 +620,8 @@ function renderTierSteps(tile, def, have, value, items) {
   }
 
   el.append(head, ul);
-  // Tiles whose tiers deep-link to games get the grid-view ladder popover (CSS).
-  tile.classList.toggle('has-tier-links', hasLinks);
+  // Any unlocked tier makes the tile open the grid-view tier modal (see main.js/CSS).
+  tile.classList.toggle('has-tiers', have >= 1);
 }
 
 function unlock(id, gameId, color, ply, { animate = true, persist = true } = {}) {
