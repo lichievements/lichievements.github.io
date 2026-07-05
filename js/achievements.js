@@ -174,17 +174,27 @@ function gameTiered({ id, title, details, steps, track, needsBoard = false, link
   const value = (state) => (state ? state.max : 0);
   return {
     id, title, details, scope: 'game', tiered: true, needsBoard, steps, link,
-    init: () => ({ max: 0, cur: 0 }),
+    init: () => ({ max: 0, cur: 0, at: new Array(steps.length).fill(null) }),
     detect: (ctx, state) => {
       const v = track(ctx, state);
-      if (typeof v === 'number' && v > state.max) state.max = v;
+      if (typeof v !== 'number') return false;
+      if (v > state.max) state.max = v;
+      // Games arrive in date order, so the first one to reach a tier owns that
+      // tier's deep link (which game unlocked "promote 5 pawns", etc.).
+      for (let i = 0; i < steps.length; i++) {
+        if (!state.at[i] && v >= steps[i].at) state.at[i] = { gameId: ctx.gameId, color: ctx.color };
+      }
       return false;
     },
     progress: (state) => ({
       have: steps.reduce((n, s) => n + (value(state) >= s.at ? 1 : 0), 0),
       need: steps.length,
       value: value(state),
-      items: steps.map((s) => ({ key: String(s.at), at: s.at, title: s.title, done: value(state) >= s.at })),
+      items: steps.map((s, i) => {
+        const at = state ? state.at[i] : null;
+        const base = { key: String(s.at), at: s.at, title: s.title, done: value(state) >= s.at };
+        return at ? { ...base, gameId: at.gameId, color: at.color } : base;
+      }),
     }),
   };
 }

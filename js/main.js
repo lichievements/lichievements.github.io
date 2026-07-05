@@ -40,6 +40,17 @@ function clearRevealed() {
 function initTileInteraction() {
   const touch = matchMedia('(hover: none)');
 
+  // A cleared tier row can deep-link to the game that unlocked it. The tile is
+  // itself an <a>, so we can't nest a real link inside; instead the row carries a
+  // data-href and this handler opens it, overriding the tile's own navigation.
+  el.gridRoot.addEventListener('click', (e) => {
+    const row = e.target.closest('.tier-steps-list li.has-game');
+    if (!row || !row.dataset.href) return;
+    e.preventDefault();  // cancel the enclosing tile <a> navigation
+    e.stopPropagation();
+    window.open(row.dataset.href, '_blank', 'noopener');
+  });
+
   el.gridRoot.addEventListener('click', (e) => {
     if (!touch.matches) return; // pointer devices keep hover + single-click
     // In list view the caption is always visible, so there's nothing to reveal:
@@ -358,7 +369,7 @@ function applyTier(id, value, { animate = false } = {}) {
   if (fill) fill.style.width = `${(have / steps.length) * 100}%`;
   if (count) count.textContent = `${have} / ${steps.length}`;
 
-  renderTierSteps(tile, def, have, value);   // list-view multi-line ladder
+  renderTierSteps(tile, def, have, value, partialRecords[id]?.items);   // list-view multi-line ladder
 
   if (have === 0) {
     tile.classList.remove('unlocked');
@@ -402,7 +413,7 @@ function applyTier(id, value, { animate = false } = {}) {
 
 // Build the list-view ladder: the group title + a line per cleared step (each
 // checked) plus the next in-progress target. Hidden in grid view via CSS.
-function renderTierSteps(tile, def, have, value) {
+function renderTierSteps(tile, def, have, value, items) {
   const el = tile.querySelector('.tier-steps');
   if (!el) return;
   const steps = def.steps;
@@ -448,6 +459,17 @@ function renderTierSteps(tile, def, have, value) {
       tg.className = 'tier-target';
       tg.textContent = `${fmtNum(Math.min(value, steps[i].at))} / ${fmtNum(steps[i].at)}`;
       li.append(tg);
+    } else if (items && items[i] && items[i].gameId) {
+      // Cleared step with a known source game: make the whole row deep-link to it.
+      // The ↗ is only revealed on hover (see CSS) so the dense rows stay uncluttered.
+      const it = items[i];
+      li.classList.add('has-game');
+      li.dataset.href = `https://lichess.org/${it.gameId}${it.color ? `/${it.color}` : ''}`;
+      const cue = document.createElement('span');
+      cue.className = 'tier-step-link';
+      cue.textContent = '↗';
+      cue.setAttribute('aria-hidden', 'true');
+      li.append(cue);
     }
     ul.append(li);
   }

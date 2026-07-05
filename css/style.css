@@ -545,6 +545,29 @@ a { color: inherit; }
 }
 .tier-steps-list li.next .tier-target { color: var(--text-mute); } /* n/N — only the in-progress step shows a tally */
 
+/* A cleared tier row can deep-link to the game that first reached it. To keep the
+   dense rows uncluttered, the ↗ is hidden at rest and only fades in on hover
+   (pointer devices); on touch it shows faintly so it stays discoverable. The
+   whole row is the click target (see main.js). */
+.tier-steps-list li.has-game { cursor: pointer; }
+.tier-step-link {
+  flex: 0 0 auto;
+  margin-left: auto;      /* sit at the right edge, past the flexible step text */
+  padding-left: 8px;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--text-mute);
+  opacity: 0;
+  transition: opacity 0.15s ease, color 0.15s ease;
+}
+@media (hover: hover) {
+  .tier-steps-list li.has-game:hover .tier-step-title { color: var(--accent); }
+  .tier-steps-list li.has-game:hover .tier-step-link { opacity: 1; color: var(--accent); }
+}
+@media (hover: none) {
+  .tier-step-link { opacity: 0.4; }
+}
+
 /* --- List view ------------------------------------------------------------- */
 /* The grid re-flows into a stacked list of rows matching the hints page. The
    same tiles are reused: the artwork hides and the caption becomes the always-
