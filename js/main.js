@@ -7,6 +7,10 @@ import { login, completeLoginIfRedirected, fetchAccount, revoke } from './oauth.
 
 const $ = (sel) => document.querySelector(sel);
 
+// A URL-fragment-friendly id from a category name, e.g. "Openings: White" ->
+// "openings-white". Used so a section can be linked/jumped to via a #hash.
+const slugify = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+
 const el = {
   loginBtn: $('#login-btn'),
   logoutBtn: $('#logout-btn'),
@@ -208,6 +212,7 @@ function renderGrid() {
 
     const section = document.createElement('section');
     section.className = 'category';
+    section.id = slugify(cat.name); // enables deep-linking to a section via #hash
 
     const head = document.createElement('div');
     head.className = 'category-head';
@@ -640,12 +645,23 @@ function showError(msg) {
   el.error.hidden = false;
 }
 
+// The grid is built in JS after parse, so the browser's native jump to a #hash
+// (which ran against an empty #grid-root) missed. Re-run it now, and keep honouring
+// later hash changes so in-page section links work.
+function jumpToHash() {
+  if (!location.hash) return;
+  const target = document.getElementById(decodeURIComponent(location.hash.slice(1)));
+  if (target) requestAnimationFrame(() => target.scrollIntoView({ block: 'start' }));
+}
+
 async function boot() {
   initTheme();
   initView();
   renderGrid();
   initTileInteraction();
   initToc();
+  jumpToHash();
+  window.addEventListener('hashchange', jumpToHash);
 
   el.loginBtn.addEventListener('click', () => login().catch((e) => showError(e.message)));
   el.reloadBtn.addEventListener('click', reloadAchievements);
