@@ -216,6 +216,7 @@ function ratingTier(key, label) {
     measure: (x) => x.peakByPerf?.[key] || 0,
     link: `https://lichess.org/@/{u}/perf/${key.toLowerCase()}`,
     steps: [
+      { at: 1000, title: 'Novice', details: `Reach a ${label} rating of 1000`, svg: 'star', color: '#60a5fa' },
       { at: 1500, title: 'Rising Star', details: `Reach a ${label} rating of 1500`, svg: 'star', color: '#3b82f6' },
       { at: 1800, title: 'Sharpshooter', details: `Reach a ${label} rating of 1800`, svg: 'chart', color: '#6366f1' },
       { at: 2000, title: 'Expert', details: `Reach a ${label} rating of 2000`, svg: 'trophy', color: '#8b5cf6' },
@@ -592,6 +593,7 @@ export const CATEGORIES = [
         id: 'puzzle-rating', title: 'Puzzle Rating', details: 'Climb the puzzle-trainer rating', scope: 'account',
         measure: (a) => ((a.perfs?.puzzle?.games || 0) > 0 ? (a.perfs?.puzzle?.rating || 0) : 0), link: 'https://lichess.org/training',
         steps: [
+          { at: 1000, title: 'Puzzle Novice', details: 'Reach a puzzle rating of 1000', svg: 'star', color: '#fbbf24' },
           { at: 1500, title: 'Sharp Eye', details: 'Reach a puzzle rating of 1500', svg: 'star', color: '#f59e0b' },
           { at: 2000, title: 'Puzzle Expert', details: 'Reach a puzzle rating of 2000', svg: 'star', color: '#d97706' },
           { at: 2500, title: 'Puzzle Master', details: 'Reach a puzzle rating of 2500', svg: 'star', color: '#b45309' },
