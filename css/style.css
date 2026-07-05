@@ -197,7 +197,10 @@ a { color: inherit; }
   border-radius: 999px;
   background: var(--line);
   overflow: hidden;
+  transition: opacity 0.5s var(--ease);
 }
+/* Fade the bar out on completion (see js/main.js) rather than snapping away. */
+.progress.fading { opacity: 0; }
 .progress > span {
   display: block;
   height: 100%;

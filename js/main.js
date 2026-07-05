@@ -723,6 +723,7 @@ function startAnalysis(account) {
   savePartial(); // ditto for per-member progress
 
   showAccountBar(account);
+  el.progress.classList.remove('fading'); // in case a prior run's fade was mid-flight
   el.progress.hidden = false;
   el.progress.classList.add('indeterminate');
   el.progressBar.style.width = '';
@@ -770,7 +771,18 @@ function startAnalysis(account) {
       setSummary(m.count);
       el.progress.classList.remove('indeterminate');
       el.progressBar.style.width = '100%';
-      setTimeout(() => { el.progress.hidden = true; }, 900);
+      // Let the full bar sit briefly, then fade it out and hide once faded.
+      // Guarded by currentWorker so a Reload started mid-fade doesn't hide the
+      // new run's bar.
+      setTimeout(() => {
+        if (worker !== currentWorker) return;
+        el.progress.classList.add('fading');
+        setTimeout(() => {
+          if (worker !== currentWorker) return;
+          el.progress.hidden = true;
+          el.progress.classList.remove('fading');
+        }, 550); // matches the .progress opacity transition
+      }, 900);
     } else if (m.type === 'error') {
       showError(m.message);
       el.progress.hidden = true;
