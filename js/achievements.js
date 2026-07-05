@@ -628,7 +628,16 @@ export const CATEGORIES = [
         ],
       }),
       { id: 'puzzle-theme', title: 'Theme Hunter', details: 'Solve at least 50 puzzles of a single theme', svg: 'puzzle', color: '#ca8a04', scope: 'extra', unlock: (x) => x.puzzleThemeMax >= 50 },
-      { id: 'puzzle-performance', title: 'Tactician', details: 'Reach a puzzle performance of 2200', svg: 'star', color: '#a16207', scope: 'extra', unlock: (x) => x.puzzlePerformance >= 2200 },
+      tiered({
+        id: 'puzzle-performance', title: 'Puzzle Performance', details: 'Push your puzzle-dashboard performance higher', scope: 'extra',
+        measure: (x) => x.puzzlePerformance || 0, link: 'https://lichess.org/training',
+        steps: [
+          { at: 1800, title: 'Sharpshooter', details: 'Reach a puzzle performance of 1800', svg: 'star', color: '#ca8a04' },
+          { at: 2000, title: 'Tactician', details: 'Reach a puzzle performance of 2000', svg: 'star', color: '#a16207' },
+          { at: 2200, title: 'Sniper', details: 'Reach a puzzle performance of 2200', svg: 'star', color: '#854d0e' },
+          { at: 2400, title: 'Tactical Genius', details: 'Reach a puzzle performance of 2400', svg: 'star', color: '#713f12' },
+        ],
+      }),
     ],
   },
   {
