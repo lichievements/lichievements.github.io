@@ -217,9 +217,9 @@ function speedTier(id, key, label, image) {
     measure: (a) => a.perfs?.[key]?.games || 0,
     link: `https://lichess.org/@/{u}/perf/${key.toLowerCase()}`,
     steps: [
-      { at: 1, title: label, details: `Play a ${label} game`, image },
-      { at: 10, title: `${label} Regular`, details: `Play 10 ${label} games`, image },
-      { at: 100, title: `${label} Devotee`, details: `Play 100 ${label} games`, image },
+      { at: 1, title: 'Rookie', details: `Play a ${label} game`, image },
+      { at: 10, title: 'Regular', details: `Play 10 ${label} games`, image },
+      { at: 100, title: 'Devotee', details: `Play 100 ${label} games`, image },
     ],
   });
 }
