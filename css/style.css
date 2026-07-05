@@ -903,3 +903,41 @@ a { color: inherit; }
     transition-duration: 0.001ms !important;
   }
 }
+
+/* --- Two-column list view on very large screens ---------------------------- */
+/* A single stacked column wastes a lot of width on big monitors, so the index
+   list view and the (always-listed) hints page split each section's rows into
+   two balanced columns. Multi-column keeps rows intact via break-inside. */
+@media (min-width: 1600px) {
+  body.list-view .wrap,
+  body.hints-page .wrap { max-width: 1480px; }
+
+  /* Index list view: each category's rows flow into two columns. Switching the
+     grid from flex to a block multicol is what enables `columns`; per-row margin
+     replaces the flex gap. Collapsed-TOC hiding stays (higher specificity). */
+  .list-view .grid {
+    display: block;
+    columns: 2;
+    column-gap: 28px;
+  }
+  .list-view .grid > .tile {
+    break-inside: avoid;
+    margin-bottom: 10px;
+  }
+
+  /* Hints page: each collection's member list flows into two columns. */
+  .hint-openings {
+    display: block;
+    columns: 2;
+    column-gap: 28px;
+  }
+  .hint-openings > li {
+    break-inside: avoid;
+    margin-bottom: 10px;
+  }
+  /* Keep prose at a readable measure even though the container is now wider. */
+  .hints-intro,
+  .hint-desc,
+  .hint-note-inline,
+  .hints-note { max-width: 80ch; }
+}
