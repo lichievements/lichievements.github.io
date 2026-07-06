@@ -676,6 +676,11 @@ body:not(.list-view) .tile[data-tiered].has-tiers { cursor: pointer; }
 .list-view .tile[data-tiered]::before { display: none; }
 .list-view .tile[data-tiered] { align-items: flex-start; }
 
+/* A tiered tile isn't clickable as a whole here (only its cleared rows are, each
+   with its own pointer + ↗ cue), so drop the whole-row link affordance. */
+.list-view .tile[data-tiered] { cursor: default; }
+.list-view .tile[data-tiered].unlocked .ext { display: none; }
+
 /* --- Footer ---------------------------------------------------------------- */
 
 .site-footer {

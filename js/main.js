@@ -63,6 +63,18 @@ function initTileInteraction() {
     window.open(row.dataset.href, '_blank', 'noopener');
   });
 
+  // List view: a tiered achievement is not clickable as a whole — only its cleared
+  // tier rows (handled just above) deep-link out. Cancel the tile's own navigation
+  // for any click that isn't on such a row. (Grid view already preempts with the
+  // tier modal above, so this only affects list view.)
+  el.gridRoot.addEventListener('click', (e) => {
+    if (!document.body.classList.contains('list-view')) return;
+    const tile = e.target.closest('.tile[data-tiered]');
+    if (!tile) return;
+    if (e.target.closest('.tier-steps-list li.has-game')) return; // its own handler navigates
+    e.preventDefault();
+  });
+
   el.gridRoot.addEventListener('click', (e) => {
     if (!touch.matches) return; // pointer devices keep hover + single-click
     // In list view the caption is always visible, so there's nothing to reveal:
