@@ -1053,6 +1053,16 @@ body.modal-open { overflow: hidden; }
 .tier-modal-art.no-link { cursor: default; }
 .tier-modal-art.no-link .ext { display: none; }
 
+/* Narrow phones: the fixed nav buttons + art overflow the modal, so tighten the
+   padding, shrink the arrows, and let the art scale down with the viewport. */
+@media (max-width: 439.98px) {
+  .tier-modal { padding: 12px; }
+  .tier-modal-body { padding: 16px; }
+  .tier-modal-stage { gap: 6px; }
+  .tier-modal-nav { width: 34px; height: 34px; font-size: 1.05rem; }
+  .tier-modal-art { width: min(56vw, 200px); }
+}
+
 /* Directional fade/slide when paging between tiers (added per step in main.js). */
 .tier-modal-body.slide-next .tier-modal-art,
 .tier-modal-body.slide-next .tier-modal-label,
