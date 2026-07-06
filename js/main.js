@@ -135,6 +135,43 @@ function initTierModal() {
   tmEls.next.addEventListener('click', () => stepTierModal(1));
   tmEls.close.addEventListener('click', closeTierModal);
   modal.addEventListener('click', (e) => { if (e.target === modal) closeTierModal(); }); // backdrop
+  // Horizontal scroll (trackpad swipe / shift+wheel) pages between tiers; vertical
+  // scroll is swallowed so the page stays put. One step per gesture (cooldown).
+  modal.addEventListener('wheel', onTierModalWheel, { passive: false });
+  // Touch swipe left/right pages between tiers.
+  modal.addEventListener('touchstart', onTierModalTouchStart, { passive: true });
+  modal.addEventListener('touchend', onTierModalTouchEnd, { passive: true });
+}
+
+let tmWheelLock = 0;          // timestamp before which further wheel steps are ignored
+function onTierModalWheel(e) {
+  e.preventDefault();         // the modal owns scrolling; the page must not move
+  const dx = e.deltaX;
+  const dy = e.deltaY;
+  // Sideways trackpad swipe, or shift+wheel, expresses horizontal intent.
+  const h = Math.abs(dx) >= Math.abs(dy) ? dx : (e.shiftKey ? dy : 0);
+  if (Math.abs(h) < 8) return;
+  const now = Date.now();
+  if (now < tmWheelLock) return;
+  tmWheelLock = now + 320;    // snap: at most one tier per gesture
+  stepTierModal(h > 0 ? 1 : -1);
+}
+
+let tmTouchX = null;
+let tmTouchY = null;
+function onTierModalTouchStart(e) {
+  if (e.touches.length !== 1) { tmTouchX = tmTouchY = null; return; }
+  tmTouchX = e.touches[0].clientX;
+  tmTouchY = e.touches[0].clientY;
+}
+function onTierModalTouchEnd(e) {
+  if (tmTouchX == null) return;
+  const t = e.changedTouches[0];
+  const dx = t.clientX - tmTouchX;
+  const dy = t.clientY - tmTouchY;
+  tmTouchX = tmTouchY = null;
+  // A decisive horizontal swipe pages; swipe left → next tier, right → previous.
+  if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) stepTierModal(dx < 0 ? 1 : -1);
 }
 
 function openTierModal(id) {
@@ -155,6 +192,7 @@ function openTierModal(id) {
   tmReturn = document.activeElement;
   renderTierModal();
   tmEls.modal.hidden = false;
+  document.body.classList.add('modal-open'); // lock page scroll behind the modal
   document.addEventListener('keydown', onTierModalKey);
   tmEls.body.focus();
 }
@@ -214,6 +252,7 @@ function stepTierModal(delta) {
 function closeTierModal() {
   if (!tmEls || tmEls.modal.hidden) return;
   tmEls.modal.hidden = true;
+  document.body.classList.remove('modal-open');
   tmEls.body.classList.remove('slide-next', 'slide-prev');
   document.removeEventListener('keydown', onTierModalKey);
   if (tmReturn && tmReturn.focus) tmReturn.focus();

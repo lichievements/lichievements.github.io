@@ -943,6 +943,9 @@ body:not(.list-view) .tile[data-tiered].has-tiers { cursor: pointer; }
    with prev/next arrows either side, its text below; the image links to the game
    that unlocked that tier (account ladders link to the achievement page instead).
    Opened by tapping any unlocked tiered (has-tiers) tile; Esc closes. */
+/* While a tier modal is open the page underneath is frozen so scroll/swipe
+   gestures drive the modal, not the grid behind it. */
+body.modal-open { overflow: hidden; }
 .tier-modal {
   position: fixed;
   inset: 0;
@@ -952,6 +955,8 @@ body:not(.list-view) .tile[data-tiered].has-tiers { cursor: pointer; }
   padding: 24px;
   background: rgba(0, 0, 0, 0.62);
   animation: tier-modal-in 0.18s var(--ease);
+  /* We interpret touch swipes as tier paging, so suppress native scroll gestures. */
+  touch-action: none;
 }
 .tier-modal[hidden] { display: none; }
 @keyframes tier-modal-in { from { opacity: 0; } to { opacity: 1; } }
