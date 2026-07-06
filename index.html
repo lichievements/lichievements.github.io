@@ -33,6 +33,11 @@
   </script>
 </head>
 <body>
+  <script>
+    // List view is the default; apply it before first paint to avoid a flash of
+    // the grid. Only an explicit 'grid' choice opts out.
+    try { if (localStorage.getItem('li_view') !== 'grid') document.body.classList.add('list-view'); } catch (e) {}
+  </script>
   <div class="wrap">
     <header class="site-header">
       <h1 class="logo"><strong>li</strong><span class="thin">chievements</span></h1>

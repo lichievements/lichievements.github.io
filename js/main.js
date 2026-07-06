@@ -296,7 +296,8 @@ function topmostCategory() {
 }
 
 function initView() {
-  if (lsGet(LS_VIEW) === 'list') document.body.classList.add('list-view');
+  // List view is the standard default; only an explicit 'grid' choice opts out.
+  document.body.classList.toggle('list-view', lsGet(LS_VIEW) !== 'grid');
   el.viewToggle.addEventListener('click', (e) => {
     const list = !document.body.classList.contains('list-view');
     const anchor = topmostCategory();
