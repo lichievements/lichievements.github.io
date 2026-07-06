@@ -39,6 +39,29 @@ const startsWith = (arr, ch) => arr.some((m) => m[0] === ch);
 const castled = (arr) => arr.some((m) => m.startsWith('O-O'));
 const isMate = (ctx) => ctx.won && ctx.status === 'mate';
 
+// "Grand tour": has a user piece landed on all four corners (a1, a8, h1, h8)?
+// SAN encodes the destination in every move token, so this is a fast string scan
+// with no board replay. Counts both normal moves of the piece and promotions to
+// it (e.g. 'Qa1', 'Qxh8', 'a8=Q'). `piece` is the SAN letter, 'Q' or 'N'.
+function cornerTour(userSan, piece) {
+  let seen = 0; // bitmask: a1 | a8 | h1 | h8
+  for (const m of userSan) {
+    const s = m.replace(/[+#]$/, ''); // drop check/mate marks
+    let dest = null;
+    if (s[0] === piece) dest = s.slice(-2);          // piece move: dest is the last square
+    else {
+      const p = s.indexOf('=' + piece);              // promotion to this piece
+      if (p > 0) dest = s.slice(p - 2, p);
+    }
+    if (dest === 'a1') seen |= 1;
+    else if (dest === 'a8') seen |= 2;
+    else if (dest === 'h1') seen |= 4;
+    else if (dest === 'h8') seen |= 8;
+    if (seen === 15) return true;
+  }
+  return false;
+}
+
 function prefixMatch(san, target) {
   if (san.length < target.length) return false;
   for (let i = 0; i < target.length; i++) {
@@ -284,7 +307,8 @@ export const CATEGORIES = [
       { id: 'survivor', title: 'Survivor', details: 'Win a game after being checked at least five times', image: 'images/survivor.png', scope: 'game', detect: (c) => c.won && c.checksByOpp >= 5 },
       { id: 'underachiever', title: 'Underachiever', details: 'Win a game in which you underpromoted a pawn', image: 'images/underachiever.png', scope: 'game', detect: (c) => c.won && c.userSan.some((m) => /=[RBN]/.test(m)) },
       { id: 'kings-journey', title: "King's Journey", details: "Win after your king reaches the opponent's back rank (8th for White, 1st for Black)", image: 'images/kings-journey.png', scope: 'game', needsBoard: true, detect: (c) => c.won && c.board.kingCrossed },
-      { id: 'queen-grand-tour', title: "Queen's Grand Tour", details: 'Win a game in which your queen visited all four edges of the board', svg: 'crown', color: '#c026d3', scope: 'game', needsBoard: true, detect: (c) => c.won && c.board.queenAllEdges },
+      { id: 'queen-grand-tour', title: "Queen's Grand Tour", details: 'Win a game in which your queen visited all four corners of the board (a1, a8, h1, h8)', svg: 'crown', color: '#c026d3', scope: 'game', detect: (c) => c.won && cornerTour(c.userSan, 'Q') },
+      { id: 'knight-grand-tour', title: "Knight's Grand Tour", details: 'Win a game in which your knights visited all four corners of the board (a1, a8, h1, h8)', svg: 'knight', color: '#059669', scope: 'game', detect: (c) => c.won && cornerTour(c.userSan, 'N') },
       { id: 'underdog', title: 'Underdog', details: 'Beat an opponent rated at least 200 points above you', svg: 'chart', color: '#0ea5e9', scope: 'game', detect: (c) => c.won && c.oppRating && c.myRating && (c.oppRating - c.myRating) >= 200 },
       { id: 'giant-slayer', title: 'Giant Slayer', details: 'Beat a titled player', svg: 'cap', color: '#0891b2', scope: 'game', detect: (c) => c.won && !!c.oppTitle && c.oppTitle !== 'BOT' },
       gameTiered({
@@ -811,5 +835,6 @@ export const ICONS = {
   import: '<path d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/>',
   video: '<path d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z"/>',
   crown: '<path d="M3.5 8.5l3.75 3.5L12 5l4.75 7 3.75-3.5-1.5 10.5H5L3.5 8.5z"/>',
+  knight: '<path d="M7 20.5h10.5M8.5 20.5v-4.2l-2.3-1.4 1.7-3 3.3-1.9M8.6 14c-1.8-1-1.6-3.9.5-5.2M11 8.6c-.3-2.1 1.2-4 3.4-4.1 3-.1 5.1 2.7 5.1 6.7v9.3"/>',
   hourglass: '<path d="M6 3h12M6 21h12M8 3v3.5a4 4 0 004 4 4 4 0 004-4V3M8 21v-3.5a4 4 0 014-4 4 4 0 014 4V21"/>',
 };
