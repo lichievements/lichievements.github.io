@@ -592,6 +592,12 @@ body:not(.list-view) .tile[data-tiered].has-tiers { cursor: pointer; }
 /* The grid re-flows into a stacked list of rows matching the hints page. The
    same tiles are reused: the artwork hides and the caption becomes the always-
    visible two-line row (title over details), with the ↗ cue kept for links. */
+/* Let the list-view container widen smoothly (1180px → 1480px) as the viewport
+   grows instead of snapping at a breakpoint, so the three columns keep resizing
+   fluidly all the way up. The clamp lands softly at both ends (no discontinuity).
+   Tuned so max-width = 1180px at ~1300px viewport and 1480px at ~1900px. */
+body.list-view .wrap { max-width: clamp(1180px, 530px + 50vw, 1480px); }
+
 .list-view .grid {
   --list-col-gap: 28px;
   display: grid;
@@ -1095,17 +1101,16 @@ body.modal-open { overflow: hidden; }
   }
 }
 
-/* --- Wider container on very large screens ---------------------------------- */
-/* The index list view scales its own column count fluidly (see `.list-view .grid`
-   above), but on big monitors a wider container gives those up-to-three columns
-   more room to breathe; the hints page likewise splits into two columns here. We
+/* --- Hints page: two columns on very large screens -------------------------- */
+/* (The index list view scales its own container width and column count fluidly —
+   see `body.list-view .wrap` and `.list-view .grid` above — so it needs nothing
+   here.) The hints page splits each collection's member list into two columns. We
    use a 2-track CSS grid rather than CSS multi-column: multicol intermittently
    fragments the flexbox rows (a tile's last step could end up pushed onto the next
    column fragment, overlapping the border), whereas grid items are never
    fragmented. `align-items: start` keeps a short item from stretching to its
    neighbour's height. */
 @media (min-width: 1600px) {
-  body.list-view .wrap,
   body.hints-page .wrap { max-width: 1480px; }
 
   /* Hints page: each collection's member list splits across two columns. */
