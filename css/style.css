@@ -593,9 +593,15 @@ body:not(.list-view) .tile[data-tiered].has-tiers { cursor: pointer; }
    same tiles are reused: the artwork hides and the caption becomes the always-
    visible two-line row (title over details), with the ↗ cue kept for links. */
 .list-view .grid {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  --list-col-gap: 28px;
+  display: grid;
+  /* 1–3 fluid columns, no fixed breakpoints. Each track is at least 300px, but
+     also never narrower than a third of the row, so the column count tops out at
+     three; below that the min(300px) floor lets it fall to two then one. Because
+     the tracks are 1fr, every column keeps resizing smoothly with the viewport. */
+  grid-template-columns: repeat(auto-fill, minmax(max(300px, (100% - 2 * var(--list-col-gap)) / 3), 1fr));
+  align-items: start;
+  gap: 10px var(--list-col-gap);
   margin-top: 16px;
 }
 .list-view .tile {
@@ -1089,26 +1095,18 @@ body.modal-open { overflow: hidden; }
   }
 }
 
-/* --- Two-column list view on very large screens ---------------------------- */
-/* A single stacked column wastes a lot of width on big monitors, so the index
-   list view and the (always-listed) hints page lay each section's rows out in two
-   columns. We use a 2-track CSS grid rather than CSS multi-column: multicol
-   intermittently fragments the flexbox rows (a tile's last step could end up
-   pushed onto the next column fragment, overlapping the border), whereas grid
-   items are never fragmented. `align-items: start` keeps a short item from
-   stretching to its neighbour's height. */
+/* --- Wider container on very large screens ---------------------------------- */
+/* The index list view scales its own column count fluidly (see `.list-view .grid`
+   above), but on big monitors a wider container gives those up-to-three columns
+   more room to breathe; the hints page likewise splits into two columns here. We
+   use a 2-track CSS grid rather than CSS multi-column: multicol intermittently
+   fragments the flexbox rows (a tile's last step could end up pushed onto the next
+   column fragment, overlapping the border), whereas grid items are never
+   fragmented. `align-items: start` keeps a short item from stretching to its
+   neighbour's height. */
 @media (min-width: 1600px) {
   body.list-view .wrap,
   body.hints-page .wrap { max-width: 1480px; }
-
-  /* Index list view: each category's rows split across two columns. (Collapsed-TOC
-     hiding still wins via its higher-specificity display:none.) */
-  .list-view .grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    align-items: start;
-    gap: 10px 28px;
-  }
 
   /* Hints page: each collection's member list splits across two columns. */
   .hint-openings {
