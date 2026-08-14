@@ -301,6 +301,12 @@ export const CATEGORIES = [
       { id: 'lazy-rook', title: 'Lazy Rooks', details: 'Checkmate without your rooks ever moving', image: 'images/lazy-rook.png', scope: 'game', detect: (c) => isMate(c) && !startsWith(c.userSan, 'R') && !castled(c.userSan) },
       { id: 'lazy-bishop', title: 'Lazy Bishops', details: 'Checkmate without your bishops ever moving', image: 'images/lazy-bishop.png', scope: 'game', detect: (c) => isMate(c) && !startsWith(c.userSan, 'B') },
       { id: 'lazy-knight', title: 'Lazy Knights', details: 'Checkmate without your knights ever moving', image: 'images/lazy-knight.png', scope: 'game', detect: (c) => isMate(c) && !startsWith(c.userSan, 'N') },
+      { id: 'checkmate-sprint', title: 'Checkmate Sprint', details: 'Finish with four checks in a row and then mate', svg: 'bolt', color: '#f43f5e', scope: 'game', detect: (c) => {
+        if (!isMate(c)) return false;
+        const u = c.userSan; const n = u.length;
+        return n >= 5 && u[n - 1].endsWith('#') && u[n - 2].endsWith('+') && u[n - 3].endsWith('+') && u[n - 4].endsWith('+') && u[n - 5].endsWith('+');
+      } },
+      { id: 'long-kill', title: 'The Long Kill', details: 'Deliver checkmate after move 60', svg: 'hourglass', color: '#9333ea', scope: 'game', detect: (c) => isMate(c) && c.san.length >= 120 },
     ],
   },
   {
@@ -333,6 +339,16 @@ export const CATEGORIES = [
           { at: 5, title: 'On Fire', details: 'Win five games in a row', svg: 'fire', color: '#f97316' },
           { at: 10, title: 'Unstoppable', details: 'Win ten games in a row', svg: 'bolt', color: '#dc2626' },
           { at: 25, title: 'Juggernaut', details: 'Win twenty-five games in a row', svg: 'bolt', color: '#991b1b' },
+        ],
+      }),
+      tiered({
+        id: 'best-win', title: 'Slayer', details: 'Take down ever-stronger opponents', scope: 'extra', unit: 'rating',
+        measure: (x) => x.bestWinRating || 0, link: 'https://lichess.org/@/{u}',
+        steps: [
+          { at: 1600, title: 'Upset Artist', details: 'Beat an opponent rated at least 1600', svg: 'chart', color: '#0ea5e9' },
+          { at: 1800, title: 'Point Stealer', details: 'Beat an opponent rated at least 1800', svg: 'star', color: '#0891b2' },
+          { at: 2000, title: 'Titan Slayer', details: 'Beat an opponent rated at least 2000', svg: 'trophy', color: '#0e7490' },
+          { at: 2200, title: 'Legend Slayer', details: 'Beat an opponent rated at least 2200', svg: 'crown', color: '#155e75' },
         ],
       }),
     ],
@@ -510,6 +526,23 @@ export const CATEGORIES = [
         'e4 e5 Nf3 Nc6 d4 exd4 Bc4',                          // Scotch Gambit
         'Nf3 Na6 e4 Nh6',                                     // Zukertort: Drunken Cavalry
       ]),
+      // Play the same opening (identified by ECO code) over and over.
+      gameTiered({
+        id: 'opening-loyalty', title: 'Opening Loyalty', details: 'Keep coming back to a favourite opening',
+        link: 'https://lichess.org/@/{u}/all',
+        track: (c, s) => {
+          if (!c.eco || c.eco === '?') return null;
+          if (!s.ecos) s.ecos = {};
+          const n = (s.ecos[c.eco] || 0) + 1;
+          s.ecos[c.eco] = n;
+          return n;
+        },
+        steps: [
+          { at: 25, title: 'Familiar Ground', details: 'Play one opening (same ECO code) 25 times', svg: 'star', color: '#60a5fa' },
+          { at: 100, title: 'Creature of Habit', details: 'Play one opening 100 times', svg: 'chart', color: '#3b82f6' },
+          { at: 500, title: 'One-Track Mind', details: 'Play one opening 500 times', svg: 'crown', color: '#2563eb' },
+        ],
+      }),
     ],
   },
   {
@@ -521,6 +554,9 @@ export const CATEGORIES = [
       speedTier('play-rapid', 'rapid', 'Rapid', 'images/rated-rapid.png'),
       speedTier('play-classical', 'classical', 'Classical', 'images/rated-classical.png'),
       speedTier('play-correspondence', 'correspondence', 'Correspondence', 'images/rated-correspondence.png'),
+      { id: 'clock-hyperbullet', title: 'Hyperbullet', details: 'Play a game with 30 seconds or less on the base clock', svg: 'bolt', color: '#ef4444', scope: 'game', detect: (c) => c.clockInitial != null && c.clockInitial <= 30 },
+      { id: 'clock-increment', title: 'Increment Lover', details: 'Play a game with an increment of 30 seconds or more', svg: 'clock', color: '#14b8a6', scope: 'game', detect: (c) => c.clockIncrement != null && c.clockIncrement >= 30 },
+      { id: 'clock-slowburn', title: 'Slow Burn', details: 'Play a game with a base clock of 30 minutes or more', svg: 'hourglass', color: '#6366f1', scope: 'game', detect: (c) => c.clockInitial != null && c.clockInitial >= 1800 },
     ],
   },
   {
@@ -534,6 +570,16 @@ export const CATEGORIES = [
       { id: 'variant-atomic', title: 'Atomic', details: 'Play a game of Atomic', image: 'images/variant-atomic.png', scope: 'account', unlock: (a) => perfPlayed(a, 'atomic') },
       { id: 'variant-horde', title: 'Horde', details: 'Play a game of Horde', image: 'images/variant-horde.png', scope: 'account', unlock: (a) => perfPlayed(a, 'horde') },
       { id: 'variant-racingkings', title: 'Racing Kings', details: 'Play a game of Racing Kings', image: 'images/variant-racingKings.png', scope: 'account', unlock: (a) => perfPlayed(a, 'racingKings') },
+    ],
+  },
+  {
+    // How the game was created — from the game's `source` field, plus rated/casual.
+    name: 'Game Types',
+    items: [
+      { id: 'source-simul', title: 'Simul', details: 'Play a game in a simultaneous exhibition', svg: 'idcard', color: '#7c3aed', scope: 'game', detect: (c) => c.source === 'simul' },
+      { id: 'source-position', title: 'From the Lab', details: 'Play a game starting from a custom position', svg: 'pencil', color: '#0ea5e9', scope: 'game', detect: (c) => c.source === 'position' },
+      { id: 'source-friend', title: 'Friendly Duel', details: 'Play a challenge against a friend', svg: 'sparkles', color: '#ec4899', scope: 'game', detect: (c) => c.source === 'friend' },
+      { id: 'casual-win', title: 'Just for Fun', details: 'Win a casual (unrated) game', svg: 'star', color: '#22c55e', scope: 'game', detect: (c) => c.won && !c.rated },
     ],
   },
   {
@@ -615,6 +661,15 @@ export const CATEGORIES = [
           { at: 100, title: 'On the Record', details: 'Play 100 rated games', svg: 'chart', color: '#10b981' },
           { at: 1000, title: 'For the Record', details: 'Play 1,000 rated games', svg: 'chart', color: '#059669' },
           { at: 10000, title: 'Rated Veteran', details: 'Play 10,000 rated games', svg: 'chart', color: '#047857' },
+        ],
+      }),
+      tiered({
+        id: 'loss-streak', title: 'On the Ropes', details: 'Weather a losing streak (and live to tell it)', scope: 'extra', unit: 'losses',
+        measure: (x) => x.lossStreak || 0, link: 'https://lichess.org/@/{u}',
+        steps: [
+          { at: 3, title: 'Rough Patch', details: 'Lose three games in a row', svg: 'bolt', color: '#f87171' },
+          { at: 5, title: 'On the Ropes', details: 'Lose five games in a row', svg: 'fire', color: '#ef4444' },
+          { at: 10, title: 'Rock Bottom', details: 'Lose ten games in a row', svg: 'scale', color: '#b91c1c' },
         ],
       }),
     ],
@@ -736,6 +791,11 @@ export const CATEGORIES = [
       { id: 'scholars-mate', title: "Scholar's Mate", details: 'Checkmate in the first four moves with your queen', svg: 'trophy', color: '#e11d48', scope: 'game', detect: (c) => isMate(c) && c.san.length <= 8 && /^Qx?f[27]#$/.test(c.lastSan) },
       { id: 'fools-mate', title: "Fool's Mate", details: 'Deliver the two-move fool’s mate', svg: 'star', color: '#be123c', scope: 'game', detect: (c) => isMate(c) && c.san.length <= 4 && c.lastSan === 'Qh4#' },
       { id: 'night-owl', title: 'Night Owl', details: 'Play a game between midnight and 5 a.m. your local time', svg: 'clock', color: '#6366f1', scope: 'game', detect: (c) => { const h = new Date(c.createdAt).getHours(); return h >= 0 && h < 5; } },
+      { id: 'quickfire', title: 'Quickfire', details: 'Win a game in six moves or fewer', svg: 'bolt', color: '#f97316', scope: 'game', detect: (c) => c.won && c.san.length <= 12 },
+      { id: 'so-close', title: 'So Close', details: 'Lose a game in which you checked the opponent at least ten times', svg: 'flag', color: '#64748b', scope: 'game', detect: (c) => !!c.winner && c.winner !== c.color && c.checksByUser >= 10 },
+      { id: 'bongcloud-victory', title: 'Bongcloud Victory', details: 'Win a game after opening with the Bongcloud (1. e4 e5 2. Ke2)', svg: 'crown', color: '#ca8a04', scope: 'game', detect: (c) => c.color === W && c.won && prefixMatch(c.san, ['e4', 'e5', 'Ke2']) },
+      { id: 'long-endgame', title: 'Endgame Grind', details: 'Play a game whose endgame lasted at least 40 half-moves', svg: 'scale', color: '#0d9488', scope: 'game', detect: (c) => c.divEnd != null && (c.san.length - c.divEnd) >= 40 },
+      { id: 'book-ending', title: 'By the Book', details: 'Win a game that ended before the middlegame began', svg: 'sparkles', color: '#8b5cf6', scope: 'game', detect: (c) => c.won && c.hasDivision && c.divMiddle == null },
     ],
   },
 
@@ -771,6 +831,9 @@ export const CATEGORIES = [
       { id: 'arena-host', title: 'Host', details: 'Create your own tournament', svg: 'flag', color: '#f59e0b', scope: 'extra', unlock: (x) => x.created.length >= 1 },
       { id: 'arena-podium', title: 'On the Podium', details: 'Finish in the top three of an arena', svg: 'cap', color: '#d97706', scope: 'extra', unlock: (x) => x.tournaments.some((t) => t.player?.rank >= 1 && t.player.rank <= 3) },
       { id: 'arena-win', title: 'Arena Champion', details: 'Win an arena tournament', svg: 'trophy', color: '#f97316', scope: 'extra', unlock: (x) => x.tournaments.some((t) => t.player?.rank === 1) },
+      { id: 'arena-warrior', title: 'Arena Warrior', details: 'Win a game inside an arena tournament', svg: 'bolt', color: '#ea580c', scope: 'game', detect: (c) => c.won && c.inArena },
+      { id: 'swiss-play', title: 'Swiss Player', details: 'Play a game in a Swiss tournament', svg: 'flag', color: '#0891b2', scope: 'game', detect: (c) => c.inSwiss },
+      { id: 'swiss-win', title: 'Swiss Winner', details: 'Win a game in a Swiss tournament', svg: 'trophy', color: '#0e7490', scope: 'game', detect: (c) => c.won && c.inSwiss },
       tiered({
         id: 'arena-points', title: 'Arena Points', details: 'Pile up arena points over time', scope: 'extra', unit: 'points',
         measure: (x) => x.arenaPoints, link: 'https://lichess.org/@/{u}/tournaments',
