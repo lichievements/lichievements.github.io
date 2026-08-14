@@ -139,7 +139,9 @@ async function evaluateExtra(username, token, achievements, account) {
   // the cap. These are best-effort background lookups, so the extra latency of
   // running them sequentially is fine.
   const teams = await fetchJsonArray(`${LI}/api/team/of/${u}`, auth);
-  const tournaments = await fetchNdjson(`${LI}/api/user/${u}/tournament/played?nb=1000`, auth);
+  // High cap so cumulative sums (arena points) aren't truncated for very active
+  // players; nb is a ceiling, so ordinary users still fetch only what they have.
+  const tournaments = await fetchNdjson(`${LI}/api/user/${u}/tournament/played?nb=10000`, auth);
   const created = await fetchNdjson(`${LI}/api/user/${u}/tournament/created`, auth);
   const studies = await fetchNdjson(`${LI}/api/study/by/${u}`, auth);
   const following = await fetchNdjson(`${LI}/api/rel/following`, auth);

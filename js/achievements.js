@@ -238,7 +238,9 @@ function speedTier(id, key, label, image) {
   return tiered({
     id, title: label, details: `Play ${label} games`, scope: 'account', unit: 'games',
     measure: (a) => a.perfs?.[key]?.games || 0,
-    link: `https://lichess.org/@/{u}/perf/${key.toLowerCase()}`,
+    // Perf-page URLs are case-sensitive (…/perf/ultraBullet, not /perf/ultrabullet),
+    // so link with the exact perf key rather than a lowercased one.
+    link: `https://lichess.org/@/{u}/perf/${key}`,
     steps: [
       { at: 1, title: 'Rookie', details: `Play a ${label} game`, image },
       { at: 10, title: 'Regular', details: `Play 10 ${label} games`, image },
@@ -254,7 +256,7 @@ function ratingTier(key, label) {
     id: `rating-${key.toLowerCase()}`, title: `${label} Rating`,
     details: `Reach new peak ${label} ratings`, scope: 'extra',
     measure: (x) => x.peakByPerf?.[key] || 0,
-    link: `https://lichess.org/@/{u}/perf/${key.toLowerCase()}`,
+    link: `https://lichess.org/@/{u}/perf/${key}`,
     steps: [
       { at: 1000, title: 'Novice', details: `Reach a ${label} rating of 1000`, svg: 'star', color: '#60a5fa' },
       { at: 1500, title: 'Rising Star', details: `Reach a ${label} rating of 1500`, svg: 'star', color: '#3b82f6' },
@@ -283,7 +285,7 @@ export const CATEGORIES = [
       { id: 'rook-mate', title: 'Raging Rook', details: 'Deliver checkmate with a rook', image: 'images/mate-rook.png', scope: 'game', detect: (c) => isMate(c) && c.lastSan[0] === 'R' },
       { id: 'bishop-mate', title: 'Bold Bishop', details: 'Deliver checkmate with a bishop', image: 'images/mate-bishop.png', scope: 'game', detect: (c) => isMate(c) && c.lastSan[0] === 'B' },
       { id: 'knight-mate', title: 'Knight Knockout', details: 'Deliver checkmate with a knight', image: 'images/mate-knight.png', scope: 'game', detect: (c) => isMate(c) && c.lastSan[0] === 'N' },
-      { id: 'short-castle-mate', title: 'Oh-Oh', details: 'Deliver checkmate by castling short', image: 'images/mate-caslte-short.png', scope: 'game', detect: (c) => isMate(c) && c.lastSan === 'O-O#' },
+      { id: 'short-castle-mate', title: 'Oh-Oh', details: 'Deliver checkmate by castling short', image: 'images/mate-castle-short.png', scope: 'game', detect: (c) => isMate(c) && c.lastSan === 'O-O#' },
       { id: 'long-castle-mate', title: 'Oh-Oh-Oh', details: 'Deliver checkmate by castling long', image: 'images/mate-castle-long.png', scope: 'game', detect: (c) => isMate(c) && c.lastSan === 'O-O-O#' },
       { id: 'en-passant-mate', title: 'French Move', details: 'Deliver checkmate by capturing en passant', image: 'images/mate-en-passant.png', scope: 'game', needsBoard: true, detect: (c) => c.board.epMate },
       { id: 'pawn-finish', title: 'Pawn Finish', details: 'Checkmate by promoting a pawn to a queen', image: 'images/pawn-finish.png', scope: 'game', detect: (c) => isMate(c) && /=Q#$/.test(c.lastSan) },
@@ -323,7 +325,7 @@ export const CATEGORIES = [
       }),
       { id: 'swindle', title: 'Swindle Your Way Out', details: 'Escape with a stalemate while at least 8 points of material behind', svg: 'scale', color: '#14b8a6', scope: 'game', needsBoard: true, detect: (c) => c.status === 'stalemate' && c.board.minMaterialDiff <= -8 },
       gameTiered({
-        id: 'win-streak', title: 'Win Streak', details: 'String wins together without a loss',
+        id: 'win-streak', title: 'Win Streak', details: 'Win game after game, with no draw or defeat in between',
         link: 'https://lichess.org/@/{u}/all',
         track: (c, s) => { s.cur = c.won ? s.cur + 1 : 0; return s.cur; },
         steps: [
@@ -643,7 +645,9 @@ export const CATEGORIES = [
       }),
       tiered({
         id: 'storm', title: 'Puzzle Storm', details: 'Chase a higher Puzzle Storm score', scope: 'account',
-        measure: (a) => a.perfs?.storm?.score || 0, link: 'https://lichess.org/storm',
+        // Credit the "played" tier from runs, so a run scoring 0 still counts; the
+        // higher score thresholds (>=50) are unaffected by the max() floor.
+        measure: (a) => { const p = a.perfs?.storm; return p ? Math.max(p.score || 0, (p.runs || 0) >= 1 ? 1 : 0) : 0; }, link: 'https://lichess.org/storm',
         steps: [
           { at: 1, title: 'Storm Chaser', details: 'Play Puzzle Storm', image: 'images/puzzle-storm.png' },
           { at: 50, title: 'Eye of the Storm', details: 'Score 50 in Puzzle Storm', image: 'images/puzzle-storm.png' },
@@ -652,7 +656,7 @@ export const CATEGORIES = [
       }),
       tiered({
         id: 'racer', title: 'Puzzle Racer', details: 'Chase a higher Puzzle Racer score', scope: 'account',
-        measure: (a) => a.perfs?.racer?.score || 0, link: 'https://lichess.org/racer',
+        measure: (a) => { const p = a.perfs?.racer; return p ? Math.max(p.score || 0, (p.runs || 0) >= 1 ? 1 : 0) : 0; }, link: 'https://lichess.org/racer',
         steps: [
           { at: 1, title: 'Puzzle Racer', details: 'Play Puzzle Racer', image: 'images/puzzle-racer.png' },
           { at: 50, title: 'Photo Finish', details: 'Score 50 in Puzzle Racer', image: 'images/puzzle-racer.png' },
@@ -661,7 +665,7 @@ export const CATEGORIES = [
       }),
       tiered({
         id: 'streak', title: 'Puzzle Streak', details: 'Extend your Puzzle Streak', scope: 'account',
-        measure: (a) => a.perfs?.streak?.score || 0, link: 'https://lichess.org/streak',
+        measure: (a) => { const p = a.perfs?.streak; return p ? Math.max(p.score || 0, (p.runs || 0) >= 1 ? 1 : 0) : 0; }, link: 'https://lichess.org/streak',
         steps: [
           { at: 1, title: 'On a Streak', details: 'Play Puzzle Streak', image: 'images/puzzle-streak.png' },
           { at: 50, title: 'Unbroken', details: 'Reach a streak of 50', image: 'images/puzzle-streak.png' },
