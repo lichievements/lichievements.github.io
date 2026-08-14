@@ -157,6 +157,8 @@ async function evaluateExtra(username, token, achievements, account) {
   let sessionGames = 0;
   let sessionTime = 0;
   let berserk = 0;
+  let lossStreak = 0;      // longest run of consecutive losses, best (worst) across formats
+  let bestWinRating = 0;   // highest-rated opponent ever beaten, across formats
   for (const k of playedPerfs) {
     const st = (await fetchJson(`${LI}/api/user/${u}/perf/${k}`, auth))?.stat;
     if (!st) continue;
@@ -166,6 +168,8 @@ async function evaluateExtra(username, token, achievements, account) {
     sessionGames = Math.max(sessionGames, st.playStreak?.nb?.max?.v || 0);
     sessionTime = Math.max(sessionTime, st.playStreak?.time?.max?.v || 0);
     berserk += st.count?.berserk || 0;
+    lossStreak = Math.max(lossStreak, st.resultStreak?.loss?.max?.v || 0);
+    for (const w of (st.bestWins?.results || [])) bestWinRating = Math.max(bestWinRating, w.opRating || 0);
   }
 
   // Puzzle dashboard (needs the puzzle:read scope) — best-effort. A long window so
@@ -184,6 +188,7 @@ async function evaluateExtra(username, token, achievements, account) {
   const extra = {
     teams, tournaments, created, studies, following, arenaPoints,
     peak, peakByPerf, sessionGames, sessionTime, berserk, puzzleThemeMax, puzzlePerformance,
+    lossStreak, bestWinRating,
   };
   for (const a of achievements) {
     if (a.tiered) {
@@ -295,12 +300,29 @@ function analyseGame(game, uid, locked) {
     userSan,
     lastSan: san[san.length - 1],
     checksByOpp: oppSan.reduce((n, m) => n + (m.endsWith('+') || m.endsWith('#') ? 1 : 0), 0),
+    checksByUser: userSan.reduce((n, m) => n + (m.endsWith('+') || m.endsWith('#') ? 1 : 0), 0),
     anyCapture: san.some((m) => m.includes('x')),
     createdAt: game.createdAt,
     myRating: me.rating || null,
     oppRating: opp.rating || null,
     oppTitle: opp.user?.title || null, // 'GM', 'IM', ... or 'BOT'
     oppAi: opp.aiLevel || null,        // Stockfish level (1-8) when the opponent is the AI
+    // Extra per-game facets (all fail-safe: a missing field just leaves the
+    // achievement locked). source: 'simul' | 'position' | 'friend' | 'arena' | …
+    source: typeof game.source === 'string' ? game.source : null,
+    rated: game.rated === true,
+    eco: game.opening?.eco || null,
+    // Clock summary (seconds); absent for correspondence.
+    clockInitial: game.clock?.initial ?? null,
+    clockIncrement: game.clock?.increment ?? null,
+    // Game-phase boundaries in plies (present only when Lichess computed them).
+    divMiddle: game.division ? (game.division.middle ?? null) : null,
+    divEnd: game.division ? (game.division.end ?? null) : null,
+    hasDivision: !!game.division,
+    // Tournament membership straight from the game (covers Swiss, which the
+    // extra-scope endpoints don't). Support both current and legacy field names.
+    inArena: !!(game.arenaTour || game.tournament),
+    inSwiss: !!(game.swissTour || game.swiss),
     board: ZERO_BOARD,
   };
 
