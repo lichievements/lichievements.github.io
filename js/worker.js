@@ -352,7 +352,12 @@ function analyseGame(game, uid, locked) {
       continue;
     }
     if (!res) continue;
-    const ply = res && typeof res === 'object' && Number.isInteger(res.ply) ? res.ply : san.length - 1;
+    // Lichess's #ply anchor counts from the game's real starting ply, which is not
+    // 0 for a game played from a custom position — and "the deciding move" is
+    // meaningless for the game-type detectors anyway. Link to the game itself.
+    const ply = !standard ? null
+      : res && typeof res === 'object' && Number.isInteger(res.ply) ? res.ply
+      : san.length - 1;
     l.done = true;
     post({ type: 'unlock', id: l.def.id, gameId: ctx.gameId, color, ply });
   }
