@@ -87,7 +87,12 @@ body {
 .wrap {
   max-width: var(--maxw);
   margin: 0 auto;
-  padding: clamp(24px, 5vw, 64px) clamp(16px, 4vw, 40px) 96px;
+  /* viewport-fit=cover lets the page paint into the notch/home-bar areas, so
+     every edge adds the inset iOS reports for it (0 everywhere else). */
+  padding: calc(clamp(24px, 5vw, 64px) + env(safe-area-inset-top))
+           calc(clamp(16px, 4vw, 40px) + env(safe-area-inset-right))
+           calc(96px + env(safe-area-inset-bottom))
+           calc(clamp(16px, 4vw, 40px) + env(safe-area-inset-left));
 }
 
 a { color: inherit; }
@@ -231,7 +236,7 @@ a { color: inherit; }
 
 .category-head {
   position: sticky;
-  top: 0;
+  top: env(safe-area-inset-top);
   z-index: 5;
   display: flex;
   align-items: baseline;
@@ -739,7 +744,7 @@ body.list-view .wrap { max-width: clamp(1180px, 530px + 50vw, 1480px); }
    sticks and is clickable exactly like the index category headers. */
 .hint-group h2 {
   position: sticky;
-  top: 0;
+  top: env(safe-area-inset-top);
   z-index: 5;
   cursor: pointer;
   user-select: none;
@@ -923,13 +928,13 @@ body.list-view .wrap { max-width: clamp(1180px, 530px + 50vw, 1480px); }
   justify-content: center;
   gap: 12px;
   margin-top: clamp(8px, 3vw, 24px);
-  padding: 14px 0 14px;
+  padding: 14px 0 calc(14px + env(safe-area-inset-bottom));
   background: var(--bg);
   border-top: 1px solid var(--line);
 }
-/* Narrow phones: let iOS tell us how much room the home-bar needs instead of
-   hard-coding 34px — env() is 0 on devices without one, leaving a slim 4px. */
-@media (max-width: 439.98px) {
+/* Touch devices: the home-bar inset is the clearance, so barely any base padding
+   is needed under the buttons. Desktop keeps the symmetric 14px. */
+@media (hover: none) {
   .theme-switch-row { padding-bottom: calc(4px + env(safe-area-inset-bottom)); }
 }
 .icon-btn {
@@ -977,7 +982,7 @@ body.modal-open { overflow: hidden; }
   z-index: 100;
   display: grid;
   place-items: center;
-  padding: 24px;
+  padding: calc(24px + env(safe-area-inset-top)) 24px calc(24px + env(safe-area-inset-bottom));
   background: rgba(0, 0, 0, 0.62);
   animation: tier-modal-in 0.18s var(--ease);
   /* We interpret touch swipes as tier paging, so suppress native scroll gestures. */
@@ -1081,7 +1086,7 @@ body.modal-open { overflow: hidden; }
 /* Narrow phones: the fixed nav buttons + art overflow the modal, so tighten the
    padding, shrink the arrows, and let the art scale down with the viewport. */
 @media (max-width: 439.98px) {
-  .tier-modal { padding: 12px; }
+  .tier-modal { padding: calc(12px + env(safe-area-inset-top)) 12px calc(12px + env(safe-area-inset-bottom)); }
   .tier-modal-body { padding: 16px; }
   .tier-modal-stage { gap: 6px; }
   .tier-modal-nav { width: 34px; height: 34px; font-size: 1.05rem; }
