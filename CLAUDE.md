@@ -249,6 +249,14 @@ are not derivable from games and will be omitted unless a fetchable endpoint exi
   round toggle (top-right) flips themes and persists the choice in `localStorage`;
   an inline pre-paint script reads the saved value / `prefers-color-scheme` to avoid a
   flash of the wrong theme.
+- **Safe areas (iPhone).** The viewport meta sets `viewport-fit=cover`, so the page
+  paints into the notch and home-bar strips and every edge that reaches into one
+  pays the inset back: `.wrap` padding (all four sides), the sticky button row's
+  bottom padding, the full-screen tier modal, and `top: env(safe-area-inset-top)` on
+  the sticky section headers so they don't rest under the translucent status bar.
+  `env(...)` is 0 on hardware without insets, so this costs nothing elsewhere — but
+  it only reports real values *because* of `viewport-fit=cover`. Same pattern as
+  `stephanhuebsch.github.io`.
 
 ---
 
