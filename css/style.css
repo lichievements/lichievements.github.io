@@ -308,6 +308,13 @@ a { color: inherit; }
   margin-top: 20px;
   padding-bottom: 10px;
 }
+/* Phones: a 128px floor only fits two tracks on a ~390px screen, which blows the
+   tiles up to ~175px. Ask for three columns outright instead. The switch is
+   seamless: at 480px the auto-fill rule above already lands on three columns of
+   the same width, so nothing jumps as the breakpoint is crossed. */
+@media (max-width: 480px) {
+  .grid { grid-template-columns: repeat(3, 1fr); }
+}
 
 /* --- Tile ------------------------------------------------------------------ */
 
