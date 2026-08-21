@@ -95,8 +95,10 @@ an updated worker takes control. Bump `APP_VERSION` in `sw.js` to invalidate the
   (arenas: participation, podium, win, cumulative `player.score` points) and
   `.../tournament/created` (hosting), `GET /api/study/by/{u}` (studies — needs
   `study:read`), `GET /api/rel/following` (follows — needs `follow:read`),
-  `GET /api/user/{u}/perf/{perf}` (public; one call per *played* time control —
-  `stat.highest` peak rating, `playStreak` longest sitting, `count.berserk`; the best
+  `GET /api/user/{u}/perf/{perf}` (public; one call per *played* format — the six
+  time controls **and the eight variants**, since berserks, sessions, loss streaks
+  and best wins are not about standard chess — for `stat.highest` peak rating,
+  `playStreak` longest sitting, `count.berserk`, `resultStreak`, `bestWins`; the best
   across formats is kept) and `GET /api/puzzle/dashboard/1000` (needs `puzzle:read` —
   per-theme solve counts + puzzle performance). **No blog API exists on Lichess**, so
   "write a blog post" is not detectable and is omitted.
@@ -166,6 +168,7 @@ Data-driven registry in `js/achievements.js`. Each entry:
   image: 'images/mate-queen.png',
   scope: 'game',               // 'account' | 'extra' | 'game'
   needsBoard: false,           // 'game' detectors set true when they read ctx.board.*
+  anyVariant: false,           // true = detector ignores the moves, so run it on every variant
   detect: (ctx, state) => { ... }  // returns falsy | true | { ply }
 }
 ```
@@ -181,6 +184,15 @@ Data-driven registry in `js/achievements.js`. Each entry:
   `game` detectors built from SAN move lines (`prefixMatch`), not a separate scope.
   A `detect` returns falsy (locked), `true` (link points at the last move), or
   `{ ply }` (link jumps to that 0-based ply).
+  **Variants:** SAN and board detectors are fed *standard* games only, so a detector
+  that reads none of the moves — how the game was created (`source`, `rated`,
+  `oppAi`), how it ended (`status`), its clock, tournament or ratings — must set
+  `anyVariant: true` or it silently ignores every non-standard game. This matters
+  most for games played from a custom position: Lichess models those as variant
+  `fromPosition` (board editor, "from position" challenges, and *thematic arenas and
+  Swiss events*, which are the only rated ones). Unlocks from non-standard games are
+  posted with `ply: null`, because Lichess's `#ply` anchor counts from the game's own
+  starting ply.
 
 **Unlock provenance & deep links.** Each game-derived achievement stores the first
 game that unlocked it: `{ gameId, color, ply }`. The unlocked tile is rendered as a
