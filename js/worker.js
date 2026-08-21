@@ -125,9 +125,17 @@ function sendPartials(allGame) {
 
 const LI = 'https://lichess.org';
 
-// Time controls whose per-format performance stats we mine for peak rating,
-// play-session length and berserk counts (GET /api/user/{u}/perf/{perf}).
-const PERF_KEYS = ['ultraBullet', 'bullet', 'blitz', 'rapid', 'classical', 'correspondence'];
+// Formats whose per-format performance stats we mine for peak rating, play-session
+// length, berserk counts, loss streaks and best wins (GET /api/user/{u}/perf/{perf}).
+// The variants are in the list because those stats are not about standard chess:
+// berserking a Crazyhouse arena or grinding a Chess960 session counts just as much.
+// Only formats the user has actually played are fetched, so this costs a variant
+// player one extra call per variant and everyone else nothing.
+const PERF_KEYS = [
+  'ultraBullet', 'bullet', 'blitz', 'rapid', 'classical', 'correspondence',
+  'crazyhouse', 'chess960', 'kingOfTheHill', 'threeCheck',
+  'antichess', 'atomic', 'horde', 'racingKings',
+];
 
 async function evaluateExtra(username, token, achievements, account) {
   const auth = token ? { Authorization: `Bearer ${token}` } : {};
