@@ -15,6 +15,14 @@
 //   true             -> unlocked (link points at the deciding/last move)
 //   { ply }          -> unlocked, link jumps to this ply (0-based)
 //
+// `anyVariant: true` marks detectors that say nothing about the moves — how the
+// game was created (source, rated/casual, vs AI), how it ended (status), its
+// clock, its tournament, its ratings. Everything else reads SAN or the board and
+// only makes sense in standard chess, so the worker feeds it standard games only.
+// Custom-position games are variant 'fromPosition' on Lichess, so a missing flag
+// here silently hides an achievement from every thematic-arena and from-position
+// player.
+//
 // `needsBoard: true` marks detectors that read ctx.board.* (en passant, king
 // journey, multiple queens). The worker only reconstructs the board when at
 // least one still-locked achievement needs it (see worker.js).
@@ -317,8 +325,8 @@ export const CATEGORIES = [
       { id: 'kings-journey', title: "King's Journey", details: "Win after your king reaches the opponent's back rank (8th for White, 1st for Black)", image: 'images/kings-journey.png', scope: 'game', needsBoard: true, detect: (c) => c.won && c.board.kingCrossed },
       { id: 'queen-grand-tour', title: "Queen's Grand Tour", details: 'Win a game in which your queen visited all four corners of the board (a1, a8, h1, h8)', svg: 'crown', color: '#c026d3', scope: 'game', detect: (c) => c.won && cornerTour(c.userSan, 'Q') },
       { id: 'knight-grand-tour', title: "Knight's Grand Tour", details: 'Win a game in which your knights visited all four corners of the board (a1, a8, h1, h8)', svg: 'knight', color: '#059669', scope: 'game', detect: (c) => c.won && cornerTour(c.userSan, 'N') },
-      { id: 'underdog', title: 'Underdog', details: 'Beat an opponent rated at least 200 points above you', svg: 'chart', color: '#0ea5e9', scope: 'game', detect: (c) => c.won && c.oppRating && c.myRating && (c.oppRating - c.myRating) >= 200 },
-      { id: 'giant-slayer', title: 'Giant Slayer', details: 'Beat a titled player', svg: 'cap', color: '#0891b2', scope: 'game', detect: (c) => c.won && !!c.oppTitle && c.oppTitle !== 'BOT' },
+      { id: 'underdog', title: 'Underdog', details: 'Beat an opponent rated at least 200 points above you', svg: 'chart', color: '#0ea5e9', scope: 'game', anyVariant: true, detect: (c) => c.won && c.oppRating && c.myRating && (c.oppRating - c.myRating) >= 200 },
+      { id: 'giant-slayer', title: 'Giant Slayer', details: 'Beat a titled player', svg: 'cap', color: '#0891b2', scope: 'game', anyVariant: true, detect: (c) => c.won && !!c.oppTitle && c.oppTitle !== 'BOT' },
       gameTiered({
         id: 'comeback', title: 'Comeback', details: 'Win from a losing material deficit', needsBoard: true,
         link: 'https://lichess.org/@/{u}/all',
@@ -359,10 +367,10 @@ export const CATEGORIES = [
     // (clock flag), timeout (opponent abandoned the game).
     name: 'Win Conditions',
     items: [
-      { id: 'win-checkmate', title: 'The Final Blow', details: 'Win a game by checkmate', svg: 'crown', color: '#eab308', scope: 'game', detect: (c) => c.won && c.status === 'mate' },
-      { id: 'win-resign', title: 'They Resigned', details: 'Win a game by your opponent resigning', svg: 'flag', color: '#ef4444', scope: 'game', detect: (c) => c.won && c.status === 'resign' },
-      { id: 'flag-opponent', title: 'Be Quick', details: "Win by flagging your opponent on time", image: 'images/flag-opponent.png', scope: 'game', detect: (c) => c.won && c.status === 'outoftime' },
-      { id: 'win-abandon', title: 'Left Behind', details: 'Win a game by your opponent abandoning it', svg: 'hourglass', color: '#8b5cf6', scope: 'game', detect: (c) => c.won && c.status === 'timeout' },
+      { id: 'win-checkmate', title: 'The Final Blow', details: 'Win a game by checkmate', svg: 'crown', color: '#eab308', scope: 'game', anyVariant: true, detect: (c) => c.won && c.status === 'mate' },
+      { id: 'win-resign', title: 'They Resigned', details: 'Win a game by your opponent resigning', svg: 'flag', color: '#ef4444', scope: 'game', anyVariant: true, detect: (c) => c.won && c.status === 'resign' },
+      { id: 'flag-opponent', title: 'Be Quick', details: "Win by flagging your opponent on time", image: 'images/flag-opponent.png', scope: 'game', anyVariant: true, detect: (c) => c.won && c.status === 'outoftime' },
+      { id: 'win-abandon', title: 'Left Behind', details: 'Win a game by your opponent abandoning it', svg: 'hourglass', color: '#8b5cf6', scope: 'game', anyVariant: true, detect: (c) => c.won && c.status === 'timeout' },
     ],
   },
   {
@@ -554,9 +562,9 @@ export const CATEGORIES = [
       speedTier('play-rapid', 'rapid', 'Rapid', 'images/rated-rapid.png'),
       speedTier('play-classical', 'classical', 'Classical', 'images/rated-classical.png'),
       speedTier('play-correspondence', 'correspondence', 'Correspondence', 'images/rated-correspondence.png'),
-      { id: 'clock-hyperbullet', title: 'Hyperbullet', details: 'Play a game with 30 seconds or less on the base clock', svg: 'bolt', color: '#ef4444', scope: 'game', detect: (c) => c.clockInitial != null && c.clockInitial <= 30 },
-      { id: 'clock-increment', title: 'Increment Lover', details: 'Play a game with an increment of 30 seconds or more', svg: 'clock', color: '#14b8a6', scope: 'game', detect: (c) => c.clockIncrement != null && c.clockIncrement >= 30 },
-      { id: 'clock-slowburn', title: 'Slow Burn', details: 'Play a game with a base clock of 30 minutes or more', svg: 'hourglass', color: '#6366f1', scope: 'game', detect: (c) => c.clockInitial != null && c.clockInitial >= 1800 },
+      { id: 'clock-hyperbullet', title: 'Hyperbullet', details: 'Play a game with 30 seconds or less on the base clock', svg: 'bolt', color: '#ef4444', scope: 'game', anyVariant: true, detect: (c) => c.clockInitial != null && c.clockInitial <= 30 },
+      { id: 'clock-increment', title: 'Increment Lover', details: 'Play a game with an increment of 30 seconds or more', svg: 'clock', color: '#14b8a6', scope: 'game', anyVariant: true, detect: (c) => c.clockIncrement != null && c.clockIncrement >= 30 },
+      { id: 'clock-slowburn', title: 'Slow Burn', details: 'Play a game with a base clock of 30 minutes or more', svg: 'hourglass', color: '#6366f1', scope: 'game', anyVariant: true, detect: (c) => c.clockInitial != null && c.clockInitial >= 1800 },
     ],
   },
   {
@@ -796,7 +804,7 @@ export const CATEGORIES = [
       }),
       { id: 'scholars-mate', title: "Scholar's Mate", details: 'Checkmate in the first four moves with your queen', svg: 'trophy', color: '#e11d48', scope: 'game', detect: (c) => isMate(c) && c.san.length <= 8 && /^Qx?f[27]#$/.test(c.lastSan) },
       { id: 'fools-mate', title: "Fool's Mate", details: 'Deliver the two-move fool’s mate', svg: 'star', color: '#be123c', scope: 'game', detect: (c) => isMate(c) && c.san.length <= 4 && c.lastSan === 'Qh4#' },
-      { id: 'night-owl', title: 'Night Owl', details: 'Play a game between midnight and 5 a.m. your local time', svg: 'clock', color: '#6366f1', scope: 'game', detect: (c) => { const h = new Date(c.createdAt).getHours(); return h >= 0 && h < 5; } },
+      { id: 'night-owl', title: 'Night Owl', details: 'Play a game between midnight and 5 a.m. your local time', svg: 'clock', color: '#6366f1', scope: 'game', anyVariant: true, detect: (c) => { const h = new Date(c.createdAt).getHours(); return h >= 0 && h < 5; } },
       { id: 'quickfire', title: 'Quickfire', details: 'Win a game in six moves or fewer', svg: 'bolt', color: '#f97316', scope: 'game', detect: (c) => c.won && c.san.length <= 12 },
       { id: 'so-close', title: 'So Close', details: 'Lose a game in which you checked the opponent at least ten times', svg: 'flag', color: '#64748b', scope: 'game', detect: (c) => !!c.winner && c.winner !== c.color && c.checksByUser >= 10 },
       { id: 'bongcloud-victory', title: 'Bongcloud Victory', details: 'Win a game after opening with the Bongcloud (1. e4 e5 2. Ke2)', svg: 'crown', color: '#ca8a04', scope: 'game', detect: (c) => c.color === W && c.won && prefixMatch(c.san, ['e4', 'e5', 'Ke2']) },
@@ -837,9 +845,9 @@ export const CATEGORIES = [
       { id: 'arena-host', title: 'Host', details: 'Create your own tournament', svg: 'flag', color: '#f59e0b', scope: 'extra', unlock: (x) => x.created.length >= 1 },
       { id: 'arena-podium', title: 'On the Podium', details: 'Finish in the top three of an arena', svg: 'cap', color: '#d97706', scope: 'extra', unlock: (x) => x.tournaments.some((t) => t.player?.rank >= 1 && t.player.rank <= 3) },
       { id: 'arena-win', title: 'Arena Champion', details: 'Win an arena tournament', svg: 'trophy', color: '#f97316', scope: 'extra', unlock: (x) => x.tournaments.some((t) => t.player?.rank === 1) },
-      { id: 'arena-warrior', title: 'Arena Warrior', details: 'Win a game inside an arena tournament', svg: 'bolt', color: '#ea580c', scope: 'game', detect: (c) => c.won && c.inArena },
-      { id: 'swiss-play', title: 'Swiss Player', details: 'Play a game in a Swiss tournament', svg: 'flag', color: '#0891b2', scope: 'game', detect: (c) => c.inSwiss },
-      { id: 'swiss-win', title: 'Swiss Winner', details: 'Win a game in a Swiss tournament', svg: 'trophy', color: '#0e7490', scope: 'game', detect: (c) => c.won && c.inSwiss },
+      { id: 'arena-warrior', title: 'Arena Warrior', details: 'Win a game inside an arena tournament', svg: 'bolt', color: '#ea580c', scope: 'game', anyVariant: true, detect: (c) => c.won && c.inArena },
+      { id: 'swiss-play', title: 'Swiss Player', details: 'Play a game in a Swiss tournament', svg: 'flag', color: '#0891b2', scope: 'game', anyVariant: true, detect: (c) => c.inSwiss },
+      { id: 'swiss-win', title: 'Swiss Winner', details: 'Win a game in a Swiss tournament', svg: 'trophy', color: '#0e7490', scope: 'game', anyVariant: true, detect: (c) => c.won && c.inSwiss },
       tiered({
         id: 'arena-points', title: 'Arena Points', details: 'Pile up arena points over time', scope: 'extra', unit: 'points',
         measure: (x) => x.arenaPoints, link: 'https://lichess.org/@/{u}/tournaments',
