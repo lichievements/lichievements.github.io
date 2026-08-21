@@ -931,9 +931,9 @@ body.list-view .wrap { max-width: clamp(1180px, 530px + 50vw, 1480px); }
    than a hard-coded number. NB: iOS only reports a real inset when the viewport
    opts in with viewport-fit=cover, which this page deliberately does NOT do —
    covering also pushes content up behind the translucent status bar. So this
-   reads 0 here and the 4px base is the whole gap. */
+   reads 0 here and the 14px base is the whole gap. */
 @media (max-width: 439.98px) {
-  .theme-switch-row { padding-bottom: calc(4px + env(safe-area-inset-bottom)); }
+  .theme-switch-row { padding-bottom: calc(14px + env(safe-area-inset-bottom)); }
 }
 .icon-btn {
   width: 44px;
