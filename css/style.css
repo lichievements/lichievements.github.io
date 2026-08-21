@@ -927,9 +927,10 @@ body.list-view .wrap { max-width: clamp(1180px, 530px + 50vw, 1480px); }
   background: var(--bg);
   border-top: 1px solid var(--line);
 }
-/* Narrow phones: extra bottom padding so the sticky row clears the home-bar. */
+/* Narrow phones: let iOS tell us how much room the home-bar needs instead of
+   hard-coding 34px — env() is 0 on devices without one, leaving a slim 4px. */
 @media (max-width: 439.98px) {
-  .theme-switch-row { padding-bottom: 34px; }
+  .theme-switch-row { padding-bottom: calc(4px + env(safe-area-inset-bottom)); }
 }
 .icon-btn {
   width: 44px;
