@@ -249,14 +249,14 @@ are not derivable from games and will be omitted unless a fetchable endpoint exi
   round toggle (top-right) flips themes and persists the choice in `localStorage`;
   an inline pre-paint script reads the saved value / `prefers-color-scheme` to avoid a
   flash of the wrong theme.
-- **Safe areas (iPhone).** The viewport meta sets `viewport-fit=cover` — without it
-  every `env(safe-area-inset-*)` resolves to 0 — and the **bottom** edge pays the
-  inset back: the sticky button row's padding, `.wrap`'s bottom padding, and the
-  full-screen tier modal. The sides get it too, which only matters for the notch in
-  landscape. **Do not add a top inset**: iOS already starts the content below the
-  status bar, so `env(safe-area-inset-top)` on `.wrap` or on the sticky section
-  headers stacks on that and opens a large gap (tried, reverted). `env(...)` is 0 on
-  hardware without insets, so none of this costs anything elsewhere.
+- **Safe areas (iPhone).** The sticky button row's bottom padding is
+  `calc(4px + env(safe-area-inset-bottom))` — the only safe-area rule in the site.
+  **Do not add `viewport-fit=cover`.** It is what makes `env(...)` report real
+  insets, but it also lets the page paint into the status-bar strip, and with
+  `apple-mobile-web-app-status-bar-style: black-translucent` the grid then scrolls
+  visibly behind the status bar and the header sits under it. Both were tried
+  (2026-08-21) and reverted; without cover every inset reads 0 and iOS insets the
+  web view itself, which is the behaviour we want.
 
 ---
 

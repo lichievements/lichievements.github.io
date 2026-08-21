@@ -87,13 +87,7 @@ body {
 .wrap {
   max-width: var(--maxw);
   margin: 0 auto;
-  /* No top inset: iOS already starts the content below the status bar here, so
-     adding env(safe-area-inset-top) on top of that just opens a large gap. Only
-     the bottom (home bar) and the sides (notch, landscape only) pay an inset. */
-  padding: clamp(24px, 5vw, 64px)
-           calc(clamp(16px, 4vw, 40px) + env(safe-area-inset-right))
-           calc(96px + env(safe-area-inset-bottom))
-           calc(clamp(16px, 4vw, 40px) + env(safe-area-inset-left));
+  padding: clamp(24px, 5vw, 64px) clamp(16px, 4vw, 40px) 96px;
 }
 
 a { color: inherit; }
@@ -929,13 +923,16 @@ body.list-view .wrap { max-width: clamp(1180px, 530px + 50vw, 1480px); }
   justify-content: center;
   gap: 12px;
   margin-top: clamp(8px, 3vw, 24px);
-  padding: 14px 0 calc(14px + env(safe-area-inset-bottom));
+  padding: 14px 0 14px;
   background: var(--bg);
   border-top: 1px solid var(--line);
 }
-/* Touch devices: the home-bar inset is the clearance, so barely any base padding
-   is needed under the buttons. Desktop keeps the symmetric 14px. */
-@media (hover: none) {
+/* Narrow phones: the home-bar allowance comes from the safe-area inset rather
+   than a hard-coded number. NB: iOS only reports a real inset when the viewport
+   opts in with viewport-fit=cover, which this page deliberately does NOT do —
+   covering also pushes content up behind the translucent status bar. So this
+   reads 0 here and the 4px base is the whole gap. */
+@media (max-width: 439.98px) {
   .theme-switch-row { padding-bottom: calc(4px + env(safe-area-inset-bottom)); }
 }
 .icon-btn {
@@ -983,7 +980,7 @@ body.modal-open { overflow: hidden; }
   z-index: 100;
   display: grid;
   place-items: center;
-  padding: 24px 24px calc(24px + env(safe-area-inset-bottom));
+  padding: 24px;
   background: rgba(0, 0, 0, 0.62);
   animation: tier-modal-in 0.18s var(--ease);
   /* We interpret touch swipes as tier paging, so suppress native scroll gestures. */
@@ -1087,7 +1084,7 @@ body.modal-open { overflow: hidden; }
 /* Narrow phones: the fixed nav buttons + art overflow the modal, so tighten the
    padding, shrink the arrows, and let the art scale down with the viewport. */
 @media (max-width: 439.98px) {
-  .tier-modal { padding: 12px 12px calc(12px + env(safe-area-inset-bottom)); }
+  .tier-modal { padding: 12px; }
   .tier-modal-body { padding: 16px; }
   .tier-modal-stage { gap: 6px; }
   .tier-modal-nav { width: 34px; height: 34px; font-size: 1.05rem; }
