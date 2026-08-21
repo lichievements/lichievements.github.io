@@ -574,12 +574,18 @@ export const CATEGORIES = [
   },
   {
     // How the game was created — from the game's `source` field, plus rated/casual.
+    // These say nothing about the moves, so they carry `anyVariant: true` and are
+    // the only game detectors the worker runs on non-standard games.
     name: 'Game Types',
     items: [
-      { id: 'source-simul', title: 'Simul', details: 'Play a game in a simultaneous exhibition', svg: 'idcard', color: '#7c3aed', scope: 'game', detect: (c) => c.source === 'simul' },
-      { id: 'source-position', title: 'From the Lab', details: 'Play a game starting from a custom position', svg: 'pencil', color: '#0ea5e9', scope: 'game', detect: (c) => c.source === 'position' },
-      { id: 'source-friend', title: 'Friendly Duel', details: 'Play a challenge against a friend', svg: 'sparkles', color: '#ec4899', scope: 'game', detect: (c) => c.source === 'friend' },
-      { id: 'casual-win', title: 'Just for Fun', details: 'Win a casual (unrated) game', svg: 'star', color: '#22c55e', scope: 'game', detect: (c) => c.won && !c.rated },
+      { id: 'source-simul', title: 'Simul', details: 'Play a game in a simultaneous exhibition', svg: 'idcard', color: '#7c3aed', scope: 'game', anyVariant: true, detect: (c) => c.source === 'simul' },
+      // Lichess only sets source 'position' for games against the computer started
+      // from a custom FEN; a challenge from a custom position keeps source 'friend'.
+      // Both are variant 'fromPosition' (Lichess normalises a custom position that
+      // equals the standard start back to plain standard), so that is the real test.
+      { id: 'source-position', title: 'From the Lab', details: 'Play a game starting from a custom position', svg: 'pencil', color: '#0ea5e9', scope: 'game', anyVariant: true, detect: (c) => c.variant === 'fromPosition' || c.source === 'position' },
+      { id: 'source-friend', title: 'Friendly Duel', details: 'Play a challenge against a friend', svg: 'sparkles', color: '#ec4899', scope: 'game', anyVariant: true, detect: (c) => c.source === 'friend' },
+      { id: 'casual-win', title: 'Just for Fun', details: 'Win a casual (unrated) game', svg: 'star', color: '#22c55e', scope: 'game', anyVariant: true, detect: (c) => c.won && !c.rated },
     ],
   },
   {
@@ -597,7 +603,7 @@ export const CATEGORIES = [
           { at: 100000, title: 'Legend', details: 'Play 100,000 games', image: 'images/play-100000.png' },
         ],
       }),
-      { id: 'play-computer', title: 'Machine Challenger', details: 'Play a game against the computer', image: 'images/play-computer.png', scope: 'game', detect: (c) => !!c.oppAi },
+      { id: 'play-computer', title: 'Machine Challenger', details: 'Play a game against the computer', image: 'images/play-computer.png', scope: 'game', anyVariant: true, detect: (c) => !!c.oppAi },
       tiered({
         id: 'account-age', title: 'Account Age', details: 'Stick around, year after year', scope: 'account', unit: 'years',
         measure: (a) => (a.createdAt ? Math.floor((Date.now() - a.createdAt) / (365 * 864e5)) : 0),

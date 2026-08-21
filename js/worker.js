@@ -271,7 +271,13 @@ function boardPlan(locked, lastBare) {
 
 function analyseGame(game, uid, locked) {
   const variant = typeof game.variant === 'string' ? game.variant : game.variant?.key;
-  if (variant !== 'standard') return; // game detectors target standard chess only
+  // SAN and board detectors assume standard chess, so they only ever see standard
+  // games. Detectors flagged `anyVariant` describe how the game was created
+  // (source, casual/rated, human/AI) and are meaningful in every variant — notably
+  // "from a custom position", which Lichess always tags as variant 'fromPosition'
+  // and would otherwise be unreachable.
+  const standard = variant === 'standard';
+  if (!standard && !locked.some((l) => !l.done && l.def.anyVariant)) return;
 
   const players = game.players || {};
   const whiteId = players.white?.user?.id?.toLowerCase();
@@ -310,6 +316,7 @@ function analyseGame(game, uid, locked) {
     // Extra per-game facets (all fail-safe: a missing field just leaves the
     // achievement locked). source: 'simul' | 'position' | 'friend' | 'arena' | …
     source: typeof game.source === 'string' ? game.source : null,
+    variant,                            // 'standard' | 'fromPosition' | 'chess960' | …
     rated: game.rated === true,
     eco: game.opening?.eco || null,
     // Clock summary (seconds); absent for correspondence.
@@ -326,11 +333,14 @@ function analyseGame(game, uid, locked) {
     board: ZERO_BOARD,
   };
 
-  const plan = boardPlan(locked, ctx.lastSan.replace(/[+#]/g, ''));
-  if (plan.replay) ctx.board = computeBoard(san, userWhite, plan.scan);
+  if (standard) {
+    const plan = boardPlan(locked, ctx.lastSan.replace(/[+#]/g, ''));
+    if (plan.replay) ctx.board = computeBoard(san, userWhite, plan.scan);
+  }
 
   for (const l of locked) {
     if (l.done) continue;
+    if (!standard && !l.def.anyVariant) continue;
     let res;
     try { res = l.def.detect(ctx, l.state); } catch { res = false; }
     if (l.def.tiered) {
