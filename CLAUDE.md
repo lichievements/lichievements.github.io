@@ -285,12 +285,13 @@ ladder's `link` template.
 
 - **Categories** (rendered as `<h2>` section headers, in this order): Checkmates ·
   Winning Feats · Win Conditions · Board Antics · Openings: White · Openings: Black ·
-  Opening Collections · Time Controls · Variants · Game Types · Milestones · Ratings ·
-  Records · Precision · Puzzles · Profile & Community · Dedication · Notable Games ·
-  Social · Tournaments. Social and Tournaments are `extra`-scope; Win Conditions and
-  Game Types are `anyVariant` `game`-scope, reading only `status` / `source` / `rated`;
-  Precision reads only the computer analysis, so it is `anyVariant` too. That is
-  **175 tiles**, which expand to **290 countable achievements** once each ladder step is
+  Opening Collections · Time Controls · Variants · Game Types · Machines · Milestones ·
+  Ratings · Records · Precision · Puzzles · Profile & Community · Dedication ·
+  Notable Games · Social · Tournaments. Social and Tournaments are `extra`-scope; Win
+  Conditions and Game Types are `anyVariant` `game`-scope, reading only `status` /
+  `source` / `rated`; Precision (computer analysis) and Machines (`aiLevel` / the
+  opponent's account id) are `anyVariant` for the same reason. That is
+  **177 tiles**, which expand to **301 countable achievements** once each ladder step is
   counted — the latter is the number in the status bar. (Both come straight from the
   registry: `ALL.length` and `ALL.reduce((n,a) => n + (a.tiered ? a.steps.length : 1), 0)`.)
   Categories whose art doesn't
