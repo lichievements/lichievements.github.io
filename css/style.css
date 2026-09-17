@@ -910,8 +910,11 @@ body.list-view .wrap { max-width: clamp(1180px, 530px + 50vw, 1480px); }
   border-spacing: 4px;
   table-layout: fixed;
   width: 100%;
+  /* Capped and centred on wide screens — stretched over the full column width the
+     squares turn into long bars. Phones drop the cap and take the whole width
+     (see the narrow-screen block below), where there is none to spare anyway. */
   max-width: 340px;
-  margin-top: 6px;
+  margin: 6px auto 0;
   font-family: 'JetBrains Mono', ui-monospace, monospace;
   font-variant-numeric: tabular-nums;
 }
@@ -1144,6 +1147,7 @@ body.modal-open { overflow: hidden; }
 /* Narrow phones: the fixed nav buttons + art overflow the modal, so tighten the
    padding, shrink the arrows, and let the art scale down with the viewport. */
 @media (max-width: 439.98px) {
+  .eco-grid { max-width: none; }
   .tier-modal { padding: 12px; }
   .tier-modal-body { padding: 16px; }
   .tier-modal-stage { gap: 6px; }
