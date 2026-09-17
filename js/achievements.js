@@ -252,8 +252,8 @@ function gameTiered({ id, title, details, steps, track, needsBoard = false, anyV
 // Speed / variant helpers over /api/account perfs.
 const perfPlayed = (account, key) => (account.perfs?.[key]?.games || 0) > 0;
 
-// A tiered "play N games in this time control" ladder (1 / 10 / 100), sourced from
-// the per-perf game count in /api/account. All three steps share the format's art.
+// A tiered "play N games in this time control" ladder (1 / 10 / 100 / 1000), sourced
+// from the per-perf game count in /api/account. All four steps share the format's art.
 function speedTier(id, key, label, image) {
   return tiered({
     id, title: label, details: `Play ${label} games`, scope: 'account', unit: 'games',
@@ -265,6 +265,7 @@ function speedTier(id, key, label, image) {
       { at: 1, title: 'Rookie', details: `Play a ${label} game`, image },
       { at: 10, title: 'Regular', details: `Play 10 ${label} games`, image },
       { at: 100, title: 'Devotee', details: `Play 100 ${label} games`, image },
+      { at: 1000, title: 'Specialist', details: `Play 1,000 ${label} games`, image },
     ],
   });
 }
