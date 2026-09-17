@@ -102,8 +102,12 @@ an updated worker takes control. Bump `APP_VERSION` in `sw.js` to invalidate the
   with no game parsing: total games (`count.all`), games vs computer (`count.ai`),
   per-speed counts, total play time, account age / "birthday", patron status.
 - **Extra-scope endpoints** (*extra*-scope achievements) — small supplementary calls
-  made once in the worker, in parallel with the game stream; each is best-effort (a
-  missing scope or 4xx yields an empty list so only that achievement stays locked):
+  made once in the worker, concurrently with the game stream but **strictly one at a
+  time among themselves**: Lichess caps a client at two concurrent API requests
+  (`429 "Please only run 2 request(s) at a time"`) and the stream already holds one
+  connection open for the whole run. They are background lookups, so the extra latency
+  of running them sequentially is fine. Each is best-effort (a missing scope or 4xx
+  yields an empty list so only that achievement stays locked):
   `GET /api/team/of/{u}` (teams joined), `GET /api/user/{u}/tournament/played`
   (arenas: participation, podium, win, cumulative `player.score` points) and
   `.../tournament/created` (hosting), `GET /api/study/by/{u}` (studies — needs
@@ -152,11 +156,18 @@ must be lean:
      Handled by replaying the game through vendored **chess.js**.
 4. **Only replay when it can still pay off.** A game is sent through chess.js **only if
    at least one board-required achievement is still locked.** Once those unlock, the
-   slow path is skipped entirely for all remaining games.
+   slow path is skipped entirely for all remaining games. `boardPlan()` in `worker.js`
+   refines this per game: a still-locked queen-party / king's-journey / comeback /
+   swindle forces the full per-ply scan, plain `en-passant` only needs the replay (no
+   scan), and if `en-passant-mate` is the *only* thing left the replay is skipped
+   outright unless the game's last move even looks like a pawn capture.
 5. **Per-achievement short-circuit.** Maintain a live set of still-locked achievement
    ids; each detector runs only until its achievement unlocks, then is dropped.
 6. **Global early-exit.** When every achievement is unlocked, abort the stream
-   (`reader.cancel()`) — no need to read the rest of the history.
+   (`reader.cancel()`) — no need to read the rest of the history. Game-scope tiered
+   ladders (§6) never "unlock" mid-stream, so the worker retires one explicitly once
+   its top step is reached; otherwise a single ladder would hold the stream open —
+   and keep the board scan alive — for the entire history.
 7. **Batched UI updates.** Reveal tiles and update the progress counter on
    `requestAnimationFrame`, coalescing messages to avoid layout thrash.
 8. **Determine "you".** From `players.white/black.user.id` vs the logged-in id, know
