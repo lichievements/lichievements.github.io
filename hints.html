@@ -79,19 +79,18 @@
         <h2>ABCDE</h2>
         <p class="hint-desc">Lichess files every standard game under a code from the
           <em>Encyclopaedia of Chess Openings</em> &mdash; <code>B20</code>, <code>E60</code>,
-          and so on. Here only the letter counts: play one game in each of the five volumes.
-          <strong>Any</strong> opening in a volume ticks it off, so the lines below are just
-          the quickest way in, not a requirement. Either colour counts.</p>
-        <ul class="hint-openings">
-          <li data-key="A"><span class="hint-name">A &mdash; Flank openings and the irregular: English, R&eacute;ti, Bird, Dutch, Benoni</span><code class="moves">c4</code></li>
-          <li data-key="B"><span class="hint-name">B &mdash; Semi-open games: 1.e4 with any reply but 1&hellip;e5 or 1&hellip;e6 &mdash; Sicilian, Caro-Kann, Pirc, Alekhine, Scandinavian</span><code class="moves">e4 c5</code></li>
-          <li data-key="C"><span class="hint-name">C &mdash; Open games and the French: 1.e4 e5 and 1.e4 e6</span><code class="moves">e4 e5</code></li>
-          <li data-key="D"><span class="hint-name">D &mdash; Closed games: 1.d4 d5 &mdash; Queen&rsquo;s Gambit, Slav &mdash; plus the Gr&uuml;nfeld</span><code class="moves">d4 d5</code></li>
-          <li data-key="E"><span class="hint-name">E &mdash; Indian defences: Nimzo-Indian, Queen&rsquo;s Indian, King&rsquo;s Indian, Catalan</span><code class="moves">d4 Nf6 c4 g6</code></li>
-        </ul>
-        <p class="hint-note-inline">Volume E is the one people miss. 1.d4 Nf6 2.c4 is still
-          volume A (A50) and it is Black&rsquo;s reply that decides: 2&hellip;g6 reaches E60,
-          while 2&hellip;c5, 2&hellip;d6 and 2&hellip;e5 all stay in A.</p>
+          and so on &mdash; and here only the letter counts. Play a game in each of the five
+          volumes: <strong>A</strong> the flank and irregular openings, <strong>B</strong> the
+          semi-open games, <strong>C</strong> the open games and the French,
+          <strong>D</strong> the closed games, <strong>E</strong> the Indian defences.
+          Any opening in a volume ticks it off, and either colour counts.</p>
+        <div class="move-chips">
+          <span class="move-chip" data-key="A">A</span>
+          <span class="move-chip" data-key="B">B</span>
+          <span class="move-chip" data-key="C">C</span>
+          <span class="move-chip" data-key="D">D</span>
+          <span class="move-chip" data-key="E">E</span>
+        </div>
       </section>
 
       <section class="hint-group" id="openings-eu" data-ach="openings-eu">
@@ -312,6 +311,10 @@
           // Link the row to the exact game where this member first appeared.
           var it = at[key];
           if (!it) return;
+          // Chips are plain pills: .hint-link is positioned for the list rows' grid
+          // and its stretched hit area needs their relative parent, so a chip layout
+          // (Encyclopedia, ABCDE) stays unlinked even when a game is on record.
+          if (el.classList.contains('move-chip')) return;
           var href = 'https://lichess.org/' + it.gameId;
           if (it.color) href += '/' + it.color;
           if (typeof it.ply === 'number') href += '#' + (it.ply + 1);
