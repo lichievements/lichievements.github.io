@@ -51,6 +51,36 @@ const MAIA_LEVEL = { maia1: 1100, maia5: 1500, maia9: 1900 };
 // a five-way scan of `opening.eco` — no move lines involved.
 const ECO_VOLUMES = ['A', 'B', 'C', 'D', 'E'];
 
+// Every code in one volume, A00 … A99. Checked against lichess-org/chess-openings:
+// all five volumes really do run 00-99 with no gaps, so none of these is a code the
+// player could never reach.
+const ecoCodes = (v) => Array.from({ length: 100 }, (_, i) => v + String(i).padStart(2, '0'));
+
+// "Expert in ECO-x": play all hundred codes of one volume. Matched on the game's
+// `eco` alone, so *any* opening filed under a code ticks it off, and — like the other
+// collections — either colour counts. Progress items stay `{ key, done }`: at five
+// times a hundred members, carrying a game reference per code would bloat the
+// persisted partial for something the hints grid does not display anyway.
+function ecoExpert(volume, color) {
+  return {
+    id: `openings-eco-${volume.toLowerCase()}`,
+    title: `Expert in ECO-${volume}`,
+    details: `Play all one hundred ECO ${volume} codes, ${volume}00 through ${volume}99`,
+    svg: 'bookmark', color, scope: 'game',
+    init: () => ({ seen: new Set() }),
+    detect: (c, s) => {
+      const e = c.eco;
+      if (e && e.length === 3 && e[0] === volume) s.seen.add(e);
+      return s.seen.size >= 100;
+    },
+    progress: (s) => ({
+      have: s.seen.size,
+      need: 100,
+      items: ecoCodes(volume).map((code) => ({ key: code, done: s.seen.has(code) })),
+    }),
+  };
+}
+
 // Strip SAN annotations so opening lines compare cleanly.
 const bare = (s) => (s ? s.replace(/[+#!?]/g, '') : s);
 const startsWith = (arr, ch) => arr.some((m) => m[0] === ch);
@@ -473,6 +503,11 @@ export const CATEGORIES = [
             return it;
           }),
         }) },
+      ecoExpert('A', '#0ea5e9'),
+      ecoExpert('B', '#8b5cf6'),
+      ecoExpert('C', '#f59e0b'),
+      ecoExpert('D', '#10b981'),
+      ecoExpert('E', '#ef4444'),
       // The Union — one opening per EU member state.
       collection('openings-eu', 'The Union', 'Play an opening corresponding to each EU member state', 'openings-eu', [
         'e4 e5 Nc3',                                          // AT Vienna Game
