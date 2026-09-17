@@ -642,6 +642,31 @@ export const CATEGORIES = [
       ratingTier('rapid', 'Rapid'),
       ratingTier('classical', 'Classical'),
       { id: 'rating-established', title: 'Established', details: 'Clear a provisional rating in any format', svg: 'verified', color: '#0ea5e9', scope: 'account', unlock: (a) => hasEstablished(a) },
+      // Single-game rating swings. `ratingDiff` is only set on rated games, and the
+      // big numbers come from provisional ratings, which move in large steps until
+      // they settle. Nothing here reads the moves, so: anyVariant.
+      gameTiered({
+        id: 'rating-gain', title: 'Big Win', details: 'Take a large chunk of rating off a single game',
+        anyVariant: true, unit: 'points', link: 'https://lichess.org/@/{u}',
+        track: (c) => (c.ratingDiff && c.ratingDiff > 0 ? c.ratingDiff : null),
+        steps: [
+          { at: 50, title: 'Nice Haul', details: 'Gain 50 rating points in one game', svg: 'chart', color: '#22c55e' },
+          { at: 100, title: 'Big Win', details: 'Gain 100 rating points in one game', svg: 'chart', color: '#16a34a' },
+          { at: 200, title: 'Rating Rocket', details: 'Gain 200 rating points in one game', svg: 'bolt', color: '#15803d' },
+          { at: 300, title: 'Off the Charts', details: 'Gain 300 rating points in one game', svg: 'crown', color: '#166534' },
+        ],
+      }),
+      gameTiered({
+        id: 'rating-loss', title: 'Ouch', details: 'Hand back a large chunk of rating in a single game',
+        anyVariant: true, unit: 'points', link: 'https://lichess.org/@/{u}',
+        track: (c) => (c.ratingDiff && c.ratingDiff < 0 ? -c.ratingDiff : null),
+        steps: [
+          { at: 50, title: 'That Stings', details: 'Lose 50 rating points in one game', svg: 'chart', color: '#f87171' },
+          { at: 100, title: 'Ouch', details: 'Lose 100 rating points in one game', svg: 'chart', color: '#ef4444' },
+          { at: 200, title: 'Free Fall', details: 'Lose 200 rating points in one game', svg: 'bolt', color: '#dc2626' },
+          { at: 300, title: 'Total Collapse', details: 'Lose 300 rating points in one game', svg: 'fire', color: '#991b1b' },
+        ],
+      }),
     ],
   },
   {
