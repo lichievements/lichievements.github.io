@@ -357,6 +357,7 @@ function analyseGame(game, uid, locked) {
     myRating: me.rating || null,
     oppRating: opp.rating || null,
     oppTitle: opp.user?.title || null, // 'GM', 'IM', ... or 'BOT'
+    oppId: opp.user?.id?.toLowerCase() || null, // account id; bots are ordinary accounts
     oppAi: opp.aiLevel || null,        // Stockfish level (1-8) when the opponent is the AI
     // Rating won or lost on this game; only present on rated games.
     ratingDiff: Number.isInteger(me.ratingDiff) ? me.ratingDiff : null,

@@ -41,6 +41,11 @@ const FIRST_MOVES = [
   'f3', 'f4', 'g3', 'g4', 'h3', 'h4', 'Na3', 'Nc3', 'Nf3', 'Nh3',
 ];
 
+// The Maia bots, mapped to the rating band each was trained on. Verified against
+// /api/users/status: only these three carry title BOT. They are normal accounts, so
+// a game against them has a regular `user.id` and no `aiLevel`.
+const MAIA_LEVEL = { maia1: 1100, maia5: 1500, maia9: 1900 };
+
 // Strip SAN annotations so opening lines compare cleanly.
 const bare = (s) => (s ? s.replace(/[+#!?]/g, '') : s);
 const startsWith = (arr, ch) => arr.some((m) => m[0] === ch);
@@ -605,6 +610,50 @@ export const CATEGORIES = [
     ],
   },
   {
+    // Games against software. The two engines look completely different in the
+    // export: Lichess's own Stockfish is not an account at all, so that side of the
+    // game carries `aiLevel` instead of a `user`, while the Maia bots are ordinary
+    // accounts (title BOT) and are identified by their id. Neither reads the moves,
+    // so all of this is anyVariant — you can face the computer in a variant too.
+    name: 'Machines',
+    items: [
+      { id: 'play-computer', title: 'Machine Challenger', details: 'Play a game against the computer', image: 'images/play-computer.png', scope: 'game', anyVariant: true, detect: (c) => !!c.oppAi },
+      // Like every ladder here this keeps the running maximum, so a win over level 8
+      // credits the levels below it as well — the tier text names the level reached,
+      // not a specific game you must still go and play.
+      gameTiered({
+        id: 'beat-stockfish', title: 'Beat Stockfish', details: 'Climb the Lichess computer levels', anyVariant: true, unit: 'level',
+        link: 'https://lichess.org/@/{u}/all',
+        track: (c) => (c.won && c.oppAi ? c.oppAi : null),
+        steps: [
+          { at: 1, title: 'Warm-Up', details: 'Beat the Lichess computer on level 1', svg: 'bolt', color: '#94a3b8' },
+          { at: 2, title: 'Getting Serious', details: 'Beat the Lichess computer on level 2', svg: 'bolt', color: '#64748b' },
+          { at: 3, title: 'Fair Fight', details: 'Beat the Lichess computer on level 3', svg: 'scale', color: '#0ea5e9' },
+          { at: 4, title: 'Uphill', details: 'Beat the Lichess computer on level 4', svg: 'scale', color: '#0284c7' },
+          { at: 5, title: 'Silicon Rival', details: 'Beat the Lichess computer on level 5', svg: 'chart', color: '#6366f1' },
+          { at: 6, title: 'Machine Tamer', details: 'Beat the Lichess computer on level 6', svg: 'target', color: '#7c3aed' },
+          { at: 7, title: 'Deep Waters', details: 'Beat the Lichess computer on level 7', svg: 'trophy', color: '#9333ea' },
+          { at: 8, title: 'Unplugged', details: 'Beat the Lichess computer on level 8', svg: 'crown', color: '#a21caf' },
+        ],
+      }),
+      // The three Maia bots on Lichess, each a neural net trained on games between
+      // players of one rating band — so the number is the human strength they
+      // imitate, NOT their own Lichess rating (maia1 sits around 1700 blitz while
+      // playing like an 1100). Only maia1/maia5/maia9 are bots; maia2, maia3 and the
+      // rest are ordinary accounts that happen to share the name.
+      gameTiered({
+        id: 'beat-maia', title: 'Human, Too', details: 'Beat Maia, the engine trained to play like a person', anyVariant: true, unit: 'level',
+        link: 'https://lichess.org/@/maia1',
+        track: (c) => (c.won ? (MAIA_LEVEL[c.oppId] || null) : null),
+        steps: [
+          { at: 1100, title: 'Maia 1100', details: 'Beat Maia at the level it learned from 1100-rated players', svg: 'idcard', color: '#14b8a6' },
+          { at: 1500, title: 'Maia 1500', details: 'Beat Maia at the level it learned from 1500-rated players', svg: 'idcard', color: '#0d9488' },
+          { at: 1900, title: 'Maia 1900', details: 'Beat Maia at the level it learned from 1900-rated players', svg: 'crown', color: '#0f766e' },
+        ],
+      }),
+    ],
+  },
+  {
     name: 'Milestones',
     items: [
       tiered({
@@ -619,7 +668,6 @@ export const CATEGORIES = [
           { at: 100000, title: 'Legend', details: 'Play 100,000 games', image: 'images/play-100000.png' },
         ],
       }),
-      { id: 'play-computer', title: 'Machine Challenger', details: 'Play a game against the computer', image: 'images/play-computer.png', scope: 'game', anyVariant: true, detect: (c) => !!c.oppAi },
       tiered({
         id: 'account-age', title: 'Account Age', details: 'Stick around, year after year', scope: 'account', unit: 'years',
         measure: (a) => (a.createdAt ? Math.floor((Date.now() - a.createdAt) / (365 * 864e5)) : 0),
