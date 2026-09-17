@@ -174,6 +174,8 @@ async function evaluateExtra(username, token, achievements, account) {
   let berserk = 0;
   let lossStreak = 0;      // longest run of consecutive losses, best (worst) across formats
   let bestWinRating = 0;   // highest-rated opponent ever beaten, across formats
+  let tourGames = 0;       // games played inside a tournament, summed over formats
+  let disconnects = 0;     // games left by losing the connection, summed over formats
   for (const k of playedPerfs) {
     const st = (await fetchJson(`${LI}/api/user/${u}/perf/${k}`, auth))?.stat;
     if (!st) continue;
@@ -185,6 +187,10 @@ async function evaluateExtra(username, token, achievements, account) {
     berserk += st.count?.berserk || 0;
     lossStreak = Math.max(lossStreak, st.resultStreak?.loss?.max?.v || 0);
     for (const w of (st.bestWins?.results || [])) bestWinRating = Math.max(bestWinRating, w.opRating || 0);
+    // Both are per-format totals, so they sum rather than max: playing tournament
+    // blitz and tournament rapid is twice the tournament experience.
+    tourGames += st.count?.tour || 0;
+    disconnects += st.count?.disconnects || 0;
   }
 
   // Puzzle dashboard (needs the puzzle:read scope) — best-effort. A long window so
@@ -200,10 +206,29 @@ async function evaluateExtra(username, token, achievements, account) {
     }
   }
 
+  // Puzzle Storm dashboard (public, no scope). `days` is capped at 365 by the API
+  // and the per-day rows only exist for that window, so the combo / highest-solved
+  // / runs-per-day figures below are "best in the last year", not lifetime — a
+  // player who last stormed two years ago gets an empty `days` array and keeps
+  // those tiles locked. The all-time score already comes from /api/account, so we
+  // only fetch this for someone who has actually played Storm.
+  let stormCombo = 0;      // longest solve combo in a run
+  let stormHighest = 0;    // highest puzzle rating solved in a run
+  let stormRunsDay = 0;    // most runs played in a single day
+  if ((account?.perfs?.storm?.runs || 0) > 0) {
+    const storm = await fetchJson(`${LI}/api/storm/dashboard/${u}?days=365`, auth);
+    for (const d of (storm?.days || [])) {
+      stormCombo = Math.max(stormCombo, d.combo || 0);
+      stormHighest = Math.max(stormHighest, d.highest || 0);
+      stormRunsDay = Math.max(stormRunsDay, d.runs || 0);
+    }
+  }
+
   const extra = {
     teams, tournaments, created, studies, following, arenaPoints,
     peak, peakByPerf, sessionGames, sessionTime, berserk, puzzleThemeMax, puzzlePerformance,
-    lossStreak, bestWinRating,
+    lossStreak, bestWinRating, tourGames, disconnects,
+    stormCombo, stormHighest, stormRunsDay,
   };
   for (const a of achievements) {
     if (a.tiered) {

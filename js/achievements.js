@@ -711,6 +711,17 @@ export const CATEGORIES = [
         ],
       }),
       tiered({
+        id: 'disconnects', title: 'Lost Connection', details: 'Games the network took from you', scope: 'extra', unit: 'games',
+        // stat.count.disconnects per format, summed. Lichess counts a game as a
+        // disconnect when you drop out of it rather than finishing at the board.
+        measure: (x) => x.disconnects || 0, link: 'https://lichess.org/@/{u}',
+        steps: [
+          { at: 1, title: 'Dropped Out', details: 'Lose the connection during a game', svg: 'bolt', color: '#94a3b8' },
+          { at: 10, title: 'Flaky Wi-Fi', details: 'Lose the connection in 10 games', svg: 'bolt', color: '#64748b' },
+          { at: 100, title: 'Lag Monster', details: 'Lose the connection in 100 games', svg: 'fire', color: '#475569' },
+        ],
+      }),
+      tiered({
         id: 'loss-streak', title: 'On the Ropes', details: 'Weather a losing streak (and live to tell it)', scope: 'extra', unit: 'losses',
         measure: (x) => x.lossStreak || 0, link: 'https://lichess.org/@/{u}',
         steps: [
@@ -781,6 +792,39 @@ export const CATEGORIES = [
           { at: 1, title: 'Storm Chaser', details: 'Play Puzzle Storm', image: 'images/puzzle-storm.png' },
           { at: 50, title: 'Eye of the Storm', details: 'Score 50 in Puzzle Storm', image: 'images/puzzle-storm.png' },
           { at: 100, title: 'Storm Master', details: 'Score 100 in Puzzle Storm', image: 'images/puzzle-storm.png' },
+        ],
+      }),
+      // The three ladders below come from /api/storm/dashboard, whose per-day rows
+      // only go back 365 days (the API's own maximum). They are therefore "your best
+      // in the last year", not all-time: someone who last played Storm two years ago
+      // keeps them locked even with a high score on record. Details say "in a run"
+      // rather than "ever" for that reason.
+      tiered({
+        id: 'storm-combo', title: 'Storm Combo', details: 'Keep a Puzzle Storm combo alive', scope: 'extra', unit: 'puzzles',
+        measure: (x) => x.stormCombo || 0, link: 'https://lichess.org/storm',
+        steps: [
+          { at: 10, title: 'On a Roll', details: 'Reach a combo of 10 in a Puzzle Storm run', svg: 'fire', color: '#fb923c' },
+          { at: 20, title: 'Combo Streak', details: 'Reach a combo of 20 in a Puzzle Storm run', svg: 'fire', color: '#f97316' },
+          { at: 30, title: 'Unbroken', details: 'Reach a combo of 30 in a Puzzle Storm run', svg: 'bolt', color: '#ea580c' },
+          { at: 50, title: 'Combo Machine', details: 'Reach a combo of 50 in a Puzzle Storm run', svg: 'crown', color: '#c2410c' },
+        ],
+      }),
+      tiered({
+        id: 'storm-highest', title: 'Storm Ceiling', details: 'Crack ever harder puzzles under the clock', scope: 'extra', unit: 'rating',
+        measure: (x) => x.stormHighest || 0, link: 'https://lichess.org/storm',
+        steps: [
+          { at: 1500, title: 'Under Pressure', details: 'Solve a 1500-rated puzzle in a Puzzle Storm run', svg: 'puzzle', color: '#f59e0b' },
+          { at: 2000, title: 'Storm Sniper', details: 'Solve a 2000-rated puzzle in a Puzzle Storm run', svg: 'target', color: '#d97706' },
+          { at: 2500, title: 'Eye of the Needle', details: 'Solve a 2500-rated puzzle in a Puzzle Storm run', svg: 'crown', color: '#b45309' },
+        ],
+      }),
+      tiered({
+        id: 'storm-binge', title: 'Storm Binge', details: 'Chain Puzzle Storm runs in a single day', scope: 'extra', unit: 'runs',
+        measure: (x) => x.stormRunsDay || 0, link: 'https://lichess.org/storm',
+        steps: [
+          { at: 5, title: 'One More Run', details: 'Play five Puzzle Storm runs in one day', svg: 'puzzle', color: '#38bdf8' },
+          { at: 10, title: 'Storm Chaser', details: 'Play 10 Puzzle Storm runs in one day', svg: 'fire', color: '#0ea5e9' },
+          { at: 25, title: 'Storm Front', details: 'Play 25 Puzzle Storm runs in one day', svg: 'bolt', color: '#0284c7' },
         ],
       }),
       tiered({
@@ -939,6 +983,17 @@ export const CATEGORIES = [
           { at: 100, title: 'Point Collector', details: 'Score 100 arena points in total', svg: 'star', color: '#ea580c' },
           { at: 1000, title: 'Point Hoarder', details: 'Score 1,000 arena points in total', svg: 'crown', color: '#b45309' },
           { at: 10000, title: 'Point Tycoon', details: 'Score 10,000 arena points in total', svg: 'trophy', color: '#7c2d12' },
+        ],
+      }),
+      tiered({
+        id: 'tournament-games', title: 'Tournament Games', details: 'Rack up games played inside tournaments', scope: 'extra', unit: 'games',
+        // stat.count.tour per format, summed — arena and Swiss games alike.
+        measure: (x) => x.tourGames || 0, link: 'https://lichess.org/@/{u}/tournaments',
+        steps: [
+          { at: 10, title: 'Tournament Regular', details: 'Play 10 tournament games', svg: 'trophy', color: '#f59e0b' },
+          { at: 100, title: 'Tournament Grinder', details: 'Play 100 tournament games', svg: 'trophy', color: '#ea9a06' },
+          { at: 1000, title: 'Tournament Veteran', details: 'Play 1,000 tournament games', svg: 'crown', color: '#d97706' },
+          { at: 5000, title: 'Tournament Lifer', details: 'Play 5,000 tournament games', svg: 'crown', color: '#b45309' },
         ],
       }),
       tiered({
