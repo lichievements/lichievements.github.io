@@ -370,9 +370,12 @@ TV) are not derivable from the API and stay omitted unless an endpoint turns up.
   theme toggle persists the choice in `localStorage` (`theme`); an inline pre-paint
   script — in `index.html` *and* `hints.html` — reads the saved value /
   `prefers-color-scheme` to avoid a flash of the wrong theme.
-- **Safe areas (iPhone).** The sticky button row's bottom padding becomes
-  `calc(14px + env(safe-area-inset-bottom))` under `@media (max-width: 439.98px)`,
-  where 14px is the row's ordinary padding — the only safe-area rule in the site.
+- **Safe areas (iPhone).** The sticky button row pads `14px` top and bottom, but under
+  `@media (max-width: 439.98px)` the bottom becomes
+  `calc(26px + env(safe-area-inset-bottom))` — the only safe-area rule in the site.
+  The extra room is deliberate: on a phone the row is pinned to the very bottom edge
+  of the screen, over the home indicator, and 14px leaves the icons looking glued to
+  it. Treat the inset as a bonus, not as the gap — see below.
   **Do not add `viewport-fit=cover`.** It is what makes `env(...)` report real
   insets, but it also lets the page paint into the status-bar strip, and with
   `apple-mobile-web-app-status-bar-style: black-translucent` the grid then scrolls

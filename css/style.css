@@ -933,13 +933,15 @@ body.list-view .wrap { max-width: clamp(1180px, 530px + 50vw, 1480px); }
   background: var(--bg);
   border-top: 1px solid var(--line);
 }
-/* Narrow phones: the home-bar allowance comes from the safe-area inset rather
-   than a hard-coded number. NB: iOS only reports a real inset when the viewport
-   opts in with viewport-fit=cover, which this page deliberately does NOT do —
-   covering also pushes content up behind the translucent status bar. So this
-   reads 0 here and the 14px base is the whole gap. */
+/* Narrow phones: more room under the buttons, because this row sticks to the very
+   bottom edge of the screen and 14px leaves them looking glued to it — especially
+   in the installed PWA, over the home indicator.
+   The safe-area inset is added on top, but do not count on it: iOS only reports a
+   real inset when the viewport opts in with viewport-fit=cover, which this page
+   deliberately does NOT do — covering also pushes content up behind the translucent
+   status bar. So the inset reads 0 here and the 26px is the whole gap. */
 @media (max-width: 439.98px) {
-  .theme-switch-row { padding-bottom: calc(14px + env(safe-area-inset-bottom)); }
+  .theme-switch-row { padding-bottom: calc(26px + env(safe-area-inset-bottom)); }
 }
 .icon-btn {
   width: 44px;
