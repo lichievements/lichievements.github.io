@@ -722,6 +722,33 @@ export const CATEGORIES = [
     ],
   },
   {
+    // Computer-analysis quality, from players[you].analysis — present only on games
+    // Lichess has actually analysed, which for most accounts is a small subset. A
+    // game without it simply never fires these, so they stay locked rather than
+    // reading a missing object as a perfect score. Nothing here inspects the moves,
+    // so they all run on every variant.
+    name: 'Precision',
+    items: [
+      gameTiered({
+        id: 'accuracy', title: 'Accuracy', details: 'Play an analysed game at a high accuracy', anyVariant: true, unit: '%',
+        link: 'https://lichess.org/@/{u}/all',
+        track: (c) => (c.analysis && Number.isFinite(c.analysis.accuracy) ? c.analysis.accuracy : null),
+        steps: [
+          { at: 90, title: 'Sharp', details: 'Finish an analysed game with 90% accuracy', svg: 'target', color: '#14b8a6' },
+          { at: 95, title: 'Surgical', details: 'Finish an analysed game with 95% accuracy', svg: 'target', color: '#0d9488' },
+          { at: 99, title: 'Engine Mode', details: 'Finish an analysed game with 99% accuracy', svg: 'target', color: '#0f766e' },
+        ],
+      }),
+      // The move-count floors keep a six-move miniature from counting as a flawless
+      // game: with almost no moves played there is almost nothing to get wrong.
+      { id: 'no-blunders', title: 'Clean Sheet', details: 'Win an analysed game of at least 25 moves without a single blunder', svg: 'verified', color: '#22c55e', scope: 'game', anyVariant: true, detect: (c) => c.won && c.san.length >= 50 && c.analysis && c.analysis.blunder === 0 },
+      { id: 'spotless', title: 'Spotless', details: 'Win an analysed game of at least 20 moves with no inaccuracy, mistake or blunder', svg: 'sparkles', color: '#10b981', scope: 'game', anyVariant: true, detect: (c) => c.won && c.san.length >= 40 && c.analysis && c.analysis.blunder === 0 && c.analysis.mistake === 0 && c.analysis.inaccuracy === 0 },
+      { id: 'low-acpl', title: 'Machine Precision', details: 'Average less than 20 centipawns lost per move in an analysed game of at least 30 moves', svg: 'chart', color: '#0891b2', scope: 'game', anyVariant: true, detect: (c) => c.san.length >= 60 && c.analysis && Number.isFinite(c.analysis.acpl) && c.analysis.acpl < 20 },
+      { id: 'endgame-precision', title: 'Cold Blood', details: 'Reach 90% accuracy in the endgame phase of an analysed game', svg: 'scale', color: '#6366f1', scope: 'game', anyVariant: true, detect: (c) => c.analysis?.phases && Number.isFinite(c.analysis.phases.endgame) && c.analysis.phases.endgame >= 90 },
+      { id: 'outplayed', title: 'Outclassed Them', details: 'Win an analysed game with at least 20 accuracy points more than your opponent', svg: 'trophy', color: '#8b5cf6', scope: 'game', anyVariant: true, detect: (c) => c.won && Number.isFinite(c.analysis?.accuracy) && Number.isFinite(c.oppAnalysis?.accuracy) && (c.analysis.accuracy - c.oppAnalysis.accuracy) >= 20 },
+    ],
+  },
+  {
     name: 'Puzzles',
     items: [
       tiered({
