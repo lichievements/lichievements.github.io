@@ -617,8 +617,16 @@ export const CATEGORIES = [
     // Games against software. The two engines look completely different in the
     // export: Lichess's own Stockfish is not an account at all, so that side of the
     // game carries `aiLevel` instead of a `user`, while the Maia bots are ordinary
-    // accounts (title BOT) and are identified by their id. Neither reads the moves,
-    // so all of this is anyVariant — you can face the computer in a variant too.
+    // accounts (title BOT) and are identified by their id.
+    //
+    // The two "beat it" ladders deliberately do NOT set anyVariant, even though they
+    // read none of the moves. The flag would let the worker feed them `fromPosition`
+    // games, and beating Stockfish 8 means nothing when you started with eight queens
+    // against a bare king. Without it the worker only passes standard games, and
+    // `variant === 'standard'` is exactly "the normal starting position" — Lichess
+    // normalises a custom position equal to the standard start back to plain
+    // standard, and files anything else as fromPosition. Merely *playing* the
+    // computer still counts from any position.
     name: 'Machines',
     items: [
       { id: 'play-computer', title: 'Machine Challenger', details: 'Play a game against the computer', image: 'images/play-computer.png', scope: 'game', anyVariant: true, detect: (c) => !!c.oppAi },
@@ -626,7 +634,7 @@ export const CATEGORIES = [
       // credits the levels below it as well — the tier text names the level reached,
       // not a specific game you must still go and play.
       gameTiered({
-        id: 'beat-stockfish', title: 'Beat Stockfish', details: 'Climb the Lichess computer levels', anyVariant: true, discrete: true,
+        id: 'beat-stockfish', title: 'Beat Stockfish', details: 'Climb the Lichess computer levels, from the normal starting position', discrete: true,
         link: 'https://lichess.org/@/{u}/all',
         track: (c) => (c.won && c.oppAi ? c.oppAi : null),
         steps: [
@@ -646,7 +654,7 @@ export const CATEGORIES = [
       // playing like an 1100). Only maia1/maia5/maia9 are bots; maia2, maia3 and the
       // rest are ordinary accounts that happen to share the name.
       gameTiered({
-        id: 'beat-maia', title: 'Beat Maia', details: 'Beat Maia, the engine trained to play like a person', anyVariant: true, discrete: true,
+        id: 'beat-maia', title: 'Beat Maia', details: 'Beat Maia, the engine trained to play like a person, from the normal starting position', discrete: true,
         link: 'https://lichess.org/@/maia1',
         track: (c) => (c.won ? (MAIA_LEVEL[c.oppId] || null) : null),
         steps: [

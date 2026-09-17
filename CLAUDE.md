@@ -238,6 +238,14 @@ placeholder tile from `ICONS`.
   Swiss events*, which are the only rated ones). Unlocks from non-standard games are
   posted with `ply: null`, because Lichess's `#ply` anchor counts from the game's own
   starting ply.
+  **The flag is not automatic, though.** When an achievement is a *feat* rather than a
+  fact — beating an engine, surviving something hard — leaving `anyVariant` off is the
+  point: a custom position lets the player choose the material, and "beat Stockfish
+  level 8" means nothing when the position started with eight queens against a bare
+  king. Omitting the flag restricts the detector to `variant === 'standard'`, which is
+  exactly "the normal starting position", since Lichess normalises a custom position
+  equal to the standard start back to plain standard. Ask which one a new detector is:
+  *how the game was set up or ended* wants the flag, *how hard the win was* does not.
 
 **Tiered achievements (ladders).** Many tiles are not a single yes/no but a ladder of
 thresholds: the tile shows the highest step reached plus progress toward the next, and
