@@ -197,14 +197,17 @@ function tiered({ id, title, details, scope, measure, steps, link, unit }) {
 // value (or null/undefined to skip the game); the tile keeps the running MAXIMUM
 // across the whole history, climbing the ladder as bigger values turn up (e.g.
 // longest win streak, deepest deficit recovered, most promotions in one game).
+// Set `anyVariant: true` when `track` reads none of the moves (a rating swing, a
+// timestamp), exactly as for a plain detector — otherwise the ladder only ever
+// sees standard games.
 // Unlike ordinary game detectors these never fire an unlock mid-stream — `detect`
 // only accumulates and returns false; the worker feeds them every game and posts
 // their `progress` once the stream ends (see worker.js / sendPartials), which
 // main.js routes through applyTier just like an account/extra ladder.
-function gameTiered({ id, title, details, steps, track, needsBoard = false, link }) {
+function gameTiered({ id, title, details, steps, track, needsBoard = false, anyVariant = false, link, unit }) {
   const value = (state) => (state ? state.max : 0);
   return {
-    id, title, details, scope: 'game', tiered: true, needsBoard, steps, link,
+    id, title, details, scope: 'game', tiered: true, needsBoard, anyVariant, steps, link, unit,
     init: () => ({ max: 0, cur: 0, at: new Array(steps.length).fill(null) }),
     detect: (ctx, state) => {
       // `track` may return a plain number, or { value, ply } to also deep-link to
@@ -918,4 +921,5 @@ export const ICONS = {
   crown: '<path d="M3.5 8.5l3.75 3.5L12 5l4.75 7 3.75-3.5-1.5 10.5H5L3.5 8.5z"/>',
   knight: '<path d="M7 20.5h10.5M8.5 20.5v-4.2l-2.3-1.4 1.7-3 3.3-1.9M8.6 14c-1.8-1-1.6-3.9.5-5.2M11 8.6c-.3-2.1 1.2-4 3.4-4.1 3-.1 5.1 2.7 5.1 6.7v9.3"/>',
   hourglass: '<path d="M6 3h12M6 21h12M8 3v3.5a4 4 0 004 4 4 4 0 004-4V3M8 21v-3.5a4 4 0 014-4 4 4 0 014 4V21"/>',
+  target: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.4"/>',
 };
