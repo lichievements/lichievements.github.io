@@ -846,6 +846,30 @@ export const CATEGORIES = [
       { id: 'tv-time', title: 'Prime Time', details: 'Be featured on Lichess TV', image: 'images/tv.png', scope: 'account', unlock: (a) => (a.playTime?.tv || 0) >= 1 },
       { id: 'session-games', title: 'Grinder', details: 'Play at least 20 games in a single sitting', svg: 'fire', color: '#0e7490', scope: 'extra', unlock: (x) => x.sessionGames >= 20 },
       { id: 'session-time', title: 'Iron Player', details: 'Play for two hours in a single sitting', svg: 'hourglass', color: '#155e75', scope: 'extra', unlock: (x) => x.sessionTime >= 7200 },
+      // Longest run of calendar days with at least one game. Counted straight off
+      // the stream — which arrives in date order and covers casual games and every
+      // variant — rather than from /api/user/{u}/rating-history, which only has a
+      // point on days a *rated* game moved the rating.
+      // Days are the player's own local calendar days, matching Night Owl.
+      gameTiered({
+        id: 'days-streak', title: 'Daily Habit', details: 'Play on day after day without missing one', anyVariant: true, unit: 'days',
+        link: 'https://lichess.org/@/{u}/all',
+        track: (c, s) => {
+          const t = new Date(c.createdAt);
+          const day = Date.UTC(t.getFullYear(), t.getMonth(), t.getDate()) / 864e5;
+          if (s.lastDay === day) return s.cur;          // another game the same day
+          s.cur = s.lastDay === day - 1 ? s.cur + 1 : 1; // consecutive, or a fresh start
+          s.lastDay = day;
+          return s.cur;
+        },
+        steps: [
+          { at: 7, title: 'One Week', details: 'Play on seven days in a row', svg: 'clock', color: '#38bdf8' },
+          { at: 14, title: 'Two Weeks', details: 'Play on 14 days in a row', svg: 'clock', color: '#0ea5e9' },
+          { at: 30, title: 'A Full Month', details: 'Play on 30 days in a row', svg: 'fire', color: '#0284c7' },
+          { at: 100, title: 'Hundred Days', details: 'Play on 100 days in a row', svg: 'fire', color: '#0369a1' },
+          { at: 365, title: 'Every Single Day', details: 'Play on 365 days in a row', svg: 'crown', color: '#075985' },
+        ],
+      }),
     ],
   },
   {
