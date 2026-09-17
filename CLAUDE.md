@@ -117,18 +117,29 @@ an updated worker takes control. Bump `APP_VERSION` in `sw.js` to invalidate the
   time controls **and the eight variants**, since berserks, sessions, loss streaks
   and best wins are not about standard chess — for `stat.highest` peak rating,
   `playStreak` longest sitting, `count.berserk`, `resultStreak`, `bestWins`; the best
-  across formats is kept) and `GET /api/puzzle/dashboard/1000` (needs `puzzle:read` —
-  per-theme solve counts + puzzle performance). **No blog API exists on Lichess**, so
-  "write a blog post" is not detectable and is omitted.
+  across formats is kept, while `count.tour` and `count.disconnects` are *summed*,
+  being per-format totals), `GET /api/puzzle/dashboard/1000` (needs `puzzle:read` —
+  per-theme solve counts + puzzle performance) and `GET /api/storm/dashboard/{u}?days=365`
+  (public; longest combo, highest puzzle solved, most runs in a day — its per-day rows
+  stop at the API's 365-day maximum, so those three are *last year's* best, not
+  all-time, and it is only fetched when `perfs.storm.runs > 0`).
+  **No blog API exists on Lichess**, so "write a blog post" is not detectable and is
+  omitted.
 - **`GET /api/games/user/{username}`** with `Accept: application/x-ndjson`,
   `moves=true&opening=true&tags=false&clocks=false&evals=false&pgnInJson=false`,
-  `sort=dateAsc`. Streams one JSON object per game, each with:
+  `accuracy=true&division=true&sort=dateAsc`. Streams one JSON object per game:
   `id` (Lichess game id), `moves` (space-separated **SAN**), `opening{eco,name,ply}`,
   `players` (incl. each side's `rating`, `ratingDiff`, `user.title`, `aiLevel`),
-  `winner`, `speed`, `variant`, `status`, `createdAt`. This is the single heavy
-  request; it is read as a `ReadableStream` and fed line-by-line to the worker.
+  `winner`, `speed`, `variant`, `status`, `source`, `clock`, `division`, `arenaTour`/
+  `swissTour`, `createdAt`. This is the single heavy request; it is read as a
+  `ReadableStream` and fed line-by-line to the worker.
   Player ratings/titles arrive in the JSON by default (no extra param), powering the
-  upset / giant-slayer detectors with no additional request.
+  upset / giant-slayer detectors with no additional request. `accuracy=true` adds
+  `players.{color}.analysis` — `accuracy`, `acpl`, `inaccuracy`/`mistake`/`blunder`
+  and per-phase accuracy — but **only on games Lichess has analysed**, which for most
+  accounts is a small subset; a detector must read a missing `analysis` as *unknown*,
+  never as a clean sheet. `division=true` is passed explicitly: the OpenAPI spec
+  documents it as opt-in, even though the live export returns it either way.
 - **Puzzle/other:** fetch from dedicated endpoints where the API allows; anything not
   verifiable from account+games is **omitted** (per decision — no dead placeholders).
 
@@ -236,11 +247,15 @@ thresholds: the tile shows the highest step reached plus progress toward the nex
 - `tiered({ id, title, details, scope, measure, steps, link, unit })` — an `account`-
   or `extra`-scope ladder. `measure(source)` returns the current number (e.g.
   `a.count.all`); `steps` is `[{ at, title, details, image | svg + color }]`.
-- `gameTiered({ id, title, details, steps, track, needsBoard, link })` — a `game`-scope
-  ladder. `track(ctx, state)` returns this game's value (or `{ value, ply }` to also
-  deep-link the deciding move) and the tile keeps the running **maximum** across the
-  history. These never fire an unlock mid-stream: `detect` only accumulates and returns
-  false, and the final value is posted once the stream ends.
+- `gameTiered({ id, title, details, steps, track, needsBoard, anyVariant, link, unit })` —
+  a `game`-scope ladder. `track(ctx, state)` returns this game's value (or
+  `{ value, ply }` to also deep-link the deciding move) and the tile keeps the running
+  **maximum** across the history. These never fire an unlock mid-stream: `detect` only
+  accumulates and returns false, and the final value is posted once the stream ends.
+  `anyVariant` works exactly as on a plain detector — a ladder over a rating swing or a
+  timestamp needs it, or it only ever sees standard games. A ladder whose `track` keeps
+  a *running* count across games (win streak, days in a row) may also use `state` for
+  its own bookkeeping beyond the `max`/`cur` that `gameTiered` manages.
 - `speedTier(id, perfKey, label, image)` — a 1 / 10 / 100 games ladder per time control,
   from the `/api/account` perf counts.
 - `ratingTier(perfKey, label)` — a 1000 / 1500 / 1800 / 2000 / 2200 peak-rating ladder
@@ -271,11 +286,14 @@ ladder's `link` template.
 - **Categories** (rendered as `<h2>` section headers, in this order): Checkmates ·
   Winning Feats · Win Conditions · Board Antics · Openings: White · Openings: Black ·
   Opening Collections · Time Controls · Variants · Game Types · Milestones · Ratings ·
-  Records · Puzzles · Profile & Community · Dedication · Notable Games · Social ·
-  Tournaments. Social and Tournaments are `extra`-scope; Win Conditions and Game Types
-  are `anyVariant` `game`-scope, reading only `status` / `source` / `rated`. That is
-  ~160 **tiles**, which expand to ~245 countable achievements once each ladder step is
-  counted — the latter is the number in the status bar. Categories whose art doesn't
+  Records · Precision · Puzzles · Profile & Community · Dedication · Notable Games ·
+  Social · Tournaments. Social and Tournaments are `extra`-scope; Win Conditions and
+  Game Types are `anyVariant` `game`-scope, reading only `status` / `source` / `rated`;
+  Precision reads only the computer analysis, so it is `anyVariant` too. That is
+  **175 tiles**, which expand to **290 countable achievements** once each ladder step is
+  counted — the latter is the number in the status bar. (Both come straight from the
+  registry: `ALL.length` and `ALL.reduce((n,a) => n + (a.tiered ? a.steps.length : 1), 0)`.)
+  Categories whose art doesn't
   exist yet render coloured SVG placeholder tiles (see `ICONS` in `achievements.js`);
   a category header carries a running `n / total` tally and shows a checkmark once
   fully unlocked.
