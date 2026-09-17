@@ -626,7 +626,7 @@ export const CATEGORIES = [
       // credits the levels below it as well — the tier text names the level reached,
       // not a specific game you must still go and play.
       gameTiered({
-        id: 'beat-stockfish', title: 'Beat Stockfish', details: 'Climb the Lichess computer levels', anyVariant: true, unit: 'level',
+        id: 'beat-stockfish', title: 'Beat Stockfish', details: 'Climb the Lichess computer levels', anyVariant: true, discrete: true,
         link: 'https://lichess.org/@/{u}/all',
         track: (c) => (c.won && c.oppAi ? c.oppAi : null),
         steps: [
@@ -646,13 +646,13 @@ export const CATEGORIES = [
       // playing like an 1100). Only maia1/maia5/maia9 are bots; maia2, maia3 and the
       // rest are ordinary accounts that happen to share the name.
       gameTiered({
-        id: 'beat-maia', title: 'Human, Too', details: 'Beat Maia, the engine trained to play like a person', anyVariant: true, unit: 'level',
+        id: 'beat-maia', title: 'Beat Maia', details: 'Beat Maia, the engine trained to play like a person', anyVariant: true, discrete: true,
         link: 'https://lichess.org/@/maia1',
         track: (c) => (c.won ? (MAIA_LEVEL[c.oppId] || null) : null),
         steps: [
-          { at: 1100, title: 'Maia 1100', details: 'Beat Maia at the level it learned from 1100-rated players', svg: 'idcard', color: '#14b8a6' },
-          { at: 1500, title: 'Maia 1500', details: 'Beat Maia at the level it learned from 1500-rated players', svg: 'idcard', color: '#0d9488' },
-          { at: 1900, title: 'Maia 1900', details: 'Beat Maia at the level it learned from 1900-rated players', svg: 'crown', color: '#0f766e' },
+          { at: 1100, title: 'Maia 1', details: 'Beat maia1, the net that learned from 1100-rated players', svg: 'idcard', color: '#14b8a6' },
+          { at: 1500, title: 'Maia 5', details: 'Beat maia5, the net that learned from 1500-rated players', svg: 'idcard', color: '#0d9488' },
+          { at: 1900, title: 'Maia 9', details: 'Beat maia9, the net that learned from 1900-rated players', svg: 'crown', color: '#0f766e' },
         ],
       }),
     ],
