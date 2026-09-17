@@ -262,7 +262,11 @@ thresholds: the tile shows the highest step reached plus progress toward the nex
   per format, from the worker's `extra.peakByPerf`.
 
 Every tiered entry carries `tiered: true`, its `steps`, and a `progress()` returning
-`{ have, need, value, items }`. `link` is a URL template with `{u}` for the username
+`{ have, need, value, items }`. Both helpers also take `discrete: true`, for a ladder
+whose `at` values *label* a rung (a computer level, a Maia net) instead of counting
+toward one: the rungs still climb in order, but the list row drops the
+"value / target" tally, which would otherwise claim you are "0 / 1100" of the way to
+beating a bot. `link` is a URL template with `{u}` for the username
 (e.g. `https://lichess.org/@/{u}/perf/blitz`) — perf keys are case-sensitive, so use
 the exact key. In grid view, clicking a tiered tile opens the **tier modal**: a
 lightbox that pages through the earned tiers, each image linking to the game that
