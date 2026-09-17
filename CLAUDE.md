@@ -310,20 +310,36 @@ TV) are not derivable from the API and stay omitted unless an endpoint turns up.
   the full weight range from one file (`fonts/Inter-4.1/web/InterVariable.woff2`).
 - **Fonts:** self-hosted `@font-face` (woff2). Inter = body/UI, JetBrains Mono =
   monospace accents (e.g. move lists in tooltips/details).
-- **Grid:** responsive `grid-template-columns: repeat(auto-fill, minmax(…, 1fr))`;
+- **Two layouts, one DOM.** A `<body>` class switches between the square-tile **grid**
+  and a stacked **list** (compact rows: title and details, art hidden). The same tiles
+  are reused; only CSS differs. **List view is the default** — an inline pre-paint
+  script in `index.html` sets the class, and only an explicit `grid` in `li_view` opts
+  out. Toggling re-anchors whichever category section was at the top of the viewport,
+  since the two layouts scroll differently.
+- **Grid:** responsive `grid-template-columns: repeat(auto-fill, minmax(128px, 1fr))`;
   square tiles via `aspect-ratio: 1`. Locked = `locked.png`; unlock = flip/fade
   reveal (respect `prefers-reduced-motion`). Tile shows title + details on
-  hover/focus/tap. Unlocked game-derived tiles are clickable `<a>` links opening the
-  source game on Lichess (§6); a small cue (e.g. ↗) signals the link.
+  hover/focus/tap — on touch there is no hover, so the first tap only reveals the
+  caption and a second tap follows the link. Unlocked game-derived tiles are clickable
+  `<a>` links opening the source game on Lichess (§6); a small cue (e.g. ↗) signals it.
+- **Table of contents.** Tapping any category heading collapses *every* section (body
+  class `toc-mode`, which also hides the header, footer and button row) so the headings
+  stack into a compact index; tapping again restores the tiles and scrolls that heading
+  to the top.
+- **Button row.** A sticky, bottom-centred row of four round icon buttons: grid/list
+  toggle, light/dark toggle, a link to `hints.html` and a link to the GitHub repo. It
+  settles above the footer once the page is scrolled all the way down; its solid
+  background matches `--bg`, so it is seamless at rest.
 - **Minimal palette**, generous whitespace, accessible focus states, works from phone
   to wide desktop.
 - **Light & dark themes** via CSS custom properties. Dark (default) uses the warm
-  board-tone accent; light uses a white background with a `#0891b2` cyan accent. A
-  round toggle (top-right) flips themes and persists the choice in `localStorage`;
-  an inline pre-paint script reads the saved value / `prefers-color-scheme` to avoid a
-  flash of the wrong theme.
-- **Safe areas (iPhone).** The sticky button row's bottom padding is
-  `calc(4px + env(safe-area-inset-bottom))` — the only safe-area rule in the site.
+  board-tone accent; light uses a white background with a `#0891b2` cyan accent. The
+  theme toggle persists the choice in `localStorage` (`theme`); an inline pre-paint
+  script — in `index.html` *and* `hints.html` — reads the saved value /
+  `prefers-color-scheme` to avoid a flash of the wrong theme.
+- **Safe areas (iPhone).** The sticky button row's bottom padding becomes
+  `calc(14px + env(safe-area-inset-bottom))` under `@media (max-width: 439.98px)`,
+  where 14px is the row's ordinary padding — the only safe-area rule in the site.
   **Do not add `viewport-fit=cover`.** It is what makes `env(...)` report real
   insets, but it also lets the page paint into the status-bar strip, and with
   `apple-mobile-web-app-status-bar-style: black-translucent` the grid then scrolls
