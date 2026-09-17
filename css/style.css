@@ -269,6 +269,7 @@ a { color: inherit; }
 .toc-mode .hint-desc,
 .toc-mode .hint-note-inline,
 .toc-mode .hint-openings,
+.toc-mode .eco-grid,
 .toc-mode .move-chips { display: none; }
 .toc-mode .hint-group { margin-bottom: 0; }
 .category-head h2 {
@@ -900,6 +901,57 @@ body.list-view .wrap { max-width: clamp(1180px, 530px + 50vw, 1480px); }
   border-color: var(--accent);
 }
 .hints.has-progress .move-chip:not(.is-done) { opacity: 0.7; }
+
+/* ECO Expert: a column per volume, a row per pair of digits, and an unlabelled
+   square per code — the same filled/empty language as the chips, just denser. The
+   code lives in each square's title, so it is a tooltip rather than a label. */
+.eco-grid {
+  border-collapse: separate;
+  border-spacing: 4px;
+  table-layout: fixed;
+  width: 100%;
+  max-width: 340px;
+  margin-top: 6px;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+}
+.eco-grid th {
+  padding: 0;
+  font-weight: 600;
+  color: var(--text-dim);
+}
+.eco-grid thead th {
+  font-size: 0.8rem;
+  padding-bottom: 2px;
+}
+.eco-grid tbody th {
+  width: 2.4em;
+  font-size: 0.68rem;
+  font-weight: 400;
+  text-align: right;
+  padding-right: 4px;
+  color: var(--text-mute);
+}
+.eco-grid td { padding: 0; }
+.eco-cell {
+  display: block;
+  height: 13px;
+  border-radius: 4px;
+  background: var(--bg-tile);
+  border: 1px solid var(--line);
+}
+/* Per-volume tally under its letter; the heading carries the combined total. */
+.eco-col-count {
+  display: block;
+  font-size: 0.62rem;
+  font-weight: 400;
+  color: var(--text-mute);
+}
+.hints.has-progress .eco-cell.is-done {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.hints.has-progress .eco-cell:not(.is-done) { opacity: 0.7; }
 
 /* --- Utility --------------------------------------------------------------- */
 

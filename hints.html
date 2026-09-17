@@ -93,6 +93,18 @@
         </div>
       </section>
 
+      <!-- Five achievements share one table, one per column, so this section carries
+           no data-ach of its own: each cell names the achievement it belongs to. -->
+      <section class="hint-group" id="openings-eco">
+        <h2>ECO Expert</h2>
+        <p class="hint-desc">One achievement per volume, and each wants the whole
+          volume: all hundred codes from <code>A00</code> to <code>A99</code>, and the
+          same for B, C, D and E. Any opening filed under a code counts, either colour.
+          A column is a volume, a row is the two digits, and a square fills in once
+          you have played that code.</p>
+        <table class="eco-grid" id="eco-grid" aria-label="ECO codes you have played, by volume"></table>
+      </section>
+
       <section class="hint-group" id="openings-eu" data-ach="openings-eu">
         <h2>The Union</h2>
         <p class="hint-desc">One opening per EU member state — 27 in total. Each row is the country, the opening, and the moves to play.</p>
@@ -262,6 +274,50 @@
   </div>
 
   <script>
+    // Build the ECO Expert grid: 100 rows of two digits, five volume columns. Written
+    // here rather than in the markup because it is 500 cells; the surrounding prose
+    // stays static so the section still reads without it.
+    (function () {
+      var table = document.getElementById('eco-grid');
+      if (!table) return;
+      var vols = ['A', 'B', 'C', 'D', 'E'];
+
+      var head = document.createElement('tr');
+      head.appendChild(document.createElement('td')); // empty corner above the digits
+      vols.forEach(function (v) {
+        var th = document.createElement('th');
+        th.scope = 'col';
+        th.textContent = v;
+        head.appendChild(th);
+      });
+      var thead = document.createElement('thead');
+      thead.appendChild(head);
+
+      var tbody = document.createElement('tbody');
+      for (var i = 0; i < 100; i++) {
+        var n = (i < 10 ? '0' : '') + i;
+        var tr = document.createElement('tr');
+        var rh = document.createElement('th');
+        rh.scope = 'row';
+        rh.textContent = n;
+        tr.appendChild(rh);
+        vols.forEach(function (v) {
+          var td = document.createElement('td');
+          var cell = document.createElement('span');
+          cell.className = 'eco-cell';
+          // The code itself is the tooltip, not a label inside the square.
+          cell.title = v + n;
+          cell.setAttribute('data-ach', 'openings-eco-' + v.toLowerCase());
+          cell.setAttribute('data-key', v + n);
+          td.appendChild(cell);
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      }
+      table.appendChild(thead);
+      table.appendChild(tbody);
+    })();
+
     // Annotate each collection with the user's progress, read from the same
     // localStorage that js/main.js writes during analysis. No user data → the page
     // stays a plain reference list.
@@ -288,9 +344,9 @@
       note.textContent = 'Showing your progress from your last analysis. Reload your achievements for the latest.';
       note.hidden = false;
 
-      document.querySelectorAll('.hint-group[data-ach]').forEach(function (section) {
-        var id = section.getAttribute('data-ach');
-        var keyed = Array.prototype.slice.call(section.querySelectorAll('[data-key]'));
+      // Mark up one achievement's members and report how many are done. Split out so
+      // the ECO grid can call it once per column — five achievements, one table.
+      function annotate(id, keyed) {
         var need = keyed.length;
         var prog = partial[id];
         var full = !!unlockedIds[id];
@@ -311,10 +367,10 @@
           // Link the row to the exact game where this member first appeared.
           var it = at[key];
           if (!it) return;
-          // Chips are plain pills: .hint-link is positioned for the list rows' grid
-          // and its stretched hit area needs their relative parent, so a chip layout
-          // (Encyclopedia, ABCDE) stays unlinked even when a game is on record.
-          if (el.classList.contains('move-chip')) return;
+          // Only the list rows get the arrow badge: .hint-link is placed into their
+          // grid and its stretched hit area needs their relative parent. Chips and
+          // grid squares stay unlinked even when a game is on record.
+          if (el.tagName !== 'LI') return;
           var href = 'https://lichess.org/' + it.gameId;
           if (it.color) href += '/' + it.color;
           if (typeof it.ply === 'number') href += '#' + (it.ply + 1);
@@ -329,11 +385,43 @@
           el.classList.add('has-link'); // whole row becomes clickable (see .hint-link::after)
         });
 
-        var badge = document.createElement('span');
-        badge.className = 'hint-progress' + (have >= need ? ' complete' : '');
-        badge.textContent = have + ' / ' + need;
-        section.querySelector('h2').appendChild(badge);
+        return { have: have, need: need };
+      }
+
+      function badge(heading, have, need) {
+        var el = document.createElement('span');
+        el.className = 'hint-progress' + (have >= need ? ' complete' : '');
+        el.textContent = have + ' / ' + need;
+        heading.appendChild(el);
+      }
+
+      document.querySelectorAll('.hint-group[data-ach]').forEach(function (section) {
+        var keyed = Array.prototype.slice.call(section.querySelectorAll('[data-key]'));
+        var r = annotate(section.getAttribute('data-ach'), keyed);
+        badge(section.querySelector('h2'), r.have, r.need);
       });
+
+      // The ECO grid is five achievements in one table, so each column is annotated
+      // on its own and carries its own count under the volume letter; the heading
+      // shows the combined total across all five.
+      var grid = document.getElementById('eco-grid');
+      if (grid) {
+        var heads = grid.querySelectorAll('thead th');
+        var total = 0;
+        var totalNeed = 0;
+        ['A', 'B', 'C', 'D', 'E'].forEach(function (v, i) {
+          var id = 'openings-eco-' + v.toLowerCase();
+          var cells = Array.prototype.slice.call(grid.querySelectorAll('[data-ach="' + id + '"]'));
+          var r = annotate(id, cells);
+          total += r.have;
+          totalNeed += r.need;
+          var count = document.createElement('span');
+          count.className = 'eco-col-count';
+          count.textContent = r.have;
+          heads[i].appendChild(count);
+        });
+        badge(document.querySelector('#openings-eco h2'), total, totalNeed);
+      }
     })();
   </script>
   <script>
