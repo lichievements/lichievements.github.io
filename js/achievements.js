@@ -185,9 +185,13 @@ function collection(id, title, details, image, memberLines) {
 // highest reached step and progress toward the next; every reached step counts
 // toward the totals. Progress rides the same `partial` channel as collections, so
 // it persists and restores without re-analysis.
-function tiered({ id, title, details, scope, measure, steps, link, unit }) {
+// `discrete: true` marks a ladder whose `at` values *label* a rung instead of
+// counting toward one — a computer level, a Maia net. The rungs still climb in
+// order, but there is no partial progress toward one, so the UI drops the
+// "value / target" tally that would otherwise read "0 / 1100".
+function tiered({ id, title, details, scope, measure, steps, link, unit, discrete = false }) {
   return {
-    id, title, details, scope, steps, measure, link, unit,
+    id, title, details, scope, steps, measure, link, unit, discrete,
     tiered: true,
     progress: (value) => ({
       have: steps.reduce((n, s) => n + (value >= s.at ? 1 : 0), 0),
@@ -209,10 +213,10 @@ function tiered({ id, title, details, scope, measure, steps, link, unit }) {
 // only accumulates and returns false; the worker feeds them every game and posts
 // their `progress` once the stream ends (see worker.js / sendPartials), which
 // main.js routes through applyTier just like an account/extra ladder.
-function gameTiered({ id, title, details, steps, track, needsBoard = false, anyVariant = false, link, unit }) {
+function gameTiered({ id, title, details, steps, track, needsBoard = false, anyVariant = false, link, unit, discrete = false }) {
   const value = (state) => (state ? state.max : 0);
   return {
-    id, title, details, scope: 'game', tiered: true, needsBoard, anyVariant, steps, link, unit,
+    id, title, details, scope: 'game', tiered: true, needsBoard, anyVariant, steps, link, unit, discrete,
     init: () => ({ max: 0, cur: 0, at: new Array(steps.length).fill(null) }),
     detect: (ctx, state) => {
       // `track` may return a plain number, or { value, ply } to also deep-link to

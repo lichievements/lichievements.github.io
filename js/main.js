@@ -656,12 +656,17 @@ function renderTierSteps(tile, def, have, value, items) {
       text.append(d);
     }
     li.append(chk, text);
-    // Per-step tally only on the in-progress step; cleared steps drop it.
+    // Per-step tally only on the in-progress step; cleared steps drop it. A
+    // `discrete` ladder has no such tally: its `at` values label a rung (a computer
+    // level, a Maia net) rather than counting up to one, so "0 / 1100" would be
+    // nonsense — there is no partial progress toward beating a given bot.
     if (!done) {
-      const tg = document.createElement('span');
-      tg.className = 'tier-target';
-      tg.textContent = `${fmtNum(Math.min(value, steps[i].at))} / ${fmtNum(steps[i].at)}`;
-      li.append(tg);
+      if (!def.discrete) {
+        const tg = document.createElement('span');
+        tg.className = 'tier-target';
+        tg.textContent = `${fmtNum(Math.min(value, steps[i].at))} / ${fmtNum(steps[i].at)}`;
+        li.append(tg);
+      }
     } else if (items && items[i] && items[i].gameId) {
       // Cleared step with a known source game: make the whole row deep-link to it.
       // The ↗ is only revealed on hover (see CSS) so the dense rows stay uncluttered.
