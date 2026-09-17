@@ -365,15 +365,20 @@ export const CATEGORIES = [
     ],
   },
   {
-    // How the win was decided — from the game's `status` field (Lichess
-    // GameStatusName). Standard decisive finishes: mate, resign, outoftime
-    // (clock flag), timeout (opponent abandoned the game).
+    // How the game ended — from its `status` field (Lichess GameStatusName).
+    // Decisive finishes: mate, resign, outoftime (clock flag), timeout (opponent
+    // abandoned the game); plus stalemate, which ends it as a draw either way.
     name: 'Win Conditions',
     items: [
       { id: 'win-checkmate', title: 'The Final Blow', details: 'Win a game by checkmate', svg: 'crown', color: '#eab308', scope: 'game', anyVariant: true, detect: (c) => c.won && c.status === 'mate' },
       { id: 'win-resign', title: 'They Resigned', details: 'Win a game by your opponent resigning', svg: 'flag', color: '#ef4444', scope: 'game', anyVariant: true, detect: (c) => c.won && c.status === 'resign' },
       { id: 'flag-opponent', title: 'Be Quick', details: "Win by flagging your opponent on time", image: 'images/flag-opponent.png', scope: 'game', anyVariant: true, detect: (c) => c.won && c.status === 'outoftime' },
       { id: 'win-abandon', title: 'Left Behind', details: 'Win a game by your opponent abandoning it', svg: 'hourglass', color: '#8b5cf6', scope: 'game', anyVariant: true, detect: (c) => c.won && c.status === 'timeout' },
+      // On a stalemate the side to move is the one with no legal move left, and
+      // `c.toMove` names it. Standard games only (see the worker): from a custom
+      // position Black may be the one to move on even plies.
+      { id: 'stalemate-forced', title: 'Nowhere to Go', details: "Stalemate your opponent — no legal move left, and only half a point for you", svg: 'scale', color: '#0ea5e9', scope: 'game', detect: (c) => c.status === 'stalemate' && c.toMove !== c.color },
+      { id: 'stalemate-received', title: 'Saved by the Rules', details: 'Be stalemated yourself, and rescue half a point from a lost game', svg: 'scale', color: '#a855f7', scope: 'game', detect: (c) => c.status === 'stalemate' && c.toMove === c.color },
     ],
   },
   {
