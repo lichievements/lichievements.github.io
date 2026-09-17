@@ -181,15 +181,19 @@ must be lean:
 
 ## 6. Achievement system
 
-Data-driven registry in `js/achievements.js`. Each entry:
+Data-driven registry in `js/achievements.js`. It exports `CATEGORIES` (the ordered
+sections, each `{ name, items }`), `ALL` (`CATEGORIES.flatMap(c => c.items)`) and
+`ICONS` (inline SVG paths for placeholder tiles). There is **no `category` field** on
+an entry — an achievement belongs to the category whose `items` array holds it.
+
+A plain entry:
 
 ```js
 {
   id: 'queen-mate',
-  category: 'Checkmates',
   title: "Queen's Quest",
   details: 'Deliver checkmate with a queen',
-  image: 'images/mate-queen.png',
+  image: 'images/mate-queen.png',  // or, when no art exists: svg: 'crown', color: '#c026d3'
   scope: 'game',               // 'account' | 'extra' | 'game'
   needsBoard: false,           // 'game' detectors set true when they read ctx.board.*
   anyVariant: false,           // true = detector ignores the moves, so run it on every variant
@@ -197,10 +201,15 @@ Data-driven registry in `js/achievements.js`. Each entry:
 }
 ```
 
+Art is either `image` (a PNG in `images/`) or `svg` + `color`, which renders a coloured
+placeholder tile from `ICONS`.
+
 **Scopes (as implemented in `js/achievements.js`):**
 - `account` — `unlock(account)`, evaluated once from `/api/account`.
-- `extra` — `unlock(extra)`, evaluated once from the supplementary endpoints
-  (teams / tournaments / studies / following) — see the worker.
+- `extra` — `unlock(extra)`, evaluated once from the supplementary endpoints —
+  teams / tournaments / studies / following, plus the per-format perf stats
+  (`peak`, `peakByPerf`, `sessionGames`, `sessionTime`, `berserk`, `lossStreak`,
+  `bestWinRating`) and the puzzle dashboard. See `evaluateExtra()` in the worker.
 - `game` — `detect(ctx, state)`, evaluated per streamed game. A `game` detector may
   set `needsBoard: true` to read `ctx.board.*` (en-passant mate, king's journey,
   multiple queens); the worker only reconstructs the board when at least one
@@ -218,39 +227,79 @@ Data-driven registry in `js/achievements.js`. Each entry:
   posted with `ply: null`, because Lichess's `#ply` anchor counts from the game's own
   starting ply.
 
-**Unlock provenance & deep links.** Each game-derived achievement stores the first
-game that unlocked it: `{ gameId, color, ply }`. The unlocked tile is rendered as a
-link to `https://lichess.org/{gameId}/{color}#{ply}` — opening the game on Lichess
-from the winning side, jumped to the deciding move (omit `/{color}` / `#{ply}` when
-not applicable). `account`-scope achievements have no single source game, so their
-tiles are non-linking (or link to the user's profile).
+**Tiered achievements (ladders).** Many tiles are not a single yes/no but a ladder of
+thresholds: the tile shows the highest step reached plus progress toward the next, and
+**every reached step counts toward the site's unlocked total** (`countOf` in
+`main.js`). Four helpers build them:
 
-- **Categories** (rendered as `<h2>` section headers). The live set (~170
-  achievements total) is: Checkmates · Winning Feats · Board Antics · Openings: White ·
-  Openings: Black · Opening Collections · Time Controls · Variants · Milestones ·
-  Ratings · Records · Puzzles · Profile & Community · Dedication · Notable Games ·
-  Social · Tournaments. (Social and Tournaments are `extra`-scope.) Categories whose
-  art doesn't exist yet render coloured SVG placeholder tiles (see `ICONS` in
-  `achievements.js`); a category header shows a checkmark once fully unlocked.
-- **Seed content:** port `achievements_OLD.json` (it maps 1:1 to images already in
-  `images/`), then expand toward the ~100 target using additional detectable ideas
-  (more mate patterns, streaks, promotion combos, opening lines, per-speed/variant
-  milestones, game-count tiers `play-1/10/100/1000/10000/100000`).
+- `tiered({ id, title, details, scope, measure, steps, link, unit })` — an `account`-
+  or `extra`-scope ladder. `measure(source)` returns the current number (e.g.
+  `a.count.all`); `steps` is `[{ at, title, details, image | svg + color }]`.
+- `gameTiered({ id, title, details, steps, track, needsBoard, link })` — a `game`-scope
+  ladder. `track(ctx, state)` returns this game's value (or `{ value, ply }` to also
+  deep-link the deciding move) and the tile keeps the running **maximum** across the
+  history. These never fire an unlock mid-stream: `detect` only accumulates and returns
+  false, and the final value is posted once the stream ends.
+- `speedTier(id, perfKey, label, image)` — a 1 / 10 / 100 games ladder per time control,
+  from the `/api/account` perf counts.
+- `ratingTier(perfKey, label)` — a 1000 / 1500 / 1800 / 2000 / 2200 peak-rating ladder
+  per format, from the worker's `extra.peakByPerf`.
+
+Every tiered entry carries `tiered: true`, its `steps`, and a `progress()` returning
+`{ have, need, value, items }`. `link` is a URL template with `{u}` for the username
+(e.g. `https://lichess.org/@/{u}/perf/blitz`) — perf keys are case-sensitive, so use
+the exact key. In grid view, clicking a tiered tile opens the **tier modal**: a
+lightbox that pages through the earned tiers, each image linking to the game that
+unlocked that tier.
+
+**The `partial` channel.** Alongside `unlock`, the worker posts
+`{ type: 'partial', id, progress }` for anything exposing a `progress()` — tiered
+ladders (account/extra immediately, game ladders via `sendPartials()` at stream end)
+and the opening collections. `main.js` persists these to `li_partial:{uid}`, so tiers
+and half-finished collections restore on a plain reload exactly like unlocks, and
+`hints.html` reads the same key to tick off the collection members you already have.
+
+**Unlock provenance & deep links.** Each game-derived achievement stores the first
+game that unlocked it: `{ gameId, color, ply }`, with `ply` 0-based. The unlocked tile
+links to `https://lichess.org/{gameId}/{color}#{ply + 1}` — Lichess's `#` anchor is
+1-based, so `main.js` adds one — opening the game from the winning side, jumped to the
+deciding move (omit `/{color}` / `#…` when not applicable). `account`-scope
+achievements have no single source game, so their tiles either don't link or follow the
+ladder's `link` template.
+
+- **Categories** (rendered as `<h2>` section headers, in this order): Checkmates ·
+  Winning Feats · Win Conditions · Board Antics · Openings: White · Openings: Black ·
+  Opening Collections · Time Controls · Variants · Game Types · Milestones · Ratings ·
+  Records · Puzzles · Profile & Community · Dedication · Notable Games · Social ·
+  Tournaments. Social and Tournaments are `extra`-scope; Win Conditions and Game Types
+  are `anyVariant` `game`-scope, reading only `status` / `source` / `rated`. That is
+  ~160 **tiles**, which expand to ~245 countable achievements once each ladder step is
+  counted — the latter is the number in the status bar. Categories whose art doesn't
+  exist yet render coloured SVG placeholder tiles (see `ICONS` in `achievements.js`);
+  a category header carries a running `n / total` tally and shows a checkmark once
+  fully unlocked.
+- **History:** the list was seeded from `achievements_OLD.json` (which mapped 1:1 to
+  images already in `images/`) and has long since grown past it — more mate patterns,
+  streaks, promotion combos, opening lines, per-speed/variant milestones and the
+  tiered ladders above.
 - **Images:** each achievement references an existing PNG in `images/`. More art is
   coming later; until an image exists, the tile shows a generic unlocked placeholder.
   `images/locked.png` is the universal locked state. `icon.png` is the favicon.
 - **Opening detection** is data-only: store the target SAN sequence per opening and
   compare against the game's opening moves (also cross-checkable with `opening.eco`).
-- **Themed collections** are aggregate achievements: every member opening must appear
-  on the board across the user's games (colour-agnostic prefix match — either side
-  counts). Members are plain SAN lines held inline in the collection. The five
-  canonical collections: Encyclopedia (all 20 White first moves), The Union (one
-  opening per EU member state), Scary Stuff, Fierce Fantasy, Blissful Beverages.
-  (The `openings-brands`/`openings-champions`/`openings-zoo` images are unused.)
+- **Themed collections** are aggregate `game` achievements built by `collection()`:
+  every member opening must appear on the board across the user's games (colour-agnostic
+  prefix match — either side counts). Members are plain SAN lines held inline. The seven
+  collections: **Encyclopedia** (all 20 White first moves — the one that *is*
+  colour-specific), **The Union** (one opening per EU member state), **Scary Stuff**,
+  **Fierce Fantasy**, **The Zoo** (one per animal), **Hall of Champions** (one per World
+  Champion) and **Blissful Beverages**. Each exposes `progress()` with per-member state,
+  which is what `hints.html` renders. (`images/openings-brands.png` is the only
+  collection art still unused.)
 
-`achievements_OLD.json` is **reference only**; the live source of truth is
-`js/achievements.js`. Note: a few old ids (puzzle storm/racer/streak, TV, studies)
-are not derivable from games and will be omitted unless a fetchable endpoint exists.
+`achievements_OLD.json` is **reference only** and is gitignored — not in the repo. The
+live source of truth is `js/achievements.js`. A few old ids (puzzle storm/racer/streak,
+TV) are not derivable from the API and stay omitted unless an endpoint turns up.
 
 ---
 
