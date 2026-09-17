@@ -264,7 +264,7 @@ thresholds: the tile shows the highest step reached plus progress toward the nex
   timestamp needs it, or it only ever sees standard games. A ladder whose `track` keeps
   a *running* count across games (win streak, days in a row) may also use `state` for
   its own bookkeeping beyond the `max`/`cur` that `gameTiered` manages.
-- `speedTier(id, perfKey, label, image)` — a 1 / 10 / 100 games ladder per time control,
+- `speedTier(id, perfKey, label, image)` — a 1 / 10 / 100 / 1,000 games ladder per time control,
   from the `/api/account` perf counts.
 - `ratingTier(perfKey, label)` — a 1000 / 1500 / 1800 / 2000 / 2200 peak-rating ladder
   per format, from the worker's `extra.peakByPerf`.
@@ -301,9 +301,10 @@ ladder's `link` template.
   Ratings · Records · Precision · Puzzles · Profile & Community · Dedication ·
   Notable Games · Social · Tournaments. Social and Tournaments are `extra`-scope; Win
   Conditions and Game Types are `anyVariant` `game`-scope, reading only `status` /
-  `source` / `rated`; Precision (computer analysis) and Machines (`aiLevel` / the
-  opponent's account id) are `anyVariant` for the same reason. That is
-  **177 tiles**, which expand to **301 countable achievements** once each ladder step is
+  `source` / `rated`. Precision and the two Machines ladders read no moves either, but
+  deliberately stay standard-only — they measure how *hard* a win was, and a custom
+  position hands the player the material. That is
+  **177 tiles**, which expand to **307 countable achievements** once each ladder step is
   counted — the latter is the number in the status bar. (Both come straight from the
   registry: `ALL.length` and `ALL.reduce((n,a) => n + (a.tiered ? a.steps.length : 1), 0)`.)
   Categories whose art doesn't
