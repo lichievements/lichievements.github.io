@@ -329,6 +329,12 @@ a { color: inherit; }
   text-decoration: none;
   color: inherit;
   isolation: isolate;
+  /* A tile is an <a>, so iOS flashes its default dark tap highlight over the whole
+     box on touch. That is wrong everywhere here: in list view a tiered tile is not
+     clickable at all (main.js cancels it — only a cleared tier row deep-links), and
+     in grid view the answer to a tap is the caption reveal or the tier modal, never
+     a plain grey wash. Same treatment as .btn, .icon-btn and .category-head. */
+  -webkit-tap-highlight-color: transparent;
 }
 
 .tile img {
