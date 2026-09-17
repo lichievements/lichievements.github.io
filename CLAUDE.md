@@ -10,8 +10,9 @@ The name is always styled as **li**`chievements` — `li` bold, `chievements` th
 
 ## 1. Product summary
 
-- **Logged-out view:** the title, a "Log in with Lichess" button, and a grid of
-  dark locked tiles (`images/locked.png`), grouped under category headers.
+- **Logged-out view:** the title, a "Log in with Lichess" button, and the full set of
+  locked tiles grouped under category headers (dark `images/locked.png` in grid view,
+  dimmed rows in the default list view).
 - **After login:** account data is fetched, then games stream in and are analyzed
   incrementally. As each achievement is detected, its tile flips/fades from
   `locked.png` to the achievement's own image. A live progress indicator shows how
@@ -367,7 +368,7 @@ TV) are not derivable from the API and stay omitted unless an endpoint turns up.
 
 ---
 
-## 9. Implementation order
+## 9. Implementation order (historical — all shipped)
 
 1. `index.html` + CSS design system + fonts + logged-out grid from the registry.
 2. `js/achievements.js` — port old list, define categories, tag scopes.
@@ -375,15 +376,20 @@ TV) are not derivable from the API and stay omitted unless an endpoint turns up.
 4. Account-scope detectors (instant tiles from `/api/account`).
 5. Streaming pipeline + worker + SAN detectors (fast path) + progressive reveal.
 6. Vendor chess.js; add board-required detectors behind the "still-locked" gate.
-7. Expand toward ~100 achievements; polish animations, responsiveness, a11y.
+7. Expand the registry; polish animations, responsiveness, a11y.
+8. Extra-scope endpoints, tiered ladders + the `partial` channel, list view and the
+   table of contents, the `hints.html` companion page, PWA + service worker.
 
 ---
 
 ## 10. Open items / notes
 
-- Confirm the exact `redirect_uri` / deployed origin to hard-code (or derive from
-  `window.location`).
+- **Deployed origin:** `https://lichievements.github.io/` (GitHub Pages, from
+  `origin/main`). Nothing is hard-coded — `oauth.js` derives both `redirect_uri` and
+  `client_id` from `location.origin + location.pathname`, so any origin that is
+  registered as a redirect works, including a local `http.server`.
 - New achievement art will be added to `images/` over time; keep ids stable so tiles
-  bind automatically.
-- Some ambitious achievements (e.g. exotic opening collections like "one opening per
-  EU state") are pure data tables over opening detection — cheap to add later.
+  bind automatically. `images/` still holds a large set of unused opening art (the
+  animal openings, `openings-brands.png`) waiting for matching achievements.
+- Some ambitious achievements (e.g. further exotic opening collections) are pure data
+  tables over opening detection — cheap to add via `collection()`.
