@@ -13,9 +13,16 @@
 import { ALL } from './achievements.js';
 import { Chess } from './chess.js';
 
+// `accuracy=true` adds players[color].analysis.accuracy on games Lichess has
+// analysed — the rest of that object (acpl, blunders, phases) comes along with it
+// and powers the Precision category. Unanalysed games simply carry no `analysis`,
+// so this costs nothing for everyone else.
+// `division` is passed explicitly: the OpenAPI spec documents it as default false
+// even though the live export returns it anyway, and two achievements depend on it.
 const GAMES_URL = (username) =>
   `https://lichess.org/api/games/user/${encodeURIComponent(username)}` +
-  `?moves=true&opening=true&tags=false&pgnInJson=false&clocks=false&evals=false&sort=dateAsc`;
+  `?moves=true&opening=true&tags=false&pgnInJson=false&clocks=false&evals=false` +
+  `&accuracy=true&division=true&sort=dateAsc`;
 
 self.onmessage = (e) => {
   const msg = e.data;
@@ -313,6 +320,11 @@ function analyseGame(game, uid, locked) {
     san,
     userSan,
     lastSan: san[san.length - 1],
+    // Colour to move after the last ply. White moves on even plies, so on a
+    // `stalemate` finish this is the side left without a legal move. It assumes
+    // the game started with White to move, which is why the detectors that read it
+    // are not flagged anyVariant (a `fromPosition` game can start either way).
+    toMove: san.length % 2 === 0 ? 'white' : 'black',
     checksByOpp: oppSan.reduce((n, m) => n + (m.endsWith('+') || m.endsWith('#') ? 1 : 0), 0),
     checksByUser: userSan.reduce((n, m) => n + (m.endsWith('+') || m.endsWith('#') ? 1 : 0), 0),
     anyCapture: san.some((m) => m.includes('x')),
@@ -321,6 +333,14 @@ function analyseGame(game, uid, locked) {
     oppRating: opp.rating || null,
     oppTitle: opp.user?.title || null, // 'GM', 'IM', ... or 'BOT'
     oppAi: opp.aiLevel || null,        // Stockfish level (1-8) when the opponent is the AI
+    // Rating won or lost on this game; only present on rated games.
+    ratingDiff: Number.isInteger(me.ratingDiff) ? me.ratingDiff : null,
+    // Computer-analysis summary per side: { inaccuracy, mistake, blunder, acpl,
+    // accuracy, phases: { opening, middlegame, endgame } }. Present only on games
+    // that have been analysed, and `accuracy`/`phases` only because GAMES_URL asks
+    // for them. Detectors must treat a missing object as "unknown", not as zero.
+    analysis: me.analysis || null,
+    oppAnalysis: opp.analysis || null,
     // Extra per-game facets (all fail-safe: a missing field just leaves the
     // achievement locked). source: 'simul' | 'position' | 'friend' | 'arena' | …
     source: typeof game.source === 'string' ? game.source : null,
