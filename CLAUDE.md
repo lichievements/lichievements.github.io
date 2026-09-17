@@ -33,23 +33,33 @@ The name is always styled as **li**`chievements` — `li` bold, `chievements` th
 - **No game-result caching during analysis:** every *analysis run* re-streams and
   re-analyzes the full history, so the pipeline's speed comes from streaming + fast
   detection + early-exit (see §5), not from storing intermediate results.
-- **Light client-side persistence (added later):** the *unlocked set* is cached in
-  `localStorage` per user (`li_unlocked:{uid}`) and the access token in
-  `sessionStorage` (`li_token`), so a page reload restores the previous tiles
-  instantly without re-analysing, and a **Reload** button re-runs the full analysis
-  on demand without a fresh Lichess login. Logout clears both.
+- **Light client-side persistence (added later):** a plain page reload restores the
+  previous tiles instantly without re-analysing, and a **Reload** button re-runs the
+  full analysis on demand without a fresh Lichess login. The keys:
+  - `localStorage` `li_unlocked:{uid}` — the unlocked set, `[{ id, gameId, color, ply }]`.
+  - `localStorage` `li_partial:{uid}` — per-member / per-tier progress for the
+    aggregate achievements, `id -> { have, need, value, items }` (§6). This is also
+    what `hints.html` reads.
+  - `localStorage` `li_user` — the last logged-in user id, so a reload (and
+    `hints.html`, which has no session of its own) knows whose cache to read.
+  - `sessionStorage` `li_token` — the access token, so **Reload** needs no new login.
+  - `localStorage` `theme` (`light`/`dark`) and `li_view` (`grid`/`list`) — UI
+    preferences, not user data; they deliberately survive logout.
+
+  Logout clears the two per-user caches, `li_user` and the token.
 
 ### File layout
 ```
 index.html            # markup: header, login button, achievement grid shell
-css/style.css         # design system, responsive grid, tile flip animation
+hints.html            # static hints page: the opening collections' full move lists,
+                      # annotated with the reader's own progress from localStorage
+css/style.css         # design system, grid + list layouts, tile reveal, tier modal
 css/fonts.css         # @font-face for Inter + JetBrains Mono
-js/main.js            # UI orchestration, OAuth, streaming fetch, DOM reveal
+js/main.js            # UI orchestration, OAuth, worker messages, DOM reveal, tier UI
 js/oauth.js           # PKCE helpers (code_verifier/challenge, state, token exchange)
 js/worker.js          # game analysis worker: runs detectors over streamed games
 js/achievements.js    # achievement registry (metadata) + detector functions
 js/chess.js           # vendored chess.js (MIT) — used ONLY for board-required detectors
-data/                 # (optional) generated opening tables if externalized
 images/               # tile art (provided; more to come). locked.png = locked tile
 fonts/                # Inter-4.1/web/*.woff2, JetBrainsMono-2.304/.../*.woff2
 icon.png              # favicon
@@ -57,6 +67,9 @@ sw.js                 # service worker: network-first for app code, cache-first 
 manifest.webmanifest  # PWA manifest
 icon-192/512*.png, apple-touch-icon.png   # PWA / iOS home-screen icons
 ```
+
+`.gitignore` keeps the dev-only reference files out of the repo:
+`achievements_OLD.json`, `lichess-api.json` and `openings/`.
 
 The site is also installable as a **PWA**. `sw.js` serves HTML/JS/CSS **network-first**
 (so every online launch gets the latest deploy — important for iOS PWAs that can't be
