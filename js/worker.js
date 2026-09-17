@@ -373,6 +373,8 @@ function analyseGame(game, uid, locked) {
     variant,                            // 'standard' | 'fromPosition' | 'chess960' | …
     rated: game.rated === true,
     eco: game.opening?.eco || null,
+    // Ply at which Lichess's opening classification stops (the last book move).
+    openingPly: Number.isInteger(game.opening?.ply) ? game.opening.ply : null,
     // Clock summary (seconds); absent for correspondence.
     clockInitial: game.clock?.initial ?? null,
     clockIncrement: game.clock?.increment ?? null,

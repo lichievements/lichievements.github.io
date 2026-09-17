@@ -304,7 +304,7 @@ ladder's `link` template.
   `source` / `rated`. Precision and the two Machines ladders read no moves either, but
   deliberately stay standard-only — they measure how *hard* a win was, and a custom
   position hands the player the material. That is
-  **177 tiles**, which expand to **307 countable achievements** once each ladder step is
+  **178 tiles**, which expand to **308 countable achievements** once each ladder step is
   counted — the latter is the number in the status bar. (Both come straight from the
   registry: `ALL.length` and `ALL.reduce((n,a) => n + (a.tiered ? a.steps.length : 1), 0)`.)
   Categories whose art doesn't
@@ -322,13 +322,17 @@ ladder's `link` template.
   compare against the game's opening moves (also cross-checkable with `opening.eco`).
 - **Themed collections** are aggregate `game` achievements built by `collection()`:
   every member opening must appear on the board across the user's games (colour-agnostic
-  prefix match — either side counts). Members are plain SAN lines held inline. The seven
-  collections: **Encyclopedia** (all 20 White first moves — the one that *is*
-  colour-specific), **The Union** (one opening per EU member state), **Scary Stuff**,
+  prefix match — either side counts). Members are plain SAN lines held inline. The six
+  themed ones: **The Union** (one opening per EU member state), **Scary Stuff**,
   **Fierce Fantasy**, **The Zoo** (one per animal), **Hall of Champions** (one per World
-  Champion) and **Blissful Beverages**. Each exposes `progress()` with per-member state,
-  which is what `hints.html` renders. (`images/openings-brands.png` is the only
-  collection art still unused.)
+  Champion) and **Blissful Beverages**. Two more are hand-rolled rather than built by
+  `collection()`, because they match on something other than a move line:
+  **Encyclopedia** (all 20 White first moves — the only colour-specific one) and
+  **ABCDE** (one opening from each ECO volume, matched on the first letter of
+  `opening.eco`, so any opening in a volume counts and transpositions sort themselves
+  out). All eight expose `progress()` with per-member state, which is what `hints.html`
+  renders — it keys rows off `data-ach` + `data-key` and needs no per-collection code.
+  (`images/openings-brands.png` is the only collection art still unused.)
 
 `achievements_OLD.json` is **reference only** and is gitignored — not in the repo. The
 live source of truth is `js/achievements.js`. A few old ids (puzzle storm/racer/streak,

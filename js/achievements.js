@@ -46,6 +46,11 @@ const FIRST_MOVES = [
 // a game against them has a regular `user.id` and no `aiLevel`.
 const MAIA_LEVEL = { maia1: 1100, maia5: 1500, maia9: 1900 };
 
+// The five volumes of the Encyclopaedia of Chess Openings. Every classified opening
+// carries one of these as the first character of its ECO code, so "one from each" is
+// a five-way scan of `opening.eco` — no move lines involved.
+const ECO_VOLUMES = ['A', 'B', 'C', 'D', 'E'];
+
 // Strip SAN annotations so opening lines compare cleanly.
 const bare = (s) => (s ? s.replace(/[+#!?]/g, '') : s);
 const startsWith = (arr, ch) => arr.some((m) => m[0] === ch);
@@ -441,6 +446,32 @@ export const CATEGORIES = [
           have: s.moves.size,
           need: 20,
           items: FIRST_MOVES.map((m) => ({ key: m, done: s.moves.has(m) })),
+        }) },
+      // ABCDE — one opening from each ECO volume. Unlike the themed collections this
+      // matches on the game's `eco` code instead of its moves, so there is nothing to
+      // transpose around: whatever Lichess ends up classifying the game as is what
+      // counts, and *any* opening in a volume ticks it off. Colour-agnostic, and a
+      // running count rather than Object.keys(), since this runs per game until done.
+      { id: 'openings-abcde', title: 'ABCDE', details: 'Play an opening from each of the five ECO volumes, A to E', svg: 'bookmark', color: '#8b5cf6', scope: 'game',
+        init: () => ({ at: {}, n: 0 }),
+        detect: (c, s) => {
+          const v = c.eco && c.eco !== '?' ? c.eco[0] : null;
+          if (v && !s.at[v] && ECO_VOLUMES.indexOf(v) >= 0) {
+            s.at[v] = { gameId: c.gameId, color: c.color, ply: c.openingPly, eco: c.eco };
+            s.n++;
+          }
+          return s.n >= ECO_VOLUMES.length;
+        },
+        progress: (s) => ({
+          have: s.n,
+          need: ECO_VOLUMES.length,
+          items: ECO_VOLUMES.map((v) => {
+            const at = s.at[v];
+            if (!at) return { key: v, done: false };
+            const it = { key: v, done: true, gameId: at.gameId, color: at.color, eco: at.eco };
+            if (Number.isInteger(at.ply)) it.ply = at.ply;
+            return it;
+          }),
         }) },
       // The Union — one opening per EU member state.
       collection('openings-eu', 'The Union', 'Play an opening corresponding to each EU member state', 'openings-eu', [
