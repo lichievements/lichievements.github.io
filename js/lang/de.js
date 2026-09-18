@@ -39,6 +39,7 @@ export const ui = {
   'err.noToken': 'Lichess hat keinen Zugangsschlüssel zurückgegeben.',
   'err.account': 'Dein Lichess-Konto konnte nicht geladen werden.',
   'err.stream': 'Deine Partien konnten nicht von Lichess geladen werden.',
+  'err.streamBroken': 'Die Verbindung zu Lichess ist abgebrochen, bevor alle deine Partien analysiert waren. Mit „Neu laden“ kannst du es erneut versuchen.',
 
   // hints.html (section headings come from the achievement titles below)
   'hints.pageTitle': 'Tipps — lichievements',

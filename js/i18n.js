@@ -43,6 +43,7 @@ const EN = {
   'err.noToken': 'Lichess did not return an access token.',
   'err.account': 'Could not load your Lichess account.',
   'err.stream': 'Could not stream your games from Lichess.',
+  'err.streamBroken': 'The connection to Lichess dropped before all your games were analysed. Use Reload to try again.',
 };
 
 export let lang = 'en';

@@ -79,34 +79,48 @@ async function run({ username, userId, token, account }) {
 
   const finish = async () => { try { await reader.cancel(); } catch {} controller.abort(); sendPartials(allGame); post({ type: 'done', count }); };
 
+  // One NDJSON line is one game. Returns true once nothing is left to find.
+  const handle = (raw) => {
+    const line = raw.trim();
+    if (!line) return false;
+    let game;
+    try { game = JSON.parse(line); } catch { return false; }
+    count++;
+
+    analyseGame(game, uid, locked);
+
+    // Drop unlocked achievements; global early-exit when nothing is left.
+    if (locked.some((l) => l.done)) {
+      locked = locked.filter((l) => !l.done);
+      if (!locked.length) return true;
+    }
+
+    if (count % 25 === 0) post({ type: 'progress', count });
+    return false;
+  };
+
   while (true) {
     let chunk;
     try { chunk = await reader.read(); }
-    catch { break; }
+    catch {
+      // The connection dropped mid-history. Keep what was found so far, but say so
+      // rather than posting 'done' — that would present a partial run as complete.
+      sendPartials(allGame);
+      throw Object.assign(new Error('The connection to Lichess dropped before all your games were analysed.'), { key: 'err.streamBroken' });
+    }
     if (chunk.done) break;
 
     buffer += decoder.decode(chunk.value, { stream: true });
     let nl;
     while ((nl = buffer.indexOf('\n')) >= 0) {
-      const line = buffer.slice(0, nl).trim();
+      const line = buffer.slice(0, nl);
       buffer = buffer.slice(nl + 1);
-      if (!line) continue;
-
-      let game;
-      try { game = JSON.parse(line); } catch { continue; }
-      count++;
-
-      analyseGame(game, uid, locked);
-
-      // Drop unlocked achievements; global early-exit when nothing is left.
-      if (locked.some((l) => l.done)) {
-        locked = locked.filter((l) => !l.done);
-        if (!locked.length) { await finish(); return; }
-      }
-
-      if (count % 25 === 0) post({ type: 'progress', count });
+      if (handle(line)) { await finish(); return; }
     }
   }
+
+  // The last game may arrive without a trailing newline.
+  if (handle(buffer + decoder.decode())) { await finish(); return; }
 
   sendPartials(allGame);
   post({ type: 'done', count });
