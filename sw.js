@@ -5,7 +5,7 @@
 // (HTML / JS / CSS / manifest) is served **network-first**, so every online launch
 // already loads the latest files. That's what makes updates reach iOS PWAs, which
 // cannot be manually refreshed. Fonts and images stay cache-first for speed.
-const APP_VERSION = '3';
+const APP_VERSION = '4';
 const CACHE = 'lichievements-v' + APP_VERSION;
 
 const SHELL = [
@@ -17,6 +17,8 @@ const SHELL = [
   './css/fonts.css',
   './js/main.js',
   './js/achievements.js',
+  './js/i18n.js',
+  './js/lang/de.js',
   './js/worker.js',
   './js/oauth.js',
   './js/chess.js',

@@ -4,6 +4,7 @@
 
 import { CATEGORIES, ALL, ICONS } from './achievements.js';
 import { login, completeLoginIfRedirected, fetchAccount, revoke } from './oauth.js';
+import { t, fmtNum, catName, achText, stepText, translateDom, initLangSelect } from './i18n.js';
 
 const $ = (sel) => document.querySelector(sel);
 
@@ -26,6 +27,7 @@ const el = {
   themeToggle: $('#theme-toggle'),
   viewToggle: $('#view-toggle'),
   reloadBtn: $('#reload-btn'),
+  langSelect: $('#lang-select'),
 };
 
 // --- Touch interaction -----------------------------------------------------
@@ -119,13 +121,14 @@ function initTierModal() {
   modal.setAttribute('role', 'dialog');
   modal.setAttribute('aria-modal', 'true');
   modal.setAttribute('aria-label', 'Achievement tier');
+  modal.dataset.i18nAria = 'modal.label';
   modal.innerHTML =
     '<div class="tier-modal-body" tabindex="-1">'
-    + '<button class="tier-modal-close" type="button" aria-label="Close">✕</button>'
+    + '<button class="tier-modal-close" type="button" aria-label="Close" data-i18n-aria="modal.close">✕</button>'
     + '<div class="tier-modal-stage">'
-    + '<button class="tier-modal-nav tier-modal-prev" type="button" aria-label="Previous tier">‹</button>'
+    + '<button class="tier-modal-nav tier-modal-prev" type="button" aria-label="Previous tier" data-i18n-aria="modal.prev">‹</button>'
     + '<a class="tier-modal-art" target="_blank" rel="noopener"><span class="ext" aria-hidden="true">↗</span></a>'
-    + '<button class="tier-modal-nav tier-modal-next" type="button" aria-label="Next tier">›</button>'
+    + '<button class="tier-modal-nav tier-modal-next" type="button" aria-label="Next tier" data-i18n-aria="modal.next">›</button>'
     + '</div>'
     + '<p class="tier-modal-label"></p>'
     + '<h3 class="tier-modal-title"></h3>'
@@ -195,7 +198,7 @@ function openTierModal(id) {
   const tiers = [];
   for (let i = 0; i < def.steps.length; i++) {
     const it = prog.items[i];
-    if (it && it.done) tiers.push({ step: def.steps[i], game: it });
+    if (it && it.done) tiers.push({ step: def.steps[i], index: i, game: it });
   }
   if (!tiers.length) return;
   tmDef = def;
@@ -226,14 +229,15 @@ function tierModalHref(game) {
 }
 
 function renderTierModal() {
-  const { step, game } = tmTiers[tmIdx];
+  const { step, index, game } = tmTiers[tmIdx];
+  const text = stepText(tmDef, index);
   const { art, prev, next, label, title, desc } = tmEls;
   // Art: image or coloured SVG icon, matching the tile. Keep the ↗ cue in place.
   art.querySelectorAll('img, svg').forEach((n) => n.remove());
   if (step.image) {
     art.style.removeProperty('--tile-color');
     const img = new Image();
-    img.src = step.image; img.alt = step.title;
+    img.src = step.image; img.alt = text.title;
     art.prepend(img);
   } else {
     art.style.setProperty('--tile-color', step.color || '#555');
@@ -242,9 +246,9 @@ function renderTierModal() {
   const href = tierModalHref(game);
   if (href) { art.href = href; art.classList.remove('no-link'); }
   else { art.removeAttribute('href'); art.classList.add('no-link'); }
-  label.textContent = `${tmDef.title} · ${tmIdx + 1} / ${tmTiers.length}`;
-  title.textContent = step.title;
-  desc.textContent = step.details || '';
+  label.textContent = `${achText(tmDef).title} · ${tmIdx + 1} / ${tmTiers.length}`;
+  title.textContent = text.title;
+  desc.textContent = text.details || '';
   prev.disabled = tmIdx === 0;
   next.disabled = tmIdx === tmTiers.length - 1;
 }
@@ -365,8 +369,8 @@ const catMeta = new Map();     // category name -> { total, unlocked, tallyEl }
 const defById = new Map(ALL.map((a) => [a.id, a]));
 const tieredIds = new Set(ALL.filter((a) => a.tiered).map((a) => a.id));
 const tierHave = new Map();     // tiered id -> steps currently counted (avoids double-count)
+const tierValue = new Map();    // tiered id -> current value, to re-render on a language switch
 const countOf = (a) => (a.tiered ? a.steps.length : 1); // each reached step counts
-const fmtNum = (n) => n.toLocaleString('en-US');
 let unlockedCount = 0;
 let token = null;
 let currentUserId = null;
@@ -420,7 +424,7 @@ function renderGrid() {
   for (const cat of CATEGORIES) {
     const catTotal = cat.items.reduce((n, a) => n + countOf(a), 0);
     grandTotal += catTotal;
-    catMeta.set(cat.name, { total: catTotal, unlocked: 0, tallyEl: null });
+    catMeta.set(cat.name, { name: cat.name, total: catTotal, unlocked: 0, tallyEl: null });
 
     const section = document.createElement('section');
     section.className = 'category';
@@ -432,7 +436,7 @@ function renderGrid() {
     head.setAttribute('role', 'button');
     head.setAttribute('aria-expanded', 'true');
     const h2 = document.createElement('h2');
-    h2.textContent = cat.name;
+    h2.textContent = catName(cat.name);
     const check = document.createElement('span');
     check.className = 'done-check';
     check.setAttribute('aria-hidden', 'true');
@@ -443,6 +447,7 @@ function renderGrid() {
     const meta = catMeta.get(cat.name);
     meta.tallyEl = tally;
     meta.headEl = head;
+    meta.nameEl = h2;
     head.append(h2, check, tally);
 
     const grid = document.createElement('div');
@@ -458,8 +463,9 @@ function renderGrid() {
       const locked = new Image();
       locked.className = 'locked';
       locked.src = 'images/locked.png';
-      locked.alt = 'Locked achievement';
+      locked.alt = t('tile.locked');
 
+      const text = achText(a);
       let art;
       if (a.tiered) {
         // Tiered tiles pick their art per reached step (set by applyTier). A ladder
@@ -467,7 +473,7 @@ function renderGrid() {
         if (a.steps[0] && a.steps[0].image) {
           art = new Image();
           art.className = 'art';
-          art.alt = a.title;
+          art.alt = text.title;
           art.loading = 'lazy';
         } else {
           art = document.createElement('div');
@@ -476,7 +482,7 @@ function renderGrid() {
       } else if (a.image) {
         art = new Image();
         art.className = 'art';
-        art.alt = a.title;
+        art.alt = text.title;
         art.dataset.art = a.image;   // loaded only on unlock (keeps the locked view light)
         art.loading = 'lazy';
       } else {
@@ -498,13 +504,13 @@ function renderGrid() {
       if (a.tiered) {
         const tt = document.createElement('span');
         tt.className = 'tier-title'; // current tier title (grid caption)
-        tt.textContent = a.title;
+        tt.textContent = text.title;
         h3.append(tt);
       } else {
-        h3.textContent = a.title;
+        h3.textContent = text.title;
       }
       const p = document.createElement('p');
-      p.textContent = a.details;
+      p.textContent = text.details;
       cap.append(h3, p);
 
       tile.append(locked, art, ext, cap);
@@ -549,6 +555,8 @@ function applyTier(id, value, { animate = false } = {}) {
   const steps = def.steps;
   let have = 0;
   for (const s of steps) if (value >= s.at) have++;
+  tierValue.set(id, value);
+  const text = achText(def);
 
   const prev = tierHave.get(id) || 0;
   if (have !== prev) {
@@ -574,12 +582,13 @@ function applyTier(id, value, { animate = false } = {}) {
 
   if (have === 0) {
     tile.classList.remove('unlocked');
-    if (title) title.textContent = def.title;
-    if (p) p.textContent = def.details;
+    if (title) title.textContent = text.title;
+    if (p) p.textContent = text.details;
     return;
   }
 
   const cur = steps[have - 1];
+  const curText = stepText(def, have - 1);
   const art = tile.querySelector('.art');
   if (art) {
     if (cur.image) {
@@ -600,11 +609,11 @@ function applyTier(id, value, { animate = false } = {}) {
   // "name: description" below (mirrors a list-view row). When a tier shares the
   // achievement's name (e.g. Time Controls, Marathon) drop the repeat and show
   // just the description.
-  if (title) title.textContent = def.title;
+  if (title) title.textContent = text.title;
   if (p) {
-    p.textContent = (cur.title !== def.title && cur.details)
-      ? `${cur.title}: ${cur.details}`
-      : (cur.details || cur.title);
+    p.textContent = (curText.title !== text.title && curText.details)
+      ? `${curText.title}: ${curText.details}`
+      : (curText.details || curText.title);
   }
 
   if (def.link && (!def.link.includes('{u}') || currentUserId)) {
@@ -626,7 +635,7 @@ function renderTierSteps(tile, def, have, value, items) {
   head.className = 'tier-steps-head';
   const ht = document.createElement('span');
   ht.className = 'tier-steps-title';
-  ht.textContent = def.title;
+  ht.textContent = achText(def).title;
   const hc = document.createElement('span');
   hc.className = 'tier-steps-count';
   hc.textContent = `${have} / ${steps.length}`;
@@ -645,14 +654,15 @@ function renderTierSteps(tile, def, have, value, items) {
     // its own line only when it doesn't fit inline (colon trails the title).
     const text = document.createElement('span');
     text.className = 'tier-step-text';
-    const t = document.createElement('span');
-    t.className = 'tier-step-title';
-    t.textContent = steps[i].details ? `${steps[i].title}:` : steps[i].title;
-    text.append(t);
-    if (steps[i].details) {
+    const st = stepText(def, i);
+    const ttl = document.createElement('span');
+    ttl.className = 'tier-step-title';
+    ttl.textContent = st.details ? `${st.title}:` : st.title;
+    text.append(ttl);
+    if (st.details) {
       const d = document.createElement('span');
       d.className = 'tier-step-desc';
-      d.textContent = steps[i].details;
+      d.textContent = st.details;
       text.append(d);
     }
     li.append(chk, text);
@@ -737,6 +747,7 @@ function resetGrid() {
   unlockedRecords = [];
   unlockedCount = 0;
   tierHave.clear();
+  tierValue.clear();
   el.statusUnlocked.textContent = '0';
   for (const tile of tiles.values()) {
     tile.classList.remove('unlocked', 'revealing', 'revealed');
@@ -788,12 +799,7 @@ function startAnalysis(account) {
   if (currentWorker) currentWorker.terminate();
 
   const totalGames = account.count?.all || 0;
-  const fmt = (n) => n.toLocaleString('en-US');
-  const setSummary = (done) => {
-    el.statusSummary.textContent = totalGames
-      ? `${fmt(done)} / ${fmt(totalGames)} games analysed`
-      : `${fmt(done)} games analysed`;
-  };
+  const setSummary = (done) => { summary = { done, total: totalGames }; renderSummary(); };
   setSummary(0);
 
   const worker = new Worker(new URL('./worker.js', import.meta.url), { type: 'module' });
@@ -841,12 +847,43 @@ function startAnalysis(account) {
         }, 550); // matches the .progress opacity transition
       }, 900);
     } else if (m.type === 'error') {
-      showError(m.message);
+      showError(m.key ? t(m.key) : m.message);
       el.progress.hidden = true;
     }
   };
 
   worker.postMessage({ type: 'analyze', username: account.username, userId: account.id, token, account });
+}
+
+// The status line next to the username: analysis progress, or a note that the
+// tiles came from the cache. Kept as state so a language switch can re-render it.
+let summary = null;   // null | 'restored' | { done, total }
+function renderSummary() {
+  if (!summary) return;
+  el.statusSummary.textContent = summary === 'restored'
+    ? t('status.restored')
+    : summary.total
+      ? t('status.analysed', { done: fmtNum(summary.done), total: fmtNum(summary.total) })
+      : t('status.analysedCount', { done: fmtNum(summary.done) });
+}
+
+// Re-render every JS-built text after a language switch (static markup is
+// handled by translateDom). Tiered tiles go back through applyTier at their
+// current value, which leaves the counters alone.
+function relabel() {
+  for (const meta of catMeta.values()) meta.nameEl.textContent = catName(meta.name);
+  for (const [id, tile] of tiles) {
+    const def = defById.get(id);
+    const { title, details } = achText(def);
+    tile.querySelector('.locked').alt = t('tile.locked');
+    const art = tile.querySelector('img.art');
+    if (art) art.alt = title;
+    if (def.tiered) { applyTier(id, tierValue.get(id) || 0); continue; }
+    tile.querySelector('.caption h3').textContent = title;
+    tile.querySelector('.caption p').textContent = details;
+  }
+  renderSummary();
+  if (tmEls && !tmEls.modal.hidden) renderTierModal();
 }
 
 // Restore previously unlocked achievements from cache without re-analysing.
@@ -855,7 +892,8 @@ function showRestored(displayName) {
   el.loginBtn.hidden = true;
   el.reloadBtn.hidden = false;
   el.statusUser.textContent = displayName;
-  el.statusSummary.textContent = 'Restored from your last visit';
+  summary = 'restored';
+  renderSummary();
   el.progress.hidden = true;
 }
 
@@ -904,6 +942,8 @@ async function boot() {
   renderGrid();
   initTileInteraction();
   initTierModal();
+  translateDom();   // static markup + the modal's aria labels
+  initLangSelect(el.langSelect, relabel);
   initToc();
   jumpToHash();
   window.addEventListener('hashchange', jumpToHash);

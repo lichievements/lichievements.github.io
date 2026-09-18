@@ -2,6 +2,8 @@
 // Lichess OAuth2 — Authorization Code flow with PKCE (public client, no secret)
 // ============================================================================
 
+import { t } from './i18n.js';
+
 const LICHESS = 'https://lichess.org';
 const AUTH_URL = `${LICHESS}/oauth`;
 const TOKEN_URL = `${LICHESS}/api/token`;
@@ -69,7 +71,7 @@ export async function completeLoginIfRedirected() {
   // Always clean the URL so a refresh doesn't re-run the exchange.
   const clean = () => history.replaceState({}, '', REDIRECT_URI);
 
-  if (authError) { clean(); throw new Error(`Lichess authorization was declined (${authError}).`); }
+  if (authError) { clean(); throw new Error(t('err.declined', { reason: authError })); }
   if (!code) return null;
 
   const verifier = sessionStorage.getItem(SS_VERIFIER);
@@ -79,7 +81,7 @@ export async function completeLoginIfRedirected() {
   clean();
 
   if (!verifier || returnedState !== expectedState) {
-    throw new Error('Login state mismatch. Please try logging in again.');
+    throw new Error(t('err.state'));
   }
 
   const body = new URLSearchParams({
@@ -95,15 +97,15 @@ export async function completeLoginIfRedirected() {
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body,
   });
-  if (!res.ok) throw new Error('Could not obtain an access token from Lichess.');
+  if (!res.ok) throw new Error(t('err.token'));
   const json = await res.json();
-  if (!json.access_token) throw new Error('Lichess did not return an access token.');
+  if (!json.access_token) throw new Error(t('err.noToken'));
   return json.access_token;
 }
 
 export async function fetchAccount(token) {
   const res = await fetch(ACCOUNT_URL, { headers: { Authorization: `Bearer ${token}` } });
-  if (!res.ok) throw new Error('Could not load your Lichess account.');
+  if (!res.ok) throw new Error(t('err.account'));
   return res.json();
 }
 

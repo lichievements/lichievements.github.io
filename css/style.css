@@ -1019,6 +1019,29 @@ body.list-view .wrap { max-width: clamp(1180px, 530px + 50vw, 1480px); }
 .icon-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .icon-btn:focus:not(:focus-visible) { outline: none; }
 .icon-btn svg { width: 20px; height: 20px; }
+/* Language menu: a native <select> laid invisibly over the round button, so the
+   platform's own picker opens (a wheel on iOS, a sheet on Android) and more
+   languages need no extra UI. 16px keeps iOS from zooming in on focus. */
+.lang-switch { position: relative; }
+.lang-switch select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  font-size: 16px;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.lang-switch:has(select:focus-visible) { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+/* Until js/i18n.js has run, hide text that is about to be swapped for another
+   language (the pre-paint script in the <head> only sets this when needed). */
+.i18n-pending [data-i18n],
+.i18n-pending [data-i18n-html],
+.i18n-pending [data-i18n-ach] { visibility: hidden; }
+
 /* Show the correct glyph per theme */
 .theme-toggle .icon-sun { display: none; }
 [data-theme='light'] .theme-toggle .icon-sun { display: block; }

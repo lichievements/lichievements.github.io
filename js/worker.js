@@ -7,7 +7,7 @@
 //   { type:'progress', count }
 //   { type:'partial', id, progress }            (per-member progress, e.g. collections)
 //   { type:'done', count }
-//   { type:'error', message }
+//   { type:'error', message, key }           (key: an i18n string id, if known)
 // ============================================================================
 
 import { ALL } from './achievements.js';
@@ -27,7 +27,7 @@ const GAMES_URL = (username) =>
 self.onmessage = (e) => {
   const msg = e.data;
   if (msg.type === 'analyze') {
-    run(msg).catch((err) => post({ type: 'error', message: err.message || String(err) }));
+    run(msg).catch((err) => post({ type: 'error', message: err.message || String(err), key: err.key }));
   }
 };
 
@@ -70,7 +70,7 @@ async function run({ username, userId, token, account }) {
     headers: { Accept: 'application/x-ndjson', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
     signal: controller.signal,
   });
-  if (!res.ok || !res.body) throw new Error('Could not stream your games from Lichess.');
+  if (!res.ok || !res.body) throw Object.assign(new Error('Could not stream your games from Lichess.'), { key: 'err.stream' });
 
   const reader = res.body.getReader();
   const decoder = new TextDecoder();
