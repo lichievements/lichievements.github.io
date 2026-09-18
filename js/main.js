@@ -378,6 +378,15 @@ let unlockedRecords = [];      // [{ id, gameId, color, ply }] — persisted per
 let partialRecords = {};       // id -> { have, need, items } — per-member progress
 let currentWorker = null;
 let shownComplete = false;     // the grid holds a finished run's result (restored or fresh)
+let analysing = false;         // a worker run is in flight
+
+// While a login or an analysis is in flight, index.html must not reload the page
+// for a service-worker update: that would cut the run short. It waits for
+// 'li:idle' instead (see the service-worker script at the end of index.html).
+function setBusy(on) {
+  document.documentElement.toggleAttribute('data-busy', on);
+  if (!on) document.dispatchEvent(new Event('li:idle'));
+}
 
 // --- Persistence (localStorage) --------------------------------------------
 // Unlocked achievements survive a reload; the session token is kept in
@@ -852,6 +861,8 @@ function showAccountBar(account) {
 }
 
 function startAnalysis(account) {
+  analysing = true;
+  setBusy(true);
   currentUserId = account.id;
   lsSet(LS_USER, account.id);
 
@@ -948,6 +959,8 @@ function startAnalysis(account) {
       persistNow();
       saveMeta(currentUserId, { complete: true, fresh });
       shownComplete = true;
+      analysing = false;
+      setBusy(false);
       setSummary(m.count, gained);
       el.progress.classList.remove('indeterminate');
       el.progressBar.style.width = '100%';
@@ -965,6 +978,8 @@ function startAnalysis(account) {
       }, 900);
     } else if (m.type === 'error') {
       if (!rerun) persistNow(); // keep what a first run found (a re-run keeps the old result)
+      analysing = false;
+      setBusy(false);
       showError(m.key ? t(m.key) : m.message);
       el.progress.hidden = true;
     }
@@ -1087,6 +1102,14 @@ async function boot() {
   el.reloadBtn.addEventListener('click', reloadAchievements);
   el.logoutBtn.addEventListener('click', logout);
 
+  // Busy from here until the session is settled: a code exchange or the first
+  // analysis must not be interrupted by an update reload.
+  setBusy(true);
+  try { await resumeSession(); } finally { if (!analysing) setBusy(false); }
+}
+
+// Finish a login redirect, or pick up the session / cached results from before.
+async function resumeSession() {
   try {
     token = await completeLoginIfRedirected();
   } catch (e) {
