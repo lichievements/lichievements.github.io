@@ -87,9 +87,12 @@
       </div>
     </header>
 
-    <div id="error" class="error" hidden></div>
+    <div id="error" class="error" role="alert" hidden></div>
+    <!-- Screen-reader announcements (js/main.js announce()); the grid itself is
+         not a live region, or every tile change would be read out. -->
+    <p id="live" class="sr-only" aria-live="polite"></p>
 
-    <main id="grid-root" aria-live="polite"></main>
+    <main id="grid-root"></main>
 
     <div class="theme-switch-row">
       <button id="view-toggle" class="icon-btn view-toggle" type="button" title="Toggle grid / list view" aria-label="Toggle grid or list view" data-i18n-title="btn.view" data-i18n-aria="btn.view">

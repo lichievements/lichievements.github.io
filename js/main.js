@@ -28,7 +28,15 @@ const el = {
   viewToggle: $('#view-toggle'),
   reloadBtn: $('#reload-btn'),
   langSelect: $('#lang-select'),
+  live: $('#live'),
 };
+
+// Screen-reader announcements go through one quiet live region. Clearing it
+// first makes a repeated message count as new.
+function announce(msg) {
+  el.live.textContent = '';
+  setTimeout(() => { el.live.textContent = msg; }, 50);
+}
 
 // --- Touch interaction -----------------------------------------------------
 // On touch devices there's no hover, so a tile's caption is shown by tapping it.
@@ -913,6 +921,7 @@ function startAnalysis(account) {
 
   const worker = new Worker(new URL('./worker.js', import.meta.url), { type: 'module' });
   currentWorker = worker;
+  announce(t('live.start'));
 
   // Coalesce unlocks onto animation frames to avoid layout thrash.
   const pending = [];
@@ -962,6 +971,10 @@ function startAnalysis(account) {
       analysing = false;
       setBusy(false);
       setSummary(m.count, gained);
+      announce([
+        t('live.done', { n: fmtNum(unlockedCount), total: el.statusTotal.textContent }),
+        gained ? t('live.fresh', { n: fmtNum(gained) }) : '',
+      ].join(' ').trim());
       el.progress.classList.remove('indeterminate');
       el.progressBar.style.width = '100%';
       // Let the full bar sit briefly, then fade it out and hide once faded.
