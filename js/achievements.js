@@ -427,12 +427,14 @@ export const CATEGORIES = [
     // How the game ended — from its `status` field (Lichess GameStatusName).
     // Decisive finishes: mate, resign, outoftime (clock flag), timeout (opponent
     // abandoned the game); plus stalemate, which ends it as a draw either way.
+    // Standard chess only, like every category up to the openings: a Chess960 or
+    // Atomic win, or one from a custom position, does not count.
     name: 'Win Conditions',
     items: [
-      { id: 'win-checkmate', title: 'The Final Blow', details: 'Win a game by checkmate', svg: 'crown', color: '#eab308', scope: 'game', anyVariant: true, detect: (c) => c.won && c.status === 'mate' },
-      { id: 'win-resign', title: 'They Resigned', details: 'Win a game by your opponent resigning', svg: 'flag', color: '#ef4444', scope: 'game', anyVariant: true, detect: (c) => c.won && c.status === 'resign' },
-      { id: 'flag-opponent', title: 'Be Quick', details: "Win by flagging your opponent on time", image: 'images/flag-opponent.png', scope: 'game', anyVariant: true, detect: (c) => c.won && c.status === 'outoftime' },
-      { id: 'win-abandon', title: 'Left Behind', details: 'Win a game by your opponent abandoning it', svg: 'hourglass', color: '#8b5cf6', scope: 'game', anyVariant: true, detect: (c) => c.won && c.status === 'timeout' },
+      { id: 'win-checkmate', title: 'The Final Blow', details: 'Win a game by checkmate', svg: 'crown', color: '#eab308', scope: 'game', detect: (c) => c.won && c.status === 'mate' },
+      { id: 'win-resign', title: 'They Resigned', details: 'Win a game by your opponent resigning', svg: 'flag', color: '#ef4444', scope: 'game', detect: (c) => c.won && c.status === 'resign' },
+      { id: 'flag-opponent', title: 'Be Quick', details: "Win by flagging your opponent on time", image: 'images/flag-opponent.png', scope: 'game', detect: (c) => c.won && c.status === 'outoftime' },
+      { id: 'win-abandon', title: 'Left Behind', details: 'Win a game by your opponent abandoning it', svg: 'hourglass', color: '#8b5cf6', scope: 'game', detect: (c) => c.won && c.status === 'timeout' },
       // On a stalemate the side to move is the one with no legal move left, and
       // `c.toMove` names it. Standard games only (see the worker): from a custom
       // position Black may be the one to move on even plies.
