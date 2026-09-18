@@ -832,6 +832,7 @@ function restoreCached(records) {
 // --- Analysis --------------------------------------------------------------
 
 function showAccountBar(account) {
+  saveMeta(account.id, { name: account.username }); // for the logged-out restore
   el.statusbar.hidden = false;
   el.loginBtn.hidden = true;
   el.reloadBtn.hidden = false;
@@ -1077,6 +1078,7 @@ async function boot() {
     if (account) {
       currentUserId = account.id;
       lsSet(LS_USER, account.id);
+      saveMeta(account.id, { name: account.username });
       const cached = loadCache(account.id);
       if (cached && cached.length && loadMeta(account.id).complete !== false) {
         showRestored(account.username); // reload kept our achievements — show them instantly
@@ -1102,7 +1104,8 @@ async function boot() {
       currentUserId = lastUser;
       // Without a session we cannot finish an interrupted run; say so instead.
       const meta = loadMeta(lastUser);
-      showRestored(lastUser, meta.complete !== false);
+      // li_user is the lowercase id; show the name as the user spells it.
+      showRestored(meta.name || lastUser, meta.complete !== false);
       restoreCached(cached);
       restoreTiers(lastUser);
       markFresh(meta.fresh || []);
