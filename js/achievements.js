@@ -885,13 +885,15 @@ export const CATEGORIES = [
     name: 'Precision',
     items: [
       gameTiered({
-        id: 'accuracy', title: 'Accuracy', details: 'Play an analysed game at a high accuracy', unit: '%',
+        id: 'accuracy', title: 'Accuracy', details: 'Play an analysed game of at least 20 moves at a high accuracy', unit: '%',
         link: 'https://lichess.org/@/{u}/all',
-        track: (c) => (c.analysis && Number.isFinite(c.analysis.accuracy) ? c.analysis.accuracy : null),
+        // Same 20-move floor as Spotless: a resignation after five book moves scores
+        // near 100% without a single real decision.
+        track: (c) => (c.san.length >= 40 && c.analysis && Number.isFinite(c.analysis.accuracy) ? c.analysis.accuracy : null),
         steps: [
-          { at: 90, title: 'Sharp', details: 'Finish an analysed game with 90% accuracy', svg: 'target', color: '#14b8a6' },
-          { at: 95, title: 'Surgical', details: 'Finish an analysed game with 95% accuracy', svg: 'target', color: '#0d9488' },
-          { at: 99, title: 'Engine Mode', details: 'Finish an analysed game with 99% accuracy', svg: 'target', color: '#0f766e' },
+          { at: 90, title: 'Sharp', details: 'Finish an analysed game of at least 20 moves with 90% accuracy', svg: 'target', color: '#14b8a6' },
+          { at: 95, title: 'Surgical', details: 'Finish an analysed game of at least 20 moves with 95% accuracy', svg: 'target', color: '#0d9488' },
+          { at: 99, title: 'Engine Mode', details: 'Finish an analysed game of at least 20 moves with 99% accuracy', svg: 'target', color: '#0f766e' },
         ],
       }),
       // The move-count floors keep a six-move miniature from counting as a flawless
@@ -899,7 +901,9 @@ export const CATEGORIES = [
       { id: 'no-blunders', title: 'Clean Sheet', details: 'Win an analysed game of at least 25 moves without a single blunder', svg: 'verified', color: '#22c55e', scope: 'game', detect: (c) => c.won && c.san.length >= 50 && c.analysis && c.analysis.blunder === 0 },
       { id: 'spotless', title: 'Spotless', details: 'Win an analysed game of at least 20 moves with no inaccuracy, mistake or blunder', svg: 'sparkles', color: '#10b981', scope: 'game', detect: (c) => c.won && c.san.length >= 40 && c.analysis && c.analysis.blunder === 0 && c.analysis.mistake === 0 && c.analysis.inaccuracy === 0 },
       { id: 'low-acpl', title: 'Machine Precision', details: 'Average less than 20 centipawns lost per move in an analysed game of at least 30 moves', svg: 'chart', color: '#0891b2', scope: 'game', detect: (c) => c.san.length >= 60 && c.analysis && Number.isFinite(c.analysis.acpl) && c.analysis.acpl < 20 },
-      { id: 'endgame-precision', title: 'Cold Blood', details: 'Reach 90% accuracy in the endgame phase of an analysed game', svg: 'scale', color: '#6366f1', scope: 'game', detect: (c) => c.analysis?.phases && Number.isFinite(c.analysis.phases.endgame) && c.analysis.phases.endgame >= 90 },
+      // The endgame must last at least ten moves (20 plies from Lichess's endgame
+      // boundary); a two-move endgame before resignation proves nothing.
+      { id: 'endgame-precision', title: 'Cold Blood', details: 'Reach 90% accuracy over an endgame of at least 10 moves in an analysed game', svg: 'scale', color: '#6366f1', scope: 'game', detect: (c) => c.divEnd != null && (c.san.length - c.divEnd) >= 20 && c.analysis?.phases && Number.isFinite(c.analysis.phases.endgame) && c.analysis.phases.endgame >= 90 },
       { id: 'outplayed', title: 'Outclassed Them', details: 'Win an analysed game with at least 20 accuracy points more than your opponent', svg: 'trophy', color: '#8b5cf6', scope: 'game', detect: (c) => c.won && Number.isFinite(c.analysis?.accuracy) && Number.isFinite(c.oppAnalysis?.accuracy) && (c.analysis.accuracy - c.oppAnalysis.accuracy) >= 20 },
     ],
   },

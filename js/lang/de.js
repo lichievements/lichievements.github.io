@@ -408,13 +408,13 @@ export const achievements = {
 
   // Precision
   'accuracy': {
-    t: 'Genauigkeit', d: 'Spiele eine analysierte Partie mit hoher Genauigkeit',
-    steps: [90, 95, 99].map((n) => [`${n} % Genauigkeit`, `Beende eine analysierte Partie mit ${n} % Genauigkeit`]),
+    t: 'Genauigkeit', d: 'Spiele eine analysierte Partie von mindestens 20 Zügen mit hoher Genauigkeit',
+    steps: [90, 95, 99].map((n) => [`${n} % Genauigkeit`, `Beende eine analysierte Partie von mindestens 20 Zügen mit ${n} % Genauigkeit`]),
   },
   'no-blunders': { t: 'Ohne Patzer', d: 'Gewinne eine analysierte Partie von mindestens 25 Zügen ohne einen einzigen Patzer' },
   'spotless': { t: 'Fehlerfrei', d: 'Gewinne eine analysierte Partie von mindestens 20 Zügen ohne Ungenauigkeit, Fehler oder Patzer' },
   'low-acpl': { t: 'Kaum Centipawn-Verlust', d: 'Verliere in einer analysierten Partie von mindestens 30 Zügen im Schnitt weniger als 20 Centipawns pro Zug' },
-  'endgame-precision': { t: 'Präzises Endspiel', d: 'Erreiche 90 % Genauigkeit im Endspiel einer analysierten Partie' },
+  'endgame-precision': { t: 'Präzises Endspiel', d: 'Erreiche 90 % Genauigkeit in einem mindestens 10 Züge langen Endspiel einer analysierten Partie' },
   'outplayed': { t: 'Klar überlegen', d: 'Gewinne eine analysierte Partie mit mindestens 20 Prozentpunkten mehr Genauigkeit als dein Gegner' },
 
   // Puzzles
