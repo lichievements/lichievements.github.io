@@ -41,6 +41,9 @@ The name is always styled as **li**`chievements` — `li` bold, `chievements` th
   - `localStorage` `li_partial:{uid}` — per-member / per-tier progress for the
     aggregate achievements, `id -> { have, need, value, items }` (§6). This is also
     what `hints.html` reads.
+  - `localStorage` `li_meta:{uid}` — `{ name, complete, fresh }`: the username as
+    spelled (for the logged-out restore), whether the stored result comes from a run
+    that reached `done`, and the ids the last re-run added (the "New" badges).
   - `localStorage` `li_user` — the last logged-in user id, so a reload (and
     `hints.html`, which has no session of its own) knows whose cache to read.
   - `sessionStorage` `li_token` — the access token, so **Reload** needs no new login.
@@ -48,7 +51,24 @@ The name is always styled as **li**`chievements` — `li` bold, `chievements` th
     (`en`/`de`, only once the reader picks one explicitly) — UI preferences, not user
     data; they deliberately survive logout.
 
-  Logout clears the two per-user caches, `li_user` and the token.
+  Logout clears the three per-user keys, `li_user` and the token.
+
+  **Two kinds of run** (`startAnalysis()` in `main.js`):
+  - *First run* (nothing stored, or the stored run never finished): the grid starts
+    empty, results are written as they arrive (coalesced to one write per second,
+    flushed at the end, on error and on `pagehide`) with `complete: false` until
+    `done`. A page loaded with a session over an incomplete result simply analyses
+    again; without a session it says the last analysis did not finish.
+  - *Re-run* (Reload over a finished result): the grid stays as it is, new finds are
+    revealed and badged "New" as they arrive (ladders only ever climb mid-run), and
+    storage keeps the previous result until `done`. Then `reconcile()` settles the grid
+    on exactly what the run found: plain tiles it no longer finds lock again (e.g. after
+    a detector got stricter), ladders take their final value up or down, and the
+    status line reports how many achievements were added. An interrupted re-run
+    therefore loses nothing.
+
+  The worker's `done` waits for the extra-scope lookups too, so it really means "this
+  run's results are complete" — `reconcile()` depends on that.
 
 ### File layout
 ```
@@ -60,6 +80,7 @@ css/fonts.css         # @font-face for Inter + JetBrains Mono
 js/main.js            # UI orchestration, OAuth, worker messages, DOM reveal, tier UI
 js/oauth.js           # PKCE helpers (code_verifier/challenge, state, token exchange)
 js/i18n.js            # language detection, t(), DOM translation, the language menu
+js/ui.js              # page chrome shared by both pages: theme toggle, TOC collapse
 js/lang/de.js         # German overlay: UI strings, category names, achievement texts
 js/worker.js          # game analysis worker: runs detectors over streamed games
 js/achievements.js    # achievement registry (metadata) + detector functions
@@ -78,7 +99,9 @@ icon-192/512*.png, apple-touch-icon.png   # PWA / iOS home-screen icons
 The site is also installable as a **PWA**. `sw.js` serves HTML/JS/CSS **network-first**
 (so every online launch gets the latest deploy — important for iOS PWAs that can't be
 manually refreshed) and fonts/images cache-first. `index.html` auto-reloads once when
-an updated worker takes control. Bump `APP_VERSION` in `sw.js` to invalidate the cache.
+an updated worker takes control — but never during a login or an analysis: `main.js`
+marks those with `data-busy` on `<html>` and fires `li:idle` when they end, and the
+reload waits for it. Bump `APP_VERSION` in `sw.js` to invalidate the cache.
 
 ---
 
@@ -258,6 +281,11 @@ placeholder tile from `ICONS`.
   exactly "the normal starting position", since Lichess normalises a custom position
   equal to the standard start back to plain standard. Ask which one a new detector is:
   *how the game was set up or ended* wants the flag, *how hard the win was* does not.
+  **Fairness floors.** A few detectors skip games that would hand them over for free:
+  the rating-swing ladders and Underdog ignore provisional ratings (the export's
+  per-player `provisional` flag), the accuracy ladder needs 20 moves and Cold Blood an
+  endgame of 10, and Miniature / Quickfire need a win at the board (`mate`, `resign`,
+  `outoftime` — not an opponent who abandoned the game).
 
 **Tiered achievements (ladders).** Many tiles are not a single yes/no but a ladder of
 thresholds: the tile shows the highest step reached plus progress toward the next, and
@@ -313,8 +341,9 @@ ladder's `link` template.
   Ratings · Records · Precision · Puzzles · Profile & Community · Dedication ·
   Notable Games · Social · Tournaments. Social and Tournaments are `extra`-scope; Win
   Conditions and Game Types are `anyVariant` `game`-scope, reading only `status` /
-  `source` / `rated`. Precision and the two Machines ladders read no moves either, but
-  deliberately stay standard-only — they measure how *hard* a win was, and a custom
+  `source` / `rated`. Precision, the two Machines ladders, Underdog and Giant Slayer
+  read no moves either, but deliberately stay standard-only — they measure how *hard* a
+  win was, and a custom
   position hands the player the material. That is
   **183 tiles**, which expand to **313 countable achievements** once each ladder step is
   counted — the latter is the number in the status bar. (Both come straight from the
@@ -381,7 +410,20 @@ TV) are not derivable from the API and stay omitted unless an endpoint turns up.
 - **Table of contents.** Tapping any category heading collapses *every* section (body
   class `toc-mode`, which also hides the header, footer and button row) so the headings
   stack into a compact index; tapping again restores the tiles and scrolls that heading
-  to the top.
+  to the top. The same code (`initToc` in `js/ui.js`) drives the hints page.
+- **Filter bar** (in the header, under the status bar): All / Unlocked / Locked plus a
+  search over title, description, ladder steps and category in the current language,
+  ignoring case and accents. "Locked" means *something left to earn*, so a half-climbed
+  ladder shows under both. Filtered tiles and emptied sections get `hidden` (forced
+  with `!important`, since the list view sets `display` on tiles).
+- **Status line:** progress while running, with an estimated time left from the
+  measured rate; after a re-run, how many achievements it added. Tiles the last re-run
+  added carry a "New" pill (`.is-new`, label from `--new-label`, set per language).
+- **Accessibility:** every tile is focusable (a locked one is a link without `href`),
+  Enter/Space opens a link-less tiered tile's tier modal; while the modal is open the
+  page behind is `inert` and Tab cycles inside it. The grid is *not* a live region —
+  a visually hidden `#live` paragraph announces only the start and result of a run,
+  and the error box is `role="alert"`.
 - **Button row.** A sticky, bottom-centred row of five round icon buttons: grid/list
   toggle, light/dark toggle, language menu, a link to `hints.html` and a link to the
   GitHub repo (`hints.html` has back, theme, language and GitHub). It
@@ -428,6 +470,7 @@ TV) are not derivable from the API and stay omitted unless an endpoint turns up.
   would wipe the progress badge appended to it, hence the inner `<span>`s on the hints
   page. The English original is remembered on first swap, so switching back needs no
   reload.
+- **Also:** `data-i18n-placeholder` for input placeholders.
 - **Detection:** saved `lang`, else the first supported entry of `navigator.languages`,
   else English. An inline pre-paint script (both pages) adds `i18n-pending` when the
   page may not be English, hiding hooked text until `translateDom()` has run.
