@@ -447,8 +447,19 @@
   <script type="module">
     import { translateDom, initLangSelect } from './js/i18n.js';
     import { initThemeToggle, initToc } from './js/ui.js';
+    // The Union lists its member states alphabetically in the reader's language
+    // (the markup holds them in country-code order).
+    function sortUnion() {
+      const ul = document.querySelector('#openings-eu .hint-openings');
+      if (!ul) return;
+      const collator = new Intl.Collator(document.documentElement.lang);
+      const name = (li) => li.querySelector('[data-i18n^="country."]').textContent;
+      [...ul.children].sort((x, y) => collator.compare(name(x), name(y))).forEach((li) => ul.append(li));
+    }
+
     translateDom();
-    initLangSelect(document.getElementById('lang-select'));
+    sortUnion();
+    initLangSelect(document.getElementById('lang-select'), sortUnion);
     initThemeToggle(document.getElementById('theme-toggle'));
     initToc(document.querySelector('.hints'), '.hint-group h2');
   </script>
