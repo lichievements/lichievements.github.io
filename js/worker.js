@@ -300,27 +300,44 @@ async function fetchNdjson(url, auth) {
 
 // ---------------------------------------------------------------------------
 
-const ZERO_BOARD = { maxQueens: 0, kingCrossed: false, epMate: false, epAny: false, minMaterialDiff: 0, minMaterialDiffPly: -1 };
-const EP_LAST = /^[a-h]x[a-h][36]$/; // a pawn capture landing on the en-passant rank
+const ZERO_BOARD = { maxQueens: 0, epMate: false, epAny: false, minMaterialDiff: 0, minMaterialDiffPly: -1 };
 const PIECE_VALUE = { p: 1, n: 3, b: 3, r: 5, q: 9, k: 0 };
+
+// An en-passant capture is a pawn capture landing on the sixth rank (White) or
+// the third (Black). Plenty of ordinary captures do too; this only rules games out.
+const EP_CANDIDATE = { white: /^[a-h]x[a-h]6/, black: /^[a-h]x[a-h]3/ };
+
+// For each board achievement: whether it needs the per-ply material/queen scan or
+// just the replay (en passant is a flag on the move itself), and a cheap test of
+// whether THIS game could fire it at all. The replay costs ~97% of the worker's CPU,
+// and each of these can only fire on a small slice of games, so most games skip it.
+const BOARD_USES = {
+  // Only a won game counts (track() returns null otherwise).
+  'comeback': { scan: true, when: (c) => c.won },
+  'swindle': { scan: true, when: (c) => c.status === 'stalemate' },
+  // A second user queen can only come from promoting to one.
+  'queen-party': { scan: true, when: (c) => c.userSan.some((m) => m.includes('=Q')) },
+  'en-passant': { scan: false, when: (c) => c.userSan.some((m) => EP_CANDIDATE[c.color].test(m)) },
+  // The user's own last move, and it mates.
+  'en-passant-mate': { scan: false, when: (c) => c.won && c.status === 'mate' && EP_CANDIDATE[c.color].test(c.lastSan) },
+};
 
 // Decide the cheapest board pass this game needs, given still-locked achievements.
 //   { replay:false }          -> no chess.js replay at all
 //   { replay:true, scan:bool } -> replay; scan=true also walks the board each ply
-function boardPlan(locked, lastBare) {
-  let scan = false;
-  let epMate = false;
-  let epAny = false;
+// A needsBoard achievement missing from BOARD_USES always gets the full scan:
+// correct, just slower — give it an entry.
+function boardPlan(locked, ctx) {
+  let replay = false;
   for (const l of locked) {
     if (!l.def.needsBoard) continue;
-    if (l.def.id === 'en-passant-mate') epMate = true;
-    else if (l.def.id === 'en-passant') epAny = true;
-    else scan = true; // queen-party, king's journey, comeback, swindle need per-ply board state
+    const use = BOARD_USES[l.def.id];
+    if (!use) return { replay: true, scan: true };
+    if (!use.when(ctx)) continue;
+    if (use.scan) return { replay: true, scan: true }; // the full walk covers en passant too
+    replay = true;
   }
-  if (scan) return { replay: true, scan: true };       // full walk covers ep too
-  if (epAny) return { replay: true, scan: false };      // any move might be en passant
-  if (epMate && EP_LAST.test(lastBare)) return { replay: true, scan: false };
-  return { replay: false };
+  return { replay, scan: false };
 }
 
 function analyseGame(game, uid, locked) {
@@ -404,7 +421,7 @@ function analyseGame(game, uid, locked) {
   };
 
   if (standard) {
-    const plan = boardPlan(locked, ctx.lastSan.replace(/[+#]/g, ''));
+    const plan = boardPlan(locked, ctx);
     if (plan.replay) ctx.board = computeBoard(san, userWhite, plan.scan);
   }
 
@@ -437,17 +454,16 @@ function analyseGame(game, uid, locked) {
 // passant. (Kept in sync with the vendored chess.js.)
 const EP_CAPTURE = 8;
 
-// Replay through chess.js, tracking material / queens / king rank INCREMENTALLY
+// Replay through chess.js, tracking material and queens INCREMENTALLY
 // so we never allocate and walk a fresh 64-square board every ply. This is the
 // per-game hot path for accounts with thousands of games, so it deliberately
 // uses chess.js's internal `_moveFromSan` + `_makeMove` to skip the public
 // move()'s per-ply SAN and FEN regeneration (which we don't use) — ~2.75x faster
 // than move()+board() while producing identical results. `scan` gates the
-// board-state work; when false we only replay far enough to test en-passant mate.
+// board-state work; when false we only look for en-passant captures.
 function computeBoard(san, userWhite, scan) {
   const chess = new Chess();
   let maxQueens = 0;
-  let kingCrossed = false;
   let epMate = false;
   let epAny = false;
   let minMaterialDiff = 0; // most negative (user material − opponent material) over the game
@@ -481,12 +497,6 @@ function computeBoard(san, userWhite, scan) {
         else diff -= gain;
       }
       if (userQueens > maxQueens) maxQueens = userQueens;
-      // The user king only changes square on its own moves; 0x88 rank index 0 is
-      // rank 8, index 7 is rank 1 — the opponent's back rank is 0 for White, 7 for Black.
-      if (byUser && mv.piece === 'k') {
-        const rankIdx = mv.to >> 4;
-        if (userWhite ? rankIdx === 0 : rankIdx === 7) kingCrossed = true;
-      }
       // Sample the material deficit only after the user's own moves, so a queen
       // trade in progress (down a queen until the recapture) isn't mistaken for a
       // sacrifice — only a genuine standing deficit counts.
@@ -497,5 +507,5 @@ function computeBoard(san, userWhite, scan) {
       if (byUser && (mv.flags & EP_CAPTURE) && chess.isCheckmate()) epMate = true;
     }
   }
-  return { maxQueens, kingCrossed, epMate, epAny, minMaterialDiff, minMaterialDiffPly };
+  return { maxQueens, epMate, epAny, minMaterialDiff, minMaterialDiffPly };
 }

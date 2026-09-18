@@ -23,9 +23,10 @@
 // here silently hides an achievement from every thematic-arena and from-position
 // player.
 //
-// `needsBoard: true` marks detectors that read ctx.board.* (en passant, king
-// journey, multiple queens). The worker only reconstructs the board when at
-// least one still-locked achievement needs it (see worker.js).
+// `needsBoard: true` marks detectors that read ctx.board.* (en passant, material
+// balance, multiple queens). The worker only reconstructs the board when at
+// least one still-locked achievement needs it AND this game could fire it — see
+// BOARD_USES in worker.js, which every needsBoard detector should have an entry in.
 //
 // `state` is a per-achievement scratch object the worker persists across games
 // (used by aggregate achievements such as opening collections).
@@ -108,6 +109,14 @@ function cornerTour(userSan, piece) {
     if (seen === 15) return true;
   }
   return false;
+}
+
+// Did the user's king ever step onto the opponent's back rank? The destination
+// is the last square in the SAN token (castling starts with 'O', so it never
+// matches), so this needs no board replay.
+function kingCrossed(c) {
+  const rank = c.color === W ? '8' : '1';
+  return c.userSan.some((m) => m[0] === 'K' && m.replace(/[+#]$/, '').endsWith(rank));
 }
 
 function prefixMatch(san, target) {
@@ -370,7 +379,7 @@ export const CATEGORIES = [
     items: [
       { id: 'survivor', title: 'Survivor', details: 'Win a game after being checked at least five times', image: 'images/survivor.png', scope: 'game', detect: (c) => c.won && c.checksByOpp >= 5 },
       { id: 'underachiever', title: 'Underachiever', details: 'Win a game in which you underpromoted a pawn', image: 'images/underachiever.png', scope: 'game', detect: (c) => c.won && c.userSan.some((m) => /=[RBN]/.test(m)) },
-      { id: 'kings-journey', title: "King's Journey", details: "Win after your king reaches the opponent's back rank (8th for White, 1st for Black)", image: 'images/kings-journey.png', scope: 'game', needsBoard: true, detect: (c) => c.won && c.board.kingCrossed },
+      { id: 'kings-journey', title: "King's Journey", details: "Win after your king reaches the opponent's back rank (8th for White, 1st for Black)", image: 'images/kings-journey.png', scope: 'game', detect: (c) => c.won && kingCrossed(c) },
       { id: 'queen-grand-tour', title: "Queen's Grand Tour", details: 'Win a game in which your queen visited all four corners of the board (a1, a8, h1, h8)', svg: 'crown', color: '#c026d3', scope: 'game', detect: (c) => c.won && cornerTour(c.userSan, 'Q') },
       { id: 'knight-grand-tour', title: "Knight's Grand Tour", details: 'Win a game in which your knights visited all four corners of the board (a1, a8, h1, h8)', svg: 'knight', color: '#059669', scope: 'game', detect: (c) => c.won && cornerTour(c.userSan, 'N') },
       { id: 'underdog', title: 'Underdog', details: 'Beat an opponent rated at least 200 points above you', svg: 'chart', color: '#0ea5e9', scope: 'game', anyVariant: true, detect: (c) => c.won && c.oppRating && c.myRating && (c.oppRating - c.myRating) >= 200 },

@@ -165,17 +165,26 @@ must be lean:
      castling mate (`O-O#` / `O-O-O#`), underpromotion (`=[RBN]`), promotion mate
      (`=Q#`), pacifist (no `x` in whole game + `#`), check-check-mate (`+ + #` on the
      winner's moves), survivor (count `+` given to the user), takes-takes-takes
-     (3 consecutive `x` moves), openings (compare first *k* SAN tokens to a target list).
+     (3 consecutive `x` moves), openings (compare first *k* SAN tokens to a target list),
+     king's journey (a user `K…` move whose destination is the far rank).
    - **Board-required detectors (slow path):** need real position tracking —
-     en-passant mate, king's-journey (king reaches opposite side), two-queens-on-board.
-     Handled by replaying the game through vendored **chess.js**.
+     en passant (plain and mate), two-queens-on-board, and the material balance behind
+     comeback / swindle. Handled by replaying the game through vendored **chess.js**.
 4. **Only replay when it can still pay off.** A game is sent through chess.js **only if
    at least one board-required achievement is still locked.** Once those unlock, the
    slow path is skipped entirely for all remaining games. `boardPlan()` in `worker.js`
-   refines this per game: a still-locked queen-party / king's-journey / comeback /
-   swindle forces the full per-ply scan, plain `en-passant` only needs the replay (no
-   scan), and if `en-passant-mate` is the *only* thing left the replay is skipped
-   outright unless the game's last move even looks like a pawn capture.
+   refines this **per game** through `BOARD_USES`: each board achievement pairs "scan
+   or plain replay" with a cheap test of whether *this* game could fire it at all —
+   comeback only on a win, swindle only on a stalemate, queen-party only after a `=Q`
+   promotion, en passant only when a user pawn capture lands on the 6th (White) / 3rd
+   (Black) rank, en-passant mate only when that is the mating move. The replay is
+   ~97% of the worker's CPU, and this skips it on roughly half of all games while
+   comeback is still climbing, and on nearly all once it tops out. A `needsBoard`
+   detector with no `BOARD_USES` entry falls back to a full scan on every game —
+   correct but slow, so give new ones an entry.
+   (For scale: Lichess throttles the export to 60 games/s for your own games, so on a
+   desktop the worker already idles most of the time. This matters for slow phones and
+   battery; wall-clock time is set by the throttle.)
 5. **Per-achievement short-circuit.** Maintain a live set of still-locked achievement
    ids; each detector runs only until its achievement unlocks, then is dropped.
 6. **Global early-exit.** When every achievement is unlocked, abort the stream
@@ -226,9 +235,9 @@ placeholder tile from `ICONS`.
   (`peak`, `peakByPerf`, `sessionGames`, `sessionTime`, `berserk`, `lossStreak`,
   `bestWinRating`) and the puzzle dashboard. See `evaluateExtra()` in the worker.
 - `game` — `detect(ctx, state)`, evaluated per streamed game. A `game` detector may
-  set `needsBoard: true` to read `ctx.board.*` (en-passant mate, king's journey,
-  multiple queens); the worker only reconstructs the board when at least one
-  still-locked achievement needs it. Openings and opening collections are ordinary
+  set `needsBoard: true` to read `ctx.board.*` (en passant, multiple queens, material
+  balance); the worker only reconstructs the board when a still-locked achievement
+  needs it and could fire on this game (`BOARD_USES`, §5). Openings and opening collections are ordinary
   `game` detectors built from SAN move lines (`prefixMatch`), not a separate scope.
   A `detect` returns falsy (locked), `true` (link points at the last move), or
   `{ ply }` (link jumps to that 0-based ply).
