@@ -17,7 +17,7 @@ The name is always styled as **li**`chievements` — `li` bold, `chievements` th
   incrementally. As each achievement is detected, its tile flips/fades from
   `locked.png` to the achievement's own image. A live progress indicator shows how
   many games have been analyzed.
-- **Language:** English throughout.
+- **Languages:** English (the source) and German, switchable live; see §7a.
 - **Design:** minimal, responsive. Inter (default) + JetBrains Mono (mono accents).
 
 ---
@@ -44,8 +44,9 @@ The name is always styled as **li**`chievements` — `li` bold, `chievements` th
   - `localStorage` `li_user` — the last logged-in user id, so a reload (and
     `hints.html`, which has no session of its own) knows whose cache to read.
   - `sessionStorage` `li_token` — the access token, so **Reload** needs no new login.
-  - `localStorage` `theme` (`light`/`dark`) and `li_view` (`grid`/`list`) — UI
-    preferences, not user data; they deliberately survive logout.
+  - `localStorage` `theme` (`light`/`dark`), `li_view` (`grid`/`list`) and `lang`
+    (`en`/`de`, only once the reader picks one explicitly) — UI preferences, not user
+    data; they deliberately survive logout.
 
   Logout clears the two per-user caches, `li_user` and the token.
 
@@ -58,6 +59,8 @@ css/style.css         # design system, grid + list layouts, tile reveal, tier mo
 css/fonts.css         # @font-face for Inter + JetBrains Mono
 js/main.js            # UI orchestration, OAuth, worker messages, DOM reveal, tier UI
 js/oauth.js           # PKCE helpers (code_verifier/challenge, state, token exchange)
+js/i18n.js            # language detection, t(), DOM translation, the language menu
+js/lang/de.js         # German overlay: UI strings, category names, achievement texts
 js/worker.js          # game analysis worker: runs detectors over streamed games
 js/achievements.js    # achievement registry (metadata) + detector functions
 js/chess.js           # vendored chess.js (MIT) — used ONLY for board-required detectors
@@ -370,8 +373,9 @@ TV) are not derivable from the API and stay omitted unless an endpoint turns up.
   class `toc-mode`, which also hides the header, footer and button row) so the headings
   stack into a compact index; tapping again restores the tiles and scrolls that heading
   to the top.
-- **Button row.** A sticky, bottom-centred row of four round icon buttons: grid/list
-  toggle, light/dark toggle, a link to `hints.html` and a link to the GitHub repo. It
+- **Button row.** A sticky, bottom-centred row of five round icon buttons: grid/list
+  toggle, light/dark toggle, language menu, a link to `hints.html` and a link to the
+  GitHub repo (`hints.html` has back, theme, language and GitHub). It
   settles above the footer once the page is scrolled all the way down; its solid
   background matches `--bg`, so it is seamless at rest.
 - **Minimal palette**, generous whitespace, accessible focus states, works from phone
@@ -393,6 +397,41 @@ TV) are not derivable from the API and stay omitted unless an endpoint turns up.
   visibly behind the status bar and the header sits under it. Both were tried
   (2026-08-21) and reverted; without cover every inset reads 0 and iOS insets the
   web view itself, which is the behaviour we want.
+
+### 7a. Translations
+
+- **English is the source** and lives where it always did: achievement texts in
+  `achievements.js`, static text in the HTML, and the few strings built at runtime in
+  the `EN` table of `js/i18n.js`. Each other language is one module in `js/lang/`
+  exporting `ui`, `categories` (keyed by the English category name) and
+  `achievements` (`id -> { t, d, steps: [[title, details], …] }`). **Whatever a
+  language leaves out falls back to English**, so nothing breaks when it lags behind.
+- **When adding or renaming an achievement, add its German entry to `js/lang/de.js`**
+  (or it simply shows in English). A ladder's `steps` must match the registry's in
+  number and order. German titles *describe* the achievement; they do not try to
+  translate the English wordplay.
+- **Kept in English on purpose:** SAN move lists, opening names on the hints page and
+  variant names — exactly as Lichess prints them. The individual opening *tiles* do
+  use the German opening names (Spanische Partie, Damengambit …).
+- **Markup hooks:** `data-i18n` (text), `data-i18n-html` (prose with links),
+  `data-i18n-title`, `data-i18n-aria`, `data-i18n-ach` (an achievement's title). Put
+  them on an element whose content is *only* the translated text — a hooked `<h2>`
+  would wipe the progress badge appended to it, hence the inner `<span>`s on the hints
+  page. The English original is remembered on first swap, so switching back needs no
+  reload.
+- **Detection:** saved `lang`, else the first supported entry of `navigator.languages`,
+  else English. An inline pre-paint script (both pages) adds `i18n-pending` when the
+  page may not be English, hiding hooked text until `translateDom()` has run.
+- **Live switch.** The menu is a native `<select>` laid invisibly over a round button,
+  so the platform's own picker opens and more languages need no new UI. On the main
+  page `relabel()` in `main.js` re-renders every JS-built text (tiles, ladders, status
+  line, open tier modal) without touching the counters or a running analysis.
+- **Stable anchors:** section ids are slugs of the *English* category names, so
+  `#checkmates` links work in every language.
+- The worker has no DOM: it reports a known error by i18n key (`err.key`) and
+  `main.js` translates it.
+- **Adding a language:** an entry in `LANGS` (native name) plus `js/lang/<code>.js`,
+  and that file in `sw.js`'s `SHELL`.
 
 ---
 
