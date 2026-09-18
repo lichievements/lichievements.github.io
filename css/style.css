@@ -438,6 +438,26 @@ a { color: inherit; }
 /* Locked tiles show a subtle title too on hover, but muted */
 .tile:not(.unlocked) .caption h3 { color: var(--text-dim); }
 
+/* "New" badge: unlocked (or climbed a tier) in the latest re-run. The label comes
+   from --new-label, which main.js sets per language. Grid: a pill in the top-left
+   corner; list view: inline after the row (see the list-view rules below). */
+.tile.is-new::after {
+  content: var(--new-label, 'New');
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 3;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--bg);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.4;
+  pointer-events: none;
+}
+
 /* Link cue for unlocked, clickable tiles */
 .tile .ext {
   position: absolute;
@@ -683,6 +703,15 @@ body.list-view .wrap { max-width: clamp(1180px, 530px + 50vw, 1480px); }
   font-size: 0.8rem;
   color: var(--text-dim);
 }
+
+/* The "new" badge sits in the row, after the text. */
+.list-view .tile.is-new::after {
+  position: static;
+  order: 1;
+  flex: 0 0 auto;
+  align-self: center;
+}
+.list-view .tile[data-tiered].is-new::after { align-self: flex-start; }
 
 /* Link cue: hidden by default, shown static on the right for unlocked links. */
 .list-view .tile .ext { display: none; }

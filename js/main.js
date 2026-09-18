@@ -377,6 +377,7 @@ let currentUserId = null;
 let unlockedRecords = [];      // [{ id, gameId, color, ply }] — persisted per user
 let partialRecords = {};       // id -> { have, need, items } — per-member progress
 let currentWorker = null;
+let shownComplete = false;     // the grid holds a finished run's result (restored or fresh)
 
 // --- Persistence (localStorage) --------------------------------------------
 // Unlocked achievements survive a reload; the session token is kept in
@@ -571,14 +572,7 @@ function applyTier(id, value, { animate = false } = {}) {
 
   const prev = tierHave.get(id) || 0;
   if (have !== prev) {
-    unlockedCount += have - prev;
-    el.statusUnlocked.textContent = String(unlockedCount);
-    const meta = catMeta.get(tile.dataset.cat);
-    if (meta) {
-      meta.unlocked += have - prev;
-      meta.tallyEl.textContent = `${meta.unlocked} / ${meta.total}`;
-      meta.headEl.classList.toggle('complete', meta.unlocked === meta.total);
-    }
+    bumpCount(tile, have - prev);
     tierHave.set(id, have);
   }
 
@@ -593,6 +587,7 @@ function applyTier(id, value, { animate = false } = {}) {
 
   if (have === 0) {
     tile.classList.remove('unlocked');
+    clearTileLink(tile);
     if (title) title.textContent = text.title;
     if (p) p.textContent = text.details;
     return;
@@ -627,11 +622,7 @@ function applyTier(id, value, { animate = false } = {}) {
       : (curText.details || curText.title);
   }
 
-  if (def.link && (!def.link.includes('{u}') || currentUserId)) {
-    tile.href = def.link.replace('{u}', encodeURIComponent(currentUserId || ''));
-    tile.target = '_blank';
-    tile.rel = 'noopener';
-  }
+  setTileLink(tile);
 }
 
 // Build the list-view ladder: the group title + a line per cleared step (each
@@ -708,9 +699,51 @@ function renderTierSteps(tile, def, have, value, items) {
   tile.classList.toggle('has-tiers', have >= 1);
 }
 
+// Point a tile at the game that unlocked it, else at its static link, if any.
+function setTileLink(tile, gameId, color, ply) {
+  let href = null;
+  if (gameId) {
+    // Game-derived tiles carry color + ply; account/extra tiles (e.g. peak rating)
+    // may carry only a gameId, so build the deep link from whatever we have.
+    href = `https://lichess.org/${gameId}`;
+    if (color) href += `/${color}`;
+    if (Number.isInteger(ply)) href += `#${ply + 1}`;
+  } else if (tile.dataset.link && (!tile.dataset.link.includes('{u}') || currentUserId)) {
+    // Static deep link (e.g. profile, teams, puzzle modes). `{u}` -> user id.
+    href = tile.dataset.link.replace('{u}', encodeURIComponent(currentUserId || ''));
+  }
+  if (!href) return;
+  tile.href = href;
+  tile.target = '_blank';
+  tile.rel = 'noopener';
+}
+function clearTileLink(tile) {
+  tile.removeAttribute('href');
+  tile.removeAttribute('target');
+  tile.removeAttribute('rel');
+}
+
+// Move the unlocked counters (status bar + the tile's category tally) by delta.
+function bumpCount(tile, delta) {
+  unlockedCount += delta;
+  el.statusUnlocked.textContent = String(unlockedCount);
+  const meta = catMeta.get(tile.dataset.cat);
+  if (meta) {
+    meta.unlocked += delta;
+    meta.tallyEl.textContent = `${meta.unlocked} / ${meta.total}`;
+    meta.headEl.classList.toggle('complete', meta.unlocked === meta.total);
+  }
+}
+
+// Reveal a tile; returns true if it was locked until now. An already unlocked
+// tile only has its link refreshed, since a re-run may name a different game.
 function unlock(id, gameId, color, ply, { animate = true, persist = true } = {}) {
   const tile = tiles.get(id);
-  if (!tile || tile.classList.contains('unlocked')) return;
+  if (!tile) return false;
+  if (tile.classList.contains('unlocked')) {
+    if (gameId) setTileLink(tile, gameId, color, ply);
+    return false;
+  }
 
   const art = tile.querySelector('.art');
   if (art.dataset.art) art.src = art.dataset.art;
@@ -720,37 +753,51 @@ function unlock(id, gameId, color, ply, { animate = true, persist = true } = {})
     tile.classList.add('revealing');
     tile.addEventListener('animationend', () => tile.classList.remove('revealing'), { once: true });
   }
-
-  if (gameId) {
-    // Game-derived tiles carry color + ply; account/extra tiles (e.g. peak rating)
-    // may carry only a gameId, so build the deep link from whatever we have.
-    let href = `https://lichess.org/${gameId}`;
-    if (color) href += `/${color}`;
-    if (Number.isInteger(ply)) href += `#${ply + 1}`;
-    tile.href = href;
-    tile.target = '_blank';
-    tile.rel = 'noopener';
-  } else if (tile.dataset.link) {
-    // Static deep link (e.g. profile, teams, puzzle modes). `{u}` -> user id.
-    const link = tile.dataset.link;
-    if (!link.includes('{u}') || currentUserId) {
-      tile.href = link.replace('{u}', encodeURIComponent(currentUserId || ''));
-      tile.target = '_blank';
-      tile.rel = 'noopener';
-    }
-  }
-
-  unlockedCount++;
-  el.statusUnlocked.textContent = String(unlockedCount);
-
-  const meta = catMeta.get(tile.dataset.cat);
-  if (meta) {
-    meta.unlocked++;
-    meta.tallyEl.textContent = `${meta.unlocked} / ${meta.total}`;
-    if (meta.unlocked === meta.total) meta.headEl.classList.add('complete');
-  }
+  setTileLink(tile, gameId, color, ply);
+  bumpCount(tile, 1);
 
   if (persist) { unlockedRecords.push({ id, gameId: gameId || null, color: color || null, ply: ply ?? null }); saveCache(); }
+  return true;
+}
+
+// Lock a plain tile again (a re-run no longer found it, e.g. a stricter detector).
+function relock(id) {
+  const tile = tiles.get(id);
+  if (!tile || !tile.classList.contains('unlocked')) return;
+  tile.classList.remove('unlocked', 'revealing', 'revealed', 'is-new');
+  clearTileLink(tile);
+  bumpCount(tile, -1);
+}
+
+// The "new" badge: exactly these tiles carry it (everything else loses it).
+function markFresh(ids) {
+  const set = new Set(ids);
+  for (const [id, tile] of tiles) tile.classList.toggle('is-new', set.has(id));
+}
+
+// End of a re-run: make the grid show exactly what this run found. Plain tiles
+// it no longer finds lock again, ladders settle on their final value (up or
+// down), and whatever beats the previous result gets the "new" badge. Returns
+// { fresh: ids, gained: countable achievements added }.
+function reconcile(run, baseline) {
+  for (const id of baseline.unlocked) if (!run.unlocked.has(id)) relock(id);
+  for (const [id, p] of Object.entries(run.partial)) {
+    if (tieredIds.has(id) && typeof p.value === 'number') applyTier(id, p.value);
+  }
+  unlockedRecords = [...run.unlocked.values()];
+  partialRecords = { ...partialRecords, ...run.partial };
+
+  const fresh = [];
+  let gained = 0;
+  for (const id of run.unlocked.keys()) {
+    if (!baseline.unlocked.has(id)) { fresh.push(id); gained++; }
+  }
+  for (const id of tieredIds) {
+    const up = (tierHave.get(id) || 0) - (baseline.have.get(id) || 0);
+    if (up > 0) { fresh.push(id); gained += up; }
+  }
+  markFresh(fresh);
+  return { fresh, gained };
 }
 
 // Clear every unlocked tile back to the locked state (used before a re-analysis).
@@ -761,10 +808,8 @@ function resetGrid() {
   tierValue.clear();
   el.statusUnlocked.textContent = '0';
   for (const tile of tiles.values()) {
-    tile.classList.remove('unlocked', 'revealing', 'revealed');
-    tile.removeAttribute('href');
-    tile.removeAttribute('target');
-    tile.removeAttribute('rel');
+    tile.classList.remove('unlocked', 'revealing', 'revealed', 'is-new');
+    clearTileLink(tile);
     const art = tile.querySelector('.art');
     if (art) art.removeAttribute('src');
     // Tiered tiles: rebuild the base (0-value) caption, bar and ladder.
@@ -796,11 +841,29 @@ function showAccountBar(account) {
 function startAnalysis(account) {
   currentUserId = account.id;
   lsSet(LS_USER, account.id);
-  resetGrid();
-  partialRecords = {};
-  saveCache();   // overwrite any stale cache with an empty set for a fresh run
-  savePartial(); // ditto for per-member progress
-  saveMeta(account.id, { complete: false });
+
+  // Two kinds of run. Over a finished result (Reload) the grid stays as it is,
+  // new finds are badged as they come in, and storage keeps the old result
+  // until this run completes, when reconcile() settles the grid on exactly what
+  // was found. Otherwise (first visit, or an interrupted run) the grid starts
+  // empty and results are saved as they arrive, flagged incomplete until 'done'.
+  const rerun = shownComplete;
+  shownComplete = false;
+  const run = { unlocked: new Map(), partial: {} };
+  let baseline = null;
+  if (rerun) {
+    baseline = {
+      unlocked: new Set([...tiles].filter(([id, t]) => !tieredIds.has(id) && t.classList.contains('unlocked')).map(([id]) => id)),
+      have: new Map(tierHave),
+    };
+    markFresh([]); // the previous run's badges are part of the baseline now
+  } else {
+    resetGrid();
+    partialRecords = {};
+    saveCache();   // overwrite any stale cache with an empty set for a fresh run
+    savePartial(); // ditto for per-member progress
+    saveMeta(account.id, { complete: false });
+  }
 
   showAccountBar(account);
   el.progress.classList.remove('fading'); // in case a prior run's fade was mid-flight
@@ -811,7 +874,7 @@ function startAnalysis(account) {
   if (currentWorker) currentWorker.terminate();
 
   const totalGames = account.count?.all || 0;
-  const setSummary = (done) => { summary = { done, total: totalGames }; renderSummary(); };
+  const setSummary = (done, fresh = null) => { summary = { done, total: totalGames, fresh }; renderSummary(); };
   setSummary(0);
 
   const worker = new Worker(new URL('./worker.js', import.meta.url), { type: 'module' });
@@ -822,7 +885,11 @@ function startAnalysis(account) {
   let scheduled = false;
   const flush = () => {
     scheduled = false;
-    for (const u of pending.splice(0)) unlock(u.id, u.gameId, u.color, u.ply);
+    for (const u of pending.splice(0)) {
+      run.unlocked.set(u.id, { id: u.id, gameId: u.gameId || null, color: u.color || null, ply: u.ply ?? null });
+      const isNew = unlock(u.id, u.gameId, u.color, u.ply, { persist: !rerun });
+      if (rerun && isNew) tiles.get(u.id).classList.add('is-new');
+    }
   };
 
   worker.onmessage = (e) => {
@@ -832,9 +899,20 @@ function startAnalysis(account) {
       pending.push(m);
       if (!scheduled) { scheduled = true; requestAnimationFrame(flush); }
     } else if (m.type === 'partial') {
-      partialRecords[m.id] = m.progress;
-      savePartial();
-      if (tieredIds.has(m.id)) applyTier(m.id, m.progress.value, { animate: true });
+      run.partial[m.id] = m.progress;
+      const tiered = tieredIds.has(m.id);
+      if (!rerun) {
+        partialRecords[m.id] = m.progress;
+        savePartial();
+        if (tiered) applyTier(m.id, m.progress.value, { animate: true });
+      } else if (!tiered || m.progress.value > (tierValue.get(m.id) || 0)) {
+        // Mid-run a re-run only ever climbs; a lower value waits for reconcile().
+        partialRecords[m.id] = m.progress;
+        if (tiered) {
+          applyTier(m.id, m.progress.value, { animate: true });
+          if ((tierHave.get(m.id) || 0) > (baseline.have.get(m.id) || 0)) tiles.get(m.id).classList.add('is-new');
+        }
+      }
     } else if (m.type === 'progress') {
       setSummary(m.count);
       if (totalGames) {
@@ -843,8 +921,12 @@ function startAnalysis(account) {
       }
     } else if (m.type === 'done') {
       flush();
-      saveMeta(currentUserId, { complete: true });
-      setSummary(m.count);
+      const { fresh, gained } = rerun ? reconcile(run, baseline) : { fresh: [], gained: null };
+      saveCache();
+      savePartial();
+      saveMeta(currentUserId, { complete: true, fresh });
+      shownComplete = true;
+      setSummary(m.count, gained);
       el.progress.classList.remove('indeterminate');
       el.progressBar.style.width = '100%';
       // Let the full bar sit briefly, then fade it out and hide once faded.
@@ -870,20 +952,23 @@ function startAnalysis(account) {
 
 // The status line next to the username: analysis progress, or a note that the
 // tiles came from the cache. Kept as state so a language switch can re-render it.
-let summary = null;   // null | 'restored' | 'incomplete' | { done, total }
+let summary = null;   // null | 'restored' | 'incomplete' | { done, total, fresh }
 function renderSummary() {
   if (!summary) return;
-  el.statusSummary.textContent = typeof summary === 'string'
-    ? t(`status.${summary}`)
-    : summary.total
-      ? t('status.analysed', { done: fmtNum(summary.done), total: fmtNum(summary.total) })
-      : t('status.analysedCount', { done: fmtNum(summary.done) });
+  if (typeof summary === 'string') { el.statusSummary.textContent = t(`status.${summary}`); return; }
+  const parts = [summary.total
+    ? t('status.analysed', { done: fmtNum(summary.done), total: fmtNum(summary.total) })
+    : t('status.analysedCount', { done: fmtNum(summary.done) })];
+  // After a re-run: how many achievements it added (null on a first run).
+  if (summary.fresh != null) parts.push(summary.fresh ? t('status.fresh', { n: fmtNum(summary.fresh) }) : t('status.noFresh'));
+  el.statusSummary.textContent = parts.join(' · ');
 }
 
 // Re-render every JS-built text after a language switch (static markup is
 // handled by translateDom). Tiered tiles go back through applyTier at their
 // current value, which leaves the counters alone.
 function relabel() {
+  setNewLabel();
   for (const meta of catMeta.values()) meta.nameEl.textContent = catName(meta.name);
   for (const [id, tile] of tiles) {
     const def = defById.get(id);
@@ -897,6 +982,11 @@ function relabel() {
   }
   renderSummary();
   if (tmEls && !tmEls.modal.hidden) renderTierModal();
+}
+
+// The "new" badge is CSS-drawn from this custom property (see .is-new).
+function setNewLabel() {
+  document.documentElement.style.setProperty('--new-label', JSON.stringify(t('tile.new')));
 }
 
 // Restore previously unlocked achievements from cache without re-analysing.
@@ -960,6 +1050,7 @@ async function boot() {
   initTileInteraction();
   initTierModal();
   translateDom();   // static markup + the modal's aria labels
+  setNewLabel();
   initLangSelect(el.langSelect, relabel);
   initToc();
   jumpToHash();
@@ -991,6 +1082,8 @@ async function boot() {
         showRestored(account.username); // reload kept our achievements — show them instantly
         restoreCached(cached);
         restoreTiers(account.id);
+        markFresh(loadMeta(account.id).fresh || []);
+        shownComplete = true;
       } else {
         startAnalysis(account);         // first visit, or the last run never finished
       }
@@ -1008,9 +1101,11 @@ async function boot() {
     if (cached && cached.length) {
       currentUserId = lastUser;
       // Without a session we cannot finish an interrupted run; say so instead.
-      showRestored(lastUser, loadMeta(lastUser).complete !== false);
+      const meta = loadMeta(lastUser);
+      showRestored(lastUser, meta.complete !== false);
       restoreCached(cached);
       restoreTiers(lastUser);
+      markFresh(meta.fresh || []);
     }
   }
   // otherwise: logged-out landing view (login button visible)
