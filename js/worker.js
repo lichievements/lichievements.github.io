@@ -152,12 +152,14 @@ const LI = 'https://lichess.org';
 
 // Formats whose per-format performance stats we mine for peak rating, play-session
 // length, berserk counts, loss streaks and best wins (GET /api/user/{u}/perf/{perf}).
-// The variants are in the list because those stats are not about standard chess:
-// berserking a Crazyhouse arena or grinding a Chess960 session counts just as much.
+// The variants are in the list because most of those stats are not about standard
+// chess: berserking a Crazyhouse arena or grinding a Chess960 session counts just as
+// much. Best wins are the exception (standard perfs only, see below).
 // Only formats the user has actually played are fetched, so this costs a variant
 // player one extra call per variant and everyone else nothing.
+const STANDARD_PERFS = ['ultraBullet', 'bullet', 'blitz', 'rapid', 'classical', 'correspondence'];
 const PERF_KEYS = [
-  'ultraBullet', 'bullet', 'blitz', 'rapid', 'classical', 'correspondence',
+  ...STANDARD_PERFS,
   'crazyhouse', 'chess960', 'kingOfTheHill', 'threeCheck',
   'antichess', 'atomic', 'horde', 'racingKings',
 ];
@@ -191,7 +193,7 @@ async function evaluateExtra(username, token, achievements, account) {
   let sessionTime = 0;
   let berserk = 0;
   let lossStreak = 0;      // longest run of consecutive losses, best (worst) across formats
-  let bestWinRating = 0;   // highest-rated opponent ever beaten, across formats
+  let bestWinRating = 0;   // highest-rated opponent ever beaten, standard chess only
   let tourGames = 0;       // games played inside a tournament, summed over formats
   let disconnects = 0;     // games left by losing the connection, summed over formats
   for (const k of playedPerfs) {
@@ -204,7 +206,11 @@ async function evaluateExtra(username, token, achievements, account) {
     sessionTime = Math.max(sessionTime, st.playStreak?.time?.max?.v || 0);
     berserk += st.count?.berserk || 0;
     lossStreak = Math.max(lossStreak, st.resultStreak?.loss?.max?.v || 0);
-    for (const w of (st.bestWins?.results || [])) bestWinRating = Math.max(bestWinRating, w.opRating || 0);
+    // Best wins count in standard chess only, like the other Winning Feats: a win
+    // over a strong Atomic player is a different game.
+    if (STANDARD_PERFS.includes(k)) {
+      for (const w of (st.bestWins?.results || [])) bestWinRating = Math.max(bestWinRating, w.opRating || 0);
+    }
     // Both are per-format totals, so they sum rather than max: playing tournament
     // blitz and tournament rapid is twice the tournament experience.
     tourGames += st.count?.tour || 0;

@@ -140,10 +140,11 @@ reload waits for it. Bump `APP_VERSION` in `sw.js` to invalidate the cache.
   `.../tournament/created` (hosting), `GET /api/study/by/{u}` (studies — needs
   `study:read`), `GET /api/rel/following` (follows — needs `follow:read`),
   `GET /api/user/{u}/perf/{perf}` (public; one call per *played* format — the six
-  time controls **and the eight variants**, since berserks, sessions, loss streaks
-  and best wins are not about standard chess — for `stat.highest` peak rating,
+  time controls **and the eight variants**, since berserks, sessions and loss streaks
+  are not about standard chess — for `stat.highest` peak rating,
   `playStreak` longest sitting, `count.berserk`, `resultStreak`, `bestWins`; the best
-  across formats is kept, while `count.tour` and `count.disconnects` are *summed*,
+  across formats is kept (except `bestWins`, read from the six standard time controls
+  only, since Slayer sits in the standard-only Winning Feats), while `count.tour` and `count.disconnects` are *summed*,
   being per-format totals), `GET /api/puzzle/dashboard/1000` (needs `puzzle:read` —
   per-theme solve counts + puzzle performance) and `GET /api/storm/dashboard/{u}?days=365`
   (public; longest combo, highest puzzle solved, most runs in a day — its per-day rows
@@ -339,9 +340,11 @@ ladder's `link` template.
   Winning Feats · Win Conditions · Board Antics · Openings: White · Openings: Black ·
   Opening Collections · Time Controls · Variants · Game Types · Machines · Milestones ·
   Ratings · Records · Precision · Puzzles · Profile & Community · Dedication ·
-  Notable Games · Social · Tournaments. Social and Tournaments are `extra`-scope; Win
-  Conditions and Game Types are `anyVariant` `game`-scope, reading only `status` /
-  `source` / `rated`. Precision, the two Machines ladders, Underdog and Giant Slayer
+  Notable Games · Social · Tournaments. Social and Tournaments are `extra`-scope; Game
+  Types is `anyVariant` `game`-scope, reading only `source` / `rated`. **Everything from
+  Checkmates through Opening Collections counts standard chess only** — no variant, no
+  custom position: none of those detectors carries `anyVariant`, and Slayer
+  (`best-win`) reads its best wins from the six standard time-control perfs only. Precision, the two Machines ladders, Underdog and Giant Slayer
   read no moves either, but deliberately stay standard-only — they measure how *hard* a
   win was, and a custom
   position hands the player the material. That is
