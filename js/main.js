@@ -227,6 +227,7 @@ function openTierModal(id) {
   renderTierModal();
   tmEls.modal.hidden = false;
   document.body.classList.add('modal-open'); // lock page scroll behind the modal
+  document.querySelector('.wrap').inert = true; // the page behind is out of reach
   document.addEventListener('keydown', onTierModalKey);
   tmEls.body.focus();
 }
@@ -288,6 +289,7 @@ function closeTierModal() {
   if (!tmEls || tmEls.modal.hidden) return;
   tmEls.modal.hidden = true;
   document.body.classList.remove('modal-open');
+  document.querySelector('.wrap').inert = false;
   tmEls.body.classList.remove('slide-next', 'slide-prev');
   document.removeEventListener('keydown', onTierModalKey);
   if (tmReturn && tmReturn.focus) tmReturn.focus();
@@ -298,6 +300,19 @@ function onTierModalKey(e) {
   if (e.key === 'Escape') { e.preventDefault(); closeTierModal(); }
   else if (e.key === 'ArrowLeft') { e.preventDefault(); stepTierModal(-1); }
   else if (e.key === 'ArrowRight') { e.preventDefault(); stepTierModal(1); }
+  else if (e.key === 'Tab') trapTab(e);
+}
+
+// Keep Tab cycling through the modal's own controls instead of leaving it for
+// the browser chrome (the page behind is inert while the modal is open).
+function trapTab(e) {
+  const f = [...tmEls.modal.querySelectorAll('button:not([disabled]), a[href]')];
+  if (!f.length) return;
+  const first = f[0];
+  const last = f[f.length - 1];
+  const at = document.activeElement;
+  if (e.shiftKey && (at === first || at === tmEls.body)) { e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && at === last) { e.preventDefault(); first.focus(); }
 }
 
 // --- Table of contents -----------------------------------------------------
