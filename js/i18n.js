@@ -19,6 +19,7 @@
 //   data-i18n-html="key"   inner HTML (for prose with links / emphasis)
 //   data-i18n-title="key"  title attribute
 //   data-i18n-aria="key"   aria-label attribute
+//   data-i18n-placeholder="key"  placeholder attribute
 //   data-i18n-ach="id"     text content = that achievement's title
 // The English original is remembered on first swap, so switching back to
 // English restores it without a reload.
@@ -119,12 +120,14 @@ const READ = {
   html: (el) => el.innerHTML,
   title: (el) => el.getAttribute('title'),
   aria: (el) => el.getAttribute('aria-label'),
+  placeholder: (el) => el.getAttribute('placeholder'),
 };
 const WRITE = {
   text: (el, v) => { el.textContent = v; },
   html: (el, v) => { el.innerHTML = v; },
   title: (el, v) => el.setAttribute('title', v),
   aria: (el, v) => el.setAttribute('aria-label', v),
+  placeholder: (el, v) => el.setAttribute('placeholder', v),
 };
 
 function swap(el, kind, value) {
@@ -143,6 +146,7 @@ export function translateDom(root = document) {
   each('data-i18n-html', 'html', (k) => ui[k]);
   each('data-i18n-title', 'title', (k) => ui[k]);
   each('data-i18n-aria', 'aria', (k) => ui[k]);
+  each('data-i18n-placeholder', 'placeholder', (k) => ui[k]);
   each('data-i18n-ach', 'text', (id) => dict.achievements?.[id]?.t);
   document.documentElement.classList.remove('i18n-pending');
 }

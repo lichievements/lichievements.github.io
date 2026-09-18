@@ -124,6 +124,71 @@ a { color: inherit; }
   max-width: 44ch;
 }
 
+/* --- Filter bar ------------------------------------------------------------ */
+/* All / Unlocked / Locked as a segmented control, next to a search field. Part of
+   the header, so the table-of-contents mode hides it along with the rest. */
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px 14px;
+  width: 100%;
+}
+.filter-seg {
+  display: inline-flex;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--bg-raised);
+}
+.filter-btn {
+  font: inherit;
+  font-size: 0.85rem;
+  padding: 6px 14px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 0.15s var(--ease), background 0.15s var(--ease);
+}
+@media (hover: hover) {
+  .filter-btn:hover { color: var(--text); }
+}
+.filter-btn[aria-pressed='true'] {
+  background: var(--bg);
+  color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent-2);
+}
+.filter-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.filter-btn:focus:not(:focus-visible) { outline: none; }
+/* 16px keeps iOS from zooming in on focus. */
+.filter-search {
+  font: inherit;
+  font-size: 16px;
+  width: min(280px, 100%);
+  min-width: 0;
+  padding: 7px 16px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--bg-raised);
+  color: var(--text);
+}
+.filter-search::placeholder { color: var(--text-mute); }
+.filter-search:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Filtered-out tiles and emptied sections. The list view sets display on tiles,
+   which would beat the UA's [hidden] rule. */
+.tile[hidden],
+.category[hidden] { display: none !important; }
+.filter-empty {
+  margin: 48px 0;
+  text-align: center;
+  color: var(--text-dim);
+}
+
 /* --- Buttons --------------------------------------------------------------- */
 
 .btn {
@@ -183,7 +248,7 @@ a { color: inherit; }
   align-items: center;
   justify-content: center;
   gap: 14px 20px;
-  margin-bottom: 28px;
+  margin-bottom: 4px; /* the filter bar follows at the header's own gap */
   color: var(--text-dim);
   font-size: 0.95rem;
 }

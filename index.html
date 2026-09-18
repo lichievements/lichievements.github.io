@@ -85,6 +85,16 @@
           </button>
         </div>
       </div>
+
+      <!-- Filter: which tiles to show, plus a search over titles and descriptions. -->
+      <div class="filter-bar" role="search">
+        <div class="filter-seg" role="group" aria-label="Show" data-i18n-aria="filter.label">
+          <button type="button" class="filter-btn" data-filter="all" aria-pressed="true" data-i18n="filter.all">All</button>
+          <button type="button" class="filter-btn" data-filter="unlocked" aria-pressed="false" data-i18n="filter.unlocked">Unlocked</button>
+          <button type="button" class="filter-btn" data-filter="locked" aria-pressed="false" data-i18n="filter.locked">Locked</button>
+        </div>
+        <input type="search" id="filter-search" class="filter-search" placeholder="Search achievements" aria-label="Search achievements" data-i18n-placeholder="filter.search" data-i18n-aria="filter.search" autocomplete="off" spellcheck="false" />
+      </div>
     </header>
 
     <div id="error" class="error" role="alert" hidden></div>
@@ -93,6 +103,7 @@
     <p id="live" class="sr-only" aria-live="polite"></p>
 
     <main id="grid-root"></main>
+    <p id="filter-empty" class="filter-empty" data-i18n="filter.empty" hidden>No achievement matches this filter.</p>
 
     <div class="theme-switch-row">
       <button id="view-toggle" class="icon-btn view-toggle" type="button" title="Toggle grid / list view" aria-label="Toggle grid or list view" data-i18n-title="btn.view" data-i18n-aria="btn.view">

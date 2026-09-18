@@ -19,6 +19,12 @@ export const ui = {
   'btn.hints': 'Tipps für knifflige Achievements',
   'btn.github': 'Quellcode auf GitHub ansehen',
   'status.unlocked': 'freigeschaltet',
+  'filter.label': 'Anzeigen',
+  'filter.all': 'Alle',
+  'filter.unlocked': 'Freigeschaltet',
+  'filter.locked': 'Gesperrt',
+  'filter.search': 'Achievements durchsuchen',
+  'filter.empty': 'Kein Achievement passt zu diesem Filter.',
   'footer.privacy': 'Kein offizielles Angebot von Lichess. Deine Partien werden vollständig in deinem Browser analysiert und verlassen nie dein Gerät. Basiert auf der <a href="https://lichess.org/api" target="_blank" rel="noopener">Lichess-API</a>.',
   'footer.icons': 'Icons von <a href="https://heroicons.com" target="_blank" rel="noopener">Heroicons</a>.',
 

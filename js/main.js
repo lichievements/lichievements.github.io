@@ -29,6 +29,8 @@ const el = {
   reloadBtn: $('#reload-btn'),
   langSelect: $('#lang-select'),
   live: $('#live'),
+  filterSearch: $('#filter-search'),
+  filterEmpty: $('#filter-empty'),
 };
 
 // Screen-reader announcements go through one quiet live region. Clearing it
@@ -791,6 +793,7 @@ function bumpCount(tile, delta) {
     meta.tallyEl.textContent = `${meta.unlocked} / ${meta.total}`;
     meta.headEl.classList.toggle('complete', meta.unlocked === meta.total);
   }
+  scheduleFilter();
 }
 
 // Reveal a tile; returns true if it was locked until now. An already unlocked
@@ -1066,6 +1069,87 @@ function relabel() {
   }
   renderSummary();
   if (tmEls && !tmEls.modal.hidden) renderTierModal();
+  searchText.clear(); // the search runs over the texts in the new language
+  if (filterQuery) applyFilter();
+}
+
+// --- Filter ----------------------------------------------------------------
+// All / unlocked / locked, narrowed by a search over each tile's title,
+// description, ladder steps and category, in the current language. "Locked"
+// means "something left to earn", so a half-climbed ladder shows under both.
+
+let filterMode = 'all';
+let filterQuery = '';          // normalised search words, space-separated
+const searchText = new Map();  // id -> normalised searchable text (per language)
+const norm = (s) => s.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
+
+function tileText(tile) {
+  const id = tile.dataset.id;
+  let s = searchText.get(id);
+  if (s == null) {
+    const def = defById.get(id);
+    const { title, details } = achText(def);
+    const parts = [title, details, catName(tile.dataset.cat)];
+    if (def.tiered) {
+      def.steps.forEach((_, i) => { const st = stepText(def, i); parts.push(st.title, st.details || ''); });
+    }
+    s = norm(parts.join(' '));
+    searchText.set(id, s);
+  }
+  return s;
+}
+
+function tileMatches(tile) {
+  const def = defById.get(tile.dataset.id);
+  if (filterMode === 'unlocked' && !tile.classList.contains('unlocked')) return false;
+  if (filterMode === 'locked') {
+    const done = def.tiered
+      ? (tierHave.get(def.id) || 0) === def.steps.length
+      : tile.classList.contains('unlocked');
+    if (done) return false;
+  }
+  return filterQuery.split(' ').every((w) => !w || tileText(tile).includes(w));
+}
+
+// Hide non-matching tiles, and whole sections left without a visible tile.
+function applyFilter() {
+  filterPending = false;
+  const active = filterMode !== 'all' || filterQuery !== '';
+  let any = false;
+  for (const section of el.gridRoot.querySelectorAll('.category')) {
+    let visible = 0;
+    for (const tile of section.querySelectorAll('.tile')) {
+      const show = !active || tileMatches(tile);
+      tile.hidden = !show;
+      if (show) visible++;
+    }
+    section.hidden = visible === 0;
+    if (visible) any = true;
+  }
+  el.filterEmpty.hidden = any;
+}
+
+// Tiles change status while a run streams in; re-filter at most every 250 ms.
+let filterPending = false;
+function scheduleFilter() {
+  if (filterPending || (filterMode === 'all' && filterQuery === '')) return;
+  filterPending = true;
+  setTimeout(applyFilter, 250);
+}
+
+function initFilter() {
+  const buttons = [...document.querySelectorAll('.filter-btn')];
+  for (const b of buttons) {
+    b.addEventListener('click', () => {
+      filterMode = b.dataset.filter;
+      for (const x of buttons) x.setAttribute('aria-pressed', String(x === b));
+      applyFilter();
+    });
+  }
+  el.filterSearch.addEventListener('input', () => {
+    filterQuery = norm(el.filterSearch.value).trim().split(/\s+/).join(' ');
+    applyFilter();
+  });
 }
 
 // The "new" badge is CSS-drawn from this custom property (see .is-new).
@@ -1137,6 +1221,7 @@ async function boot() {
   setNewLabel();
   initLangSelect(el.langSelect, relabel);
   initToc();
+  initFilter();
   jumpToHash();
   window.addEventListener('hashchange', jumpToHash);
 
