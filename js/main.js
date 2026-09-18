@@ -886,7 +886,18 @@ function startAnalysis(account) {
   if (currentWorker) currentWorker.terminate();
 
   const totalGames = account.count?.all || 0;
-  const setSummary = (done, fresh = null) => { summary = { done, total: totalGames, fresh }; renderSummary(); };
+  const setSummary = (done, fresh = null, eta = null) => { summary = { done, total: totalGames, fresh, eta }; renderSummary(); };
+  // Remaining time from the rate measured so far. Lichess streams your own games at
+  // up to 60 per second, so the rate is steady; the first seconds are skipped
+  // because they include the connection set-up.
+  let rateFrom = null;
+  const etaAt = (count) => {
+    const now = performance.now();
+    if (!rateFrom) rateFrom = { t: now, count };
+    const secs = (now - rateFrom.t) / 1000;
+    const rate = secs >= 3 ? (count - rateFrom.count) / secs : 0;
+    return rate > 0 && totalGames > count ? (totalGames - count) / rate : null;
+  };
   setSummary(0);
 
   const worker = new Worker(new URL('./worker.js', import.meta.url), { type: 'module' });
@@ -926,7 +937,7 @@ function startAnalysis(account) {
         }
       }
     } else if (m.type === 'progress') {
-      setSummary(m.count);
+      setSummary(m.count, null, etaAt(m.count));
       if (totalGames) {
         el.progress.classList.remove('indeterminate');
         el.progressBar.style.width = `${Math.min(100, (m.count / totalGames) * 100)}%`;
@@ -964,13 +975,17 @@ function startAnalysis(account) {
 
 // The status line next to the username: analysis progress, or a note that the
 // tiles came from the cache. Kept as state so a language switch can re-render it.
-let summary = null;   // null | 'restored' | 'incomplete' | { done, total, fresh }
+let summary = null;   // null | 'restored' | 'incomplete' | { done, total, fresh, eta }
 function renderSummary() {
   if (!summary) return;
   if (typeof summary === 'string') { el.statusSummary.textContent = t(`status.${summary}`); return; }
   const parts = [summary.total
     ? t('status.analysed', { done: fmtNum(summary.done), total: fmtNum(summary.total) })
     : t('status.analysedCount', { done: fmtNum(summary.done) })];
+  // While running: the estimated time left, in seconds.
+  if (summary.eta != null) {
+    parts.push(summary.eta < 60 ? t('status.etaSoon') : t('status.eta', { min: fmtNum(Math.ceil(summary.eta / 60)) }));
+  }
   // After a re-run: how many achievements it added (null on a first run).
   if (summary.fresh != null) parts.push(summary.fresh ? t('status.fresh', { n: fmtNum(summary.fresh) }) : t('status.noFresh'));
   el.statusSummary.textContent = parts.join(' · ');

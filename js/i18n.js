@@ -40,6 +40,8 @@ const EN = {
   'tile.locked': 'Locked achievement',
   'tile.new': 'New',
   'status.fresh': '{n} new',
+  'status.eta': 'about {min} min left',
+  'status.etaSoon': 'less than a minute left',
   'status.noFresh': 'nothing new',
   'err.declined': 'Lichess authorization was declined ({reason}).',
   'err.state': 'Login state mismatch. Please try logging in again.',

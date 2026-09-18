@@ -30,6 +30,8 @@ export const ui = {
   'tile.locked': 'Gesperrtes Achievement',
   'tile.new': 'Neu',
   'status.fresh': '{n} neu',
+  'status.eta': 'noch etwa {min} Min.',
+  'status.etaSoon': 'noch weniger als eine Minute',
   'status.noFresh': 'nichts Neues',
   'modal.label': 'Achievement-Stufe',
   'modal.close': 'Schließen',
