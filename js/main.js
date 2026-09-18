@@ -5,6 +5,7 @@
 import { CATEGORIES, ALL, ICONS } from './achievements.js';
 import { login, completeLoginIfRedirected, fetchAccount, revoke } from './oauth.js';
 import { t, fmtNum, catName, achText, stepText, translateDom, initLangSelect } from './i18n.js';
+import { initThemeToggle, initToc } from './ui.js';
 
 const $ = (sel) => document.querySelector(sel);
 
@@ -317,55 +318,6 @@ function trapTab(e) {
   else if (!e.shiftKey && at === last) { e.preventDefault(); first.focus(); }
 }
 
-// --- Table of contents -----------------------------------------------------
-// Tapping any category heading collapses every grid so the headings stack into a
-// compact table of contents; tapping again restores the tiles and brings the
-// tapped heading to the top of the screen.
-
-let tocCollapsed = false;
-
-function toggleToc(head) {
-  tocCollapsed = !tocCollapsed;
-  // Class on <body> so page chrome (header, footer, theme/GitHub row) can hide too.
-  document.body.classList.toggle('toc-mode', tocCollapsed);
-  for (const h of document.querySelectorAll('.category-head')) {
-    h.setAttribute('aria-expanded', String(!tocCollapsed));
-  }
-  // Let the layout settle after showing/hiding the grids, then scroll. Opening
-  // the TOC jumps to the very top; expanding brings the tapped heading to the top.
-  requestAnimationFrame(() => {
-    if (tocCollapsed) window.scrollTo(0, 0);
-    else head.scrollIntoView({ block: 'start' });
-  });
-}
-
-function initToc() {
-  el.gridRoot.addEventListener('click', (e) => {
-    const head = e.target.closest('.category-head');
-    if (head) toggleToc(head);
-  });
-  el.gridRoot.addEventListener('keydown', (e) => {
-    if (e.key !== 'Enter' && e.key !== ' ') return;
-    const head = e.target.closest('.category-head');
-    if (!head) return;
-    e.preventDefault(); // Space would otherwise scroll the page
-    toggleToc(head);
-  });
-}
-
-// --- Theme -----------------------------------------------------------------
-
-function initTheme() {
-  el.themeToggle.addEventListener('click', (e) => {
-    const light = document.documentElement.getAttribute('data-theme') !== 'light';
-    document.documentElement.setAttribute('data-theme', light ? 'light' : 'dark');
-    try { localStorage.setItem('theme', light ? 'light' : 'dark'); } catch {}
-    // e.detail === 0 means keyboard activation; drop focus for pointer taps so no
-    // outline lingers on touch devices, but keep it for keyboard users.
-    if (e.detail) el.themeToggle.blur();
-  });
-}
-
 // --- View (grid / list) ----------------------------------------------------
 // The whole grid re-styles into a stacked list via a body class; the same tiles
 // are reused (see .list-view CSS). The choice persists per browser.
@@ -500,10 +452,7 @@ function renderGrid() {
     section.id = slugify(cat.name); // enables deep-linking to a section via #hash
 
     const head = document.createElement('div');
-    head.className = 'category-head';
-    head.tabIndex = 0;
-    head.setAttribute('role', 'button');
-    head.setAttribute('aria-expanded', 'true');
+    head.className = 'category-head'; // a table-of-contents toggle (see initToc)
     const h2 = document.createElement('h2');
     h2.textContent = catName(cat.name);
     const check = document.createElement('span');
@@ -1212,7 +1161,7 @@ function jumpToHash() {
 }
 
 async function boot() {
-  initTheme();
+  initThemeToggle(el.themeToggle);
   initView();
   renderGrid();
   initTileInteraction();
@@ -1220,7 +1169,7 @@ async function boot() {
   translateDom();   // static markup + the modal's aria labels
   setNewLabel();
   initLangSelect(el.langSelect, relabel);
-  initToc();
+  initToc(el.gridRoot, '.category-head');
   initFilter();
   jumpToHash();
   window.addEventListener('hashchange', jumpToHash);
