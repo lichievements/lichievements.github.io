@@ -393,6 +393,18 @@ function saveCache() {
   if (!currentUserId) return;
   try { localStorage.setItem(cacheKey(currentUserId), JSON.stringify(unlockedRecords)); } catch {}
 }
+// While a run streams in, results are written at most once a second: the end
+// of a stream alone posts dozens of partials, and each would otherwise
+// re-serialise the whole record into localStorage on the main thread.
+let saveTimer = 0;
+function persistSoon() { if (!saveTimer) saveTimer = setTimeout(persistNow, 1000); }
+function persistNow() {
+  clearTimeout(saveTimer);
+  saveTimer = 0;
+  saveCache();
+  savePartial();
+}
+window.addEventListener('pagehide', () => { if (saveTimer) persistNow(); });
 function loadCache(uid) {
   try { return JSON.parse(localStorage.getItem(cacheKey(uid)) || 'null'); } catch { return null; }
 }
@@ -756,7 +768,7 @@ function unlock(id, gameId, color, ply, { animate = true, persist = true } = {})
   setTileLink(tile, gameId, color, ply);
   bumpCount(tile, 1);
 
-  if (persist) { unlockedRecords.push({ id, gameId: gameId || null, color: color || null, ply: ply ?? null }); saveCache(); }
+  if (persist) { unlockedRecords.push({ id, gameId: gameId || null, color: color || null, ply: ply ?? null }); persistSoon(); }
   return true;
 }
 
@@ -861,8 +873,7 @@ function startAnalysis(account) {
   } else {
     resetGrid();
     partialRecords = {};
-    saveCache();   // overwrite any stale cache with an empty set for a fresh run
-    savePartial(); // ditto for per-member progress
+    persistNow();  // overwrite any stale cache with an empty set for a fresh run
     saveMeta(account.id, { complete: false });
   }
 
@@ -904,7 +915,7 @@ function startAnalysis(account) {
       const tiered = tieredIds.has(m.id);
       if (!rerun) {
         partialRecords[m.id] = m.progress;
-        savePartial();
+        persistSoon();
         if (tiered) applyTier(m.id, m.progress.value, { animate: true });
       } else if (!tiered || m.progress.value > (tierValue.get(m.id) || 0)) {
         // Mid-run a re-run only ever climbs; a lower value waits for reconcile().
@@ -923,8 +934,7 @@ function startAnalysis(account) {
     } else if (m.type === 'done') {
       flush();
       const { fresh, gained } = rerun ? reconcile(run, baseline) : { fresh: [], gained: null };
-      saveCache();
-      savePartial();
+      persistNow();
       saveMeta(currentUserId, { complete: true, fresh });
       shownComplete = true;
       setSummary(m.count, gained);
@@ -943,6 +953,7 @@ function startAnalysis(account) {
         }, 550); // matches the .progress opacity transition
       }, 900);
     } else if (m.type === 'error') {
+      if (!rerun) persistNow(); // keep what a first run found (a re-run keeps the old result)
       showError(m.key ? t(m.key) : m.message);
       el.progress.hidden = true;
     }
