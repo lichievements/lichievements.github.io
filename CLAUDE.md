@@ -450,6 +450,9 @@ TV) are not derivable from the API and stay omitted unless an endpoint turns up.
 - **Push very seldom.** `origin/main` is the GitHub Pages source, so every push
   triggers a live redeploy. Accumulate several vetted commits locally and push in a
   batch only when you deliberately intend to publish — don't push per commit.
+- **Claude may push, and should.** Pushing to `origin/main` is authorised without
+  asking each time: once a piece of work is finished, verified and committed, push
+  it — still as a batch at the end of the task, never per commit.
 
 ---
 
