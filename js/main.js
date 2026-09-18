@@ -100,6 +100,17 @@ function initTileInteraction() {
     // already revealed: let the default action run (navigate if it has an href)
   });
 
+  // Keyboard: a tiered tile without a link of its own fires no click on Enter,
+  // so open its tier modal here (grid view; a linked tile gets its click).
+  el.gridRoot.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    if (document.body.classList.contains('list-view')) return;
+    const tile = e.target.closest('.tile[data-tiered].has-tiers');
+    if (!tile || (e.key === 'Enter' && tile.hasAttribute('href'))) return;
+    e.preventDefault(); // Space would otherwise scroll the page
+    openTierModal(tile.dataset.id);
+  });
+
   // A tap outside any revealed tile hides the caption again.
   document.addEventListener('click', (e) => {
     if (!e.target.closest('.tile.revealed')) clearRevealed();
@@ -497,6 +508,9 @@ function renderGrid() {
     for (const a of cat.items) {
       const tile = document.createElement('a');
       tile.className = 'tile';
+      // A link without href is not focusable, so a locked tile (and its caption,
+      // shown on focus in grid view) would be out of keyboard reach.
+      tile.tabIndex = 0;
       tile.dataset.id = a.id;
       tile.dataset.cat = cat.name;
       if (a.link) tile.dataset.link = a.link; // static deep link (account/extra tiles)
