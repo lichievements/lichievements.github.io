@@ -516,7 +516,7 @@ export const achievements = {
   },
 
   // Notable Games
-  'miniature': { t: 'Miniatur', d: 'Gewinne eine Partie in höchstens 10 Zügen' },
+  'miniature': { t: 'Miniatur', d: 'Gewinne eine Partie in höchstens 10 Zügen durch Matt, Aufgabe oder auf Zeit' },
   'marathon': {
     t: 'Lange Partien', d: 'Spiele immer längere Partien',
     steps: [60, 80, 100, 120].map((n) => [`${n} Züge`, `Spiele eine Partie mit mindestens ${n} Zügen`]),
@@ -524,7 +524,7 @@ export const achievements = {
   'scholars-mate': { t: 'Schäfermatt', d: 'Setze in den ersten vier Zügen mit der Dame matt' },
   'fools-mate': { t: 'Narrenmatt', d: 'Setze mit dem Narrenmatt in zwei Zügen matt' },
   'night-owl': { t: 'Nachtpartie', d: 'Spiele eine Partie zwischen Mitternacht und 5 Uhr morgens (deine Ortszeit)' },
-  'quickfire': { t: 'Sieg in sechs Zügen', d: 'Gewinne eine Partie in höchstens sechs Zügen' },
+  'quickfire': { t: 'Sieg in sechs Zügen', d: 'Gewinne eine Partie in höchstens sechs Zügen durch Matt, Aufgabe oder auf Zeit' },
   'so-close': { t: 'Knapp daneben', d: 'Verliere eine Partie, in der du mindestens zehnmal Schach gegeben hast' },
   'bongcloud-victory': { t: 'Sieg mit Bongcloud', d: 'Gewinne eine Partie nach der Bongcloud-Eröffnung (1. e4 e5 2. Ke2)' },
   'long-endgame': { t: 'Langes Endspiel', d: 'Spiele eine Partie, deren Endspiel mindestens 40 Halbzüge dauerte' },

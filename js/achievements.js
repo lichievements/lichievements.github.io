@@ -87,6 +87,8 @@ const bare = (s) => (s ? s.replace(/[+#!?]/g, '') : s);
 const startsWith = (arr, ch) => arr.some((m) => m[0] === ch);
 const castled = (arr) => arr.some((m) => m.startsWith('O-O'));
 const isMate = (ctx) => ctx.won && ctx.status === 'mate';
+// Game endings that were decided at the board, as opposed to an abandoned game.
+const BOARD_WIN = new Set(['mate', 'resign', 'outoftime']);
 
 // "Grand tour": has a user piece landed on all four corners (a1, a8, h1, h8)?
 // SAN encodes the destination in every move token, so this is a fast string scan
@@ -1067,7 +1069,10 @@ export const CATEGORIES = [
   {
     name: 'Notable Games',
     items: [
-      { id: 'miniature', title: 'Miniature', details: 'Win a game in 10 moves or fewer', svg: 'bolt', color: '#ef4444', scope: 'game', detect: (c) => c.won && c.san.length <= 20 },
+      // A quick win has to be won at the board: mate, resignation or the clock. An
+      // opponent who walks away after two moves (status 'timeout'), or never moves at
+      // all, hands it over for free.
+      { id: 'miniature', title: 'Miniature', details: 'Win a game in 10 moves or fewer by mate, resignation or on time', svg: 'bolt', color: '#ef4444', scope: 'game', detect: (c) => c.won && c.san.length <= 20 && BOARD_WIN.has(c.status) },
       gameTiered({
         id: 'marathon', title: 'Marathon', details: 'Play ever-longer games',
         track: (c) => Math.floor(c.san.length / 2), // full moves in the game
@@ -1081,7 +1086,7 @@ export const CATEGORIES = [
       { id: 'scholars-mate', title: "Scholar's Mate", details: 'Checkmate in the first four moves with your queen', svg: 'trophy', color: '#e11d48', scope: 'game', detect: (c) => isMate(c) && c.san.length <= 8 && /^Qx?f[27]#$/.test(c.lastSan) },
       { id: 'fools-mate', title: "Fool's Mate", details: 'Deliver the two-move fool’s mate', svg: 'star', color: '#be123c', scope: 'game', detect: (c) => isMate(c) && c.san.length <= 4 && c.lastSan === 'Qh4#' },
       { id: 'night-owl', title: 'Night Owl', details: 'Play a game between midnight and 5 a.m. your local time', svg: 'clock', color: '#6366f1', scope: 'game', anyVariant: true, detect: (c) => { const h = new Date(c.createdAt).getHours(); return h >= 0 && h < 5; } },
-      { id: 'quickfire', title: 'Quickfire', details: 'Win a game in six moves or fewer', svg: 'bolt', color: '#f97316', scope: 'game', detect: (c) => c.won && c.san.length <= 12 },
+      { id: 'quickfire', title: 'Quickfire', details: 'Win a game in six moves or fewer by mate, resignation or on time', svg: 'bolt', color: '#f97316', scope: 'game', detect: (c) => c.won && c.san.length <= 12 && BOARD_WIN.has(c.status) },
       { id: 'so-close', title: 'So Close', details: 'Lose a game in which you checked the opponent at least ten times', svg: 'flag', color: '#64748b', scope: 'game', detect: (c) => !!c.winner && c.winner !== c.color && c.checksByUser >= 10 },
       { id: 'bongcloud-victory', title: 'Bongcloud Victory', details: 'Win a game after opening with the Bongcloud (1. e4 e5 2. Ke2)', svg: 'crown', color: '#ca8a04', scope: 'game', detect: (c) => c.color === W && c.won && prefixMatch(c.san, ['e4', 'e5', 'Ke2']) },
       { id: 'long-endgame', title: 'Endgame Grind', details: 'Play a game whose endgame lasted at least 40 half-moves', svg: 'scale', color: '#0d9488', scope: 'game', detect: (c) => c.divEnd != null && (c.san.length - c.divEnd) >= 40 },
