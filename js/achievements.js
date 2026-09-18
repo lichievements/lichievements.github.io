@@ -382,8 +382,11 @@ export const CATEGORIES = [
       { id: 'kings-journey', title: "King's Journey", details: "Win after your king reaches the opponent's back rank (8th for White, 1st for Black)", image: 'images/kings-journey.png', scope: 'game', detect: (c) => c.won && kingCrossed(c) },
       { id: 'queen-grand-tour', title: "Queen's Grand Tour", details: 'Win a game in which your queen visited all four corners of the board (a1, a8, h1, h8)', svg: 'crown', color: '#c026d3', scope: 'game', detect: (c) => c.won && cornerTour(c.userSan, 'Q') },
       { id: 'knight-grand-tour', title: "Knight's Grand Tour", details: 'Win a game in which your knights visited all four corners of the board (a1, a8, h1, h8)', svg: 'knight', color: '#059669', scope: 'game', detect: (c) => c.won && cornerTour(c.userSan, 'N') },
-      { id: 'underdog', title: 'Underdog', details: 'Beat an opponent rated at least 200 points above you', svg: 'chart', color: '#0ea5e9', scope: 'game', anyVariant: true, detect: (c) => c.won && c.oppRating && c.myRating && (c.oppRating - c.myRating) >= 200 },
-      { id: 'giant-slayer', title: 'Giant Slayer', details: 'Beat a titled player', svg: 'cap', color: '#0891b2', scope: 'game', anyVariant: true, detect: (c) => c.won && !!c.oppTitle && c.oppTitle !== 'BOT' },
+      // Beating someone stronger or titled is a feat, not a fact about the game, so
+      // both stay standard-only: from a custom position the winner may have picked
+      // the material (see anyVariant in CLAUDE.md §6).
+      { id: 'underdog', title: 'Underdog', details: 'Beat an opponent rated at least 200 points above you', svg: 'chart', color: '#0ea5e9', scope: 'game', detect: (c) => c.won && c.oppRating && c.myRating && (c.oppRating - c.myRating) >= 200 },
+      { id: 'giant-slayer', title: 'Giant Slayer', details: 'Beat a titled player', svg: 'cap', color: '#0891b2', scope: 'game', detect: (c) => c.won && !!c.oppTitle && c.oppTitle !== 'BOT' },
       gameTiered({
         id: 'comeback', title: 'Comeback', details: 'Win from a losing material deficit', needsBoard: true,
         link: 'https://lichess.org/@/{u}/all',
