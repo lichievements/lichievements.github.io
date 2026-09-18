@@ -415,7 +415,10 @@ TV) are not derivable from the API and stay omitted unless an endpoint turns up.
   search over title, description, ladder steps and category in the current language,
   ignoring case and accents. "Locked" means *something left to earn*, so a half-climbed
   ladder shows under both. Filtered tiles and emptied sections get `hidden` (forced
-  with `!important`, since the list view sets `display` on tiles).
+  with `!important`, since the list view sets `display` on tiles). The pressed
+  button's highlight is one `.filter-thumb` that slides to the chosen button,
+  animating position and width; a `ResizeObserver` re-places it without animation
+  when the buttons change size (web font, language switch).
 - **Status line:** progress while running, with an estimated time left from the
   measured rate; after a re-run, how many achievements it added. Tiles the last re-run
   added carry a "New" pill (`.is-new`, label from `--new-label`, set per language).

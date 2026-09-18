@@ -1087,11 +1087,32 @@ function scheduleFilter() {
 }
 
 function initFilter() {
-  const buttons = [...document.querySelectorAll('.filter-btn')];
+  const seg = document.querySelector('.filter-seg');
+  const thumb = seg.querySelector('.filter-thumb');
+  const buttons = [...seg.querySelectorAll('.filter-btn')];
+
+  // Slide the highlight onto the pressed button, matching its position and width.
+  // Without `animate` it jumps: the first placement, and any resize (the web font
+  // arriving, a language switch, the TOC hiding and showing the bar).
+  const placeThumb = (animate) => {
+    const b = seg.querySelector('.filter-btn[aria-pressed="true"]');
+    if (!animate) thumb.style.transition = 'none';
+    thumb.style.width = `${b.offsetWidth}px`;
+    thumb.style.transform = `translateX(${b.offsetLeft}px)`;
+    if (!animate) {
+      void thumb.offsetWidth; // commit the jump before transitions come back
+      thumb.style.transition = '';
+    }
+  };
+  placeThumb(false);
+  seg.classList.add('has-thumb');
+  new ResizeObserver(() => placeThumb(false)).observe(seg);
+
   for (const b of buttons) {
     b.addEventListener('click', () => {
       filterMode = b.dataset.filter;
       for (const x of buttons) x.setAttribute('aria-pressed', String(x === b));
+      placeThumb(true);
       applyFilter();
     });
   }

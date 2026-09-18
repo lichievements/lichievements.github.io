@@ -136,6 +136,7 @@ a { color: inherit; }
   width: 100%;
 }
 .filter-seg {
+  position: relative; /* anchors the sliding .filter-thumb */
   display: inline-flex;
   padding: 3px;
   border: 1px solid var(--line);
@@ -143,6 +144,8 @@ a { color: inherit; }
   background: var(--bg-raised);
 }
 .filter-btn {
+  position: relative; /* above the thumb */
+  z-index: 1;
   font: inherit;
   font-size: 0.85rem;
   padding: 6px 14px;
@@ -157,9 +160,25 @@ a { color: inherit; }
 @media (hover: hover) {
   .filter-btn:hover { color: var(--text); }
 }
-.filter-btn[aria-pressed='true'] {
+.filter-btn[aria-pressed='true'] { color: var(--accent); }
+/* The pressed highlight is one pill that slides (position and width) to the
+   chosen button; main.js sizes it and adds .has-thumb. Until then, or without
+   JS, the pressed button draws the same highlight itself. */
+.filter-thumb {
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  left: 0;
+  width: 0;
+  border-radius: 999px;
   background: var(--bg);
-  color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent-2);
+  pointer-events: none;
+  transition: transform 0.35s var(--ease), width 0.35s var(--ease);
+}
+.filter-seg:not(.has-thumb) .filter-thumb { display: none; }
+.filter-seg:not(.has-thumb) .filter-btn[aria-pressed='true'] {
+  background: var(--bg);
   box-shadow: inset 0 0 0 1px var(--accent-2);
 }
 .filter-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
