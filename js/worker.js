@@ -392,6 +392,10 @@ function analyseGame(game, uid, locked) {
     oppAi: opp.aiLevel || null,        // Stockfish level (1-8) when the opponent is the AI
     // Rating won or lost on this game; only present on rated games.
     ratingDiff: Number.isInteger(me.ratingDiff) ? me.ratingDiff : null,
+    // A provisional rating (too few games, high deviation) still swings by hundreds
+    // of points and can sit far from the player's real strength.
+    myProvisional: me.provisional === true,
+    oppProvisional: opp.provisional === true,
     // Computer-analysis summary per side: { inaccuracy, mistake, blunder, acpl,
     // accuracy, phases: { opening, middlegame, endgame } }. Present only on games
     // that have been analysed, and `accuracy`/`phases` only because GAMES_URL asks

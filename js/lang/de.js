@@ -170,7 +170,7 @@ export const achievements = {
   'kings-journey': { t: 'Königswanderung', d: 'Gewinne, nachdem dein König die gegnerische Grundreihe erreicht hat (die 8. für Weiß, die 1. für Schwarz)' },
   'queen-grand-tour': { t: 'Damen-Rundreise', d: 'Gewinne eine Partie, in der deine Dame alle vier Ecken des Bretts besucht hat (a1, a8, h1, h8)' },
   'knight-grand-tour': { t: 'Springer-Rundreise', d: 'Gewinne eine Partie, in der deine Springer alle vier Ecken des Bretts besucht haben (a1, a8, h1, h8)' },
-  'underdog': { t: 'Sieg gegen einen Stärkeren', d: 'Besiege einen Gegner, der mindestens 200 Punkte höher gewertet ist als du' },
+  'underdog': { t: 'Sieg gegen einen Stärkeren', d: 'Besiege einen Gegner, der mindestens 200 Punkte höher gewertet ist als du, keine der beiden Wertungen vorläufig' },
   'giant-slayer': { t: 'Titelträger besiegt', d: 'Besiege einen Spieler mit Titel' },
   'comeback': {
     t: 'Sieg trotz Materialrückstand', d: 'Gewinne, obwohl du Material zurücklagst',
@@ -346,11 +346,11 @@ export const achievements = {
   'rating-classical': rating('Klassische Wertung', 'in klassischen Partien'),
   'rating-established': { t: 'Feste Wertung', d: 'Lass in einer beliebigen Spielart die vorläufige Wertung hinter dir' },
   'rating-gain': {
-    t: 'Großer Wertungsgewinn', d: 'Gewinne in einer einzigen Partie viele Wertungspunkte',
+    t: 'Großer Wertungsgewinn', d: 'Gewinne in einer einzigen Partie viele Wertungspunkte, sobald deine Wertung nicht mehr vorläufig ist',
     steps: [50, 100, 200, 300].map((n) => [`+${n} Punkte`, `Gewinne ${n} Wertungspunkte in einer Partie`]),
   },
   'rating-loss': {
-    t: 'Großer Wertungsverlust', d: 'Verliere in einer einzigen Partie viele Wertungspunkte',
+    t: 'Großer Wertungsverlust', d: 'Verliere in einer einzigen Partie viele Wertungspunkte, sobald deine Wertung nicht mehr vorläufig ist',
     steps: [50, 100, 200, 300].map((n) => [`−${n} Punkte`, `Verliere ${n} Wertungspunkte in einer Partie`]),
   },
 

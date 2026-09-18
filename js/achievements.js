@@ -385,7 +385,7 @@ export const CATEGORIES = [
       // Beating someone stronger or titled is a feat, not a fact about the game, so
       // both stay standard-only: from a custom position the winner may have picked
       // the material (see anyVariant in CLAUDE.md §6).
-      { id: 'underdog', title: 'Underdog', details: 'Beat an opponent rated at least 200 points above you', svg: 'chart', color: '#0ea5e9', scope: 'game', detect: (c) => c.won && c.oppRating && c.myRating && (c.oppRating - c.myRating) >= 200 },
+      { id: 'underdog', title: 'Underdog', details: 'Beat an opponent rated at least 200 points above you, neither rating provisional', svg: 'chart', color: '#0ea5e9', scope: 'game', detect: (c) => c.won && !c.myProvisional && !c.oppProvisional && c.oppRating && c.myRating && (c.oppRating - c.myRating) >= 200 },
       { id: 'giant-slayer', title: 'Giant Slayer', details: 'Beat a titled player', svg: 'cap', color: '#0891b2', scope: 'game', detect: (c) => c.won && !!c.oppTitle && c.oppTitle !== 'BOT' },
       gameTiered({
         id: 'comeback', title: 'Comeback', details: 'Win from a losing material deficit', needsBoard: true,
@@ -781,13 +781,14 @@ export const CATEGORIES = [
       ratingTier('rapid', 'Rapid'),
       ratingTier('classical', 'Classical'),
       { id: 'rating-established', title: 'Established', details: 'Clear a provisional rating in any format', svg: 'verified', color: '#0ea5e9', scope: 'account', unlock: (a) => hasEstablished(a) },
-      // Single-game rating swings. `ratingDiff` is only set on rated games, and the
-      // big numbers come from provisional ratings, which move in large steps until
-      // they settle. Nothing here reads the moves, so: anyVariant.
+      // Single-game rating swings. `ratingDiff` is only set on rated games. A
+      // provisional rating moves in huge steps until it settles, which would hand
+      // every new account the top tiers, so those games are skipped. Nothing here
+      // reads the moves, so: anyVariant.
       gameTiered({
-        id: 'rating-gain', title: 'Big Win', details: 'Take a large chunk of rating off a single game',
+        id: 'rating-gain', title: 'Big Win', details: 'Take a large chunk of rating off a single game, once your rating is no longer provisional',
         anyVariant: true, unit: 'points', link: 'https://lichess.org/@/{u}',
-        track: (c) => (c.ratingDiff && c.ratingDiff > 0 ? c.ratingDiff : null),
+        track: (c) => (!c.myProvisional && c.ratingDiff && c.ratingDiff > 0 ? c.ratingDiff : null),
         steps: [
           { at: 50, title: 'Nice Haul', details: 'Gain 50 rating points in one game', svg: 'chart', color: '#22c55e' },
           { at: 100, title: 'Big Win', details: 'Gain 100 rating points in one game', svg: 'chart', color: '#16a34a' },
@@ -796,9 +797,9 @@ export const CATEGORIES = [
         ],
       }),
       gameTiered({
-        id: 'rating-loss', title: 'Ouch', details: 'Hand back a large chunk of rating in a single game',
+        id: 'rating-loss', title: 'Ouch', details: 'Hand back a large chunk of rating in a single game, once your rating is no longer provisional',
         anyVariant: true, unit: 'points', link: 'https://lichess.org/@/{u}',
-        track: (c) => (c.ratingDiff && c.ratingDiff < 0 ? -c.ratingDiff : null),
+        track: (c) => (!c.myProvisional && c.ratingDiff && c.ratingDiff < 0 ? -c.ratingDiff : null),
         steps: [
           { at: 50, title: 'That Stings', details: 'Lose 50 rating points in one game', svg: 'chart', color: '#f87171' },
           { at: 100, title: 'Ouch', details: 'Lose 100 rating points in one game', svg: 'chart', color: '#ef4444' },
