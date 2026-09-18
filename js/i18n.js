@@ -36,6 +36,7 @@ const EN = {
   'status.analysed': '{done} / {total} games analysed',
   'status.analysedCount': '{done} games analysed',
   'status.restored': 'Restored from your last visit',
+  'status.incomplete': 'Your last analysis did not finish. Use Reload to complete it.',
   'tile.locked': 'Locked achievement',
   'err.declined': 'Lichess authorization was declined ({reason}).',
   'err.state': 'Login state mismatch. Please try logging in again.',

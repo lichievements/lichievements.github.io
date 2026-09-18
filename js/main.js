@@ -386,6 +386,7 @@ const SS_TOKEN = 'li_token';
 const LS_USER = 'li_user';
 const cacheKey = (uid) => `li_unlocked:${uid}`;
 const partialKey = (uid) => `li_partial:${uid}`;
+const metaKey = (uid) => `li_meta:${uid}`;
 
 function saveCache() {
   if (!currentUserId) return;
@@ -410,6 +411,16 @@ function restoreTiers(uid) {
   for (const id of tieredIds) {
     if (p[id] && typeof p[id].value === 'number') applyTier(id, p[id].value, { animate: false });
   }
+}
+// Per-user bookkeeping next to the results: `complete` is false from the start
+// of an analysis until its 'done', so a run cut short (page reload, closed tab)
+// is never mistaken for a finished one. Older caches have no meta: complete.
+function loadMeta(uid) {
+  try { return JSON.parse(localStorage.getItem(metaKey(uid)) || 'null') || {}; } catch { return {}; }
+}
+function saveMeta(uid, patch) {
+  if (!uid) return;
+  try { localStorage.setItem(metaKey(uid), JSON.stringify({ ...loadMeta(uid), ...patch })); } catch {}
 }
 function lsGet(k) { try { return localStorage.getItem(k); } catch { return null; } }
 function lsSet(k, v) { try { localStorage.setItem(k, v); } catch {} }
@@ -789,6 +800,7 @@ function startAnalysis(account) {
   partialRecords = {};
   saveCache();   // overwrite any stale cache with an empty set for a fresh run
   savePartial(); // ditto for per-member progress
+  saveMeta(account.id, { complete: false });
 
   showAccountBar(account);
   el.progress.classList.remove('fading'); // in case a prior run's fade was mid-flight
@@ -831,6 +843,7 @@ function startAnalysis(account) {
       }
     } else if (m.type === 'done') {
       flush();
+      saveMeta(currentUserId, { complete: true });
       setSummary(m.count);
       el.progress.classList.remove('indeterminate');
       el.progressBar.style.width = '100%';
@@ -857,11 +870,11 @@ function startAnalysis(account) {
 
 // The status line next to the username: analysis progress, or a note that the
 // tiles came from the cache. Kept as state so a language switch can re-render it.
-let summary = null;   // null | 'restored' | { done, total }
+let summary = null;   // null | 'restored' | 'incomplete' | { done, total }
 function renderSummary() {
   if (!summary) return;
-  el.statusSummary.textContent = summary === 'restored'
-    ? t('status.restored')
+  el.statusSummary.textContent = typeof summary === 'string'
+    ? t(`status.${summary}`)
     : summary.total
       ? t('status.analysed', { done: fmtNum(summary.done), total: fmtNum(summary.total) })
       : t('status.analysedCount', { done: fmtNum(summary.done) });
@@ -887,12 +900,12 @@ function relabel() {
 }
 
 // Restore previously unlocked achievements from cache without re-analysing.
-function showRestored(displayName) {
+function showRestored(displayName, complete = true) {
   el.statusbar.hidden = false;
   el.loginBtn.hidden = true;
   el.reloadBtn.hidden = false;
   el.statusUser.textContent = displayName;
-  summary = 'restored';
+  summary = complete ? 'restored' : 'incomplete';
   renderSummary();
   el.progress.hidden = true;
 }
@@ -913,7 +926,11 @@ async function logout() {
   const t = token;
   try {
     sessionStorage.removeItem(SS_TOKEN);
-    if (currentUserId) { localStorage.removeItem(cacheKey(currentUserId)); localStorage.removeItem(partialKey(currentUserId)); }
+    if (currentUserId) {
+      localStorage.removeItem(cacheKey(currentUserId));
+      localStorage.removeItem(partialKey(currentUserId));
+      localStorage.removeItem(metaKey(currentUserId));
+    }
     localStorage.removeItem(LS_USER);
   } catch {}
   if (t) await revoke(t);
@@ -970,12 +987,12 @@ async function boot() {
       currentUserId = account.id;
       lsSet(LS_USER, account.id);
       const cached = loadCache(account.id);
-      if (cached && cached.length) {
+      if (cached && cached.length && loadMeta(account.id).complete !== false) {
         showRestored(account.username); // reload kept our achievements — show them instantly
         restoreCached(cached);
         restoreTiers(account.id);
       } else {
-        startAnalysis(account);         // first visit for this user
+        startAnalysis(account);         // first visit, or the last run never finished
       }
       return;
     }
@@ -990,7 +1007,8 @@ async function boot() {
     const cached = loadCache(lastUser);
     if (cached && cached.length) {
       currentUserId = lastUser;
-      showRestored(lastUser);
+      // Without a session we cannot finish an interrupted run; say so instead.
+      showRestored(lastUser, loadMeta(lastUser).complete !== false);
       restoreCached(cached);
       restoreTiers(lastUser);
     }

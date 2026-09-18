@@ -26,6 +26,7 @@ export const ui = {
   'status.analysed': '{done} / {total} Partien analysiert',
   'status.analysedCount': '{done} Partien analysiert',
   'status.restored': 'Wiederhergestellt von deinem letzten Besuch',
+  'status.incomplete': 'Deine letzte Analyse wurde nicht abgeschlossen. Mit „Neu laden“ holst du sie nach.',
   'tile.locked': 'Gesperrtes Achievement',
   'modal.label': 'Achievement-Stufe',
   'modal.close': 'Schließen',

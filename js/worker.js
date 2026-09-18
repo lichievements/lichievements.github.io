@@ -6,7 +6,7 @@
 //   { type:'unlock', id, gameId, color, ply }   (gameId null for account scope)
 //   { type:'progress', count }
 //   { type:'partial', id, progress }            (per-member progress, e.g. collections)
-//   { type:'done', count }
+//   { type:'done', count }                       (only once the extras are in, too)
 //   { type:'error', message, key }           (key: an i18n string id, if known)
 // ============================================================================
 
@@ -55,14 +55,18 @@ async function run({ username, userId, token, account }) {
   }
 
   // 1b) Extra-scope achievements — fetched from supplementary endpoints in
-  // parallel with (and independently of) the game stream. Their unlocks may
-  // arrive after the 'done' of the game pass; main.js reveals them regardless.
-  if (extraAchievements.length) evaluateExtra(username, token, extraAchievements, account).catch(() => {});
+  // parallel with (and independently of) the game stream. 'done' waits for them:
+  // main.js treats it as "this run's results are complete" and re-locks anything
+  // the run did not find, so an extra unlock arriving after it would be lost.
+  const extrasDone = extraAchievements.length
+    ? evaluateExtra(username, token, extraAchievements, account).catch(() => {})
+    : Promise.resolve();
+  const done = async (count) => { await extrasDone; post({ type: 'done', count }); };
 
   // Nothing game-based left to find? We're done.
   const allGame = gameAchievements; // kept whole so partials survive early-exit filtering
   let locked = gameAchievements;
-  if (!locked.length) { post({ type: 'done', count: 0 }); return; }
+  if (!locked.length) { await done(0); return; }
 
   // 2) Stream games.
   const controller = new AbortController();
@@ -77,7 +81,7 @@ async function run({ username, userId, token, account }) {
   let buffer = '';
   let count = 0;
 
-  const finish = async () => { try { await reader.cancel(); } catch {} controller.abort(); sendPartials(allGame); post({ type: 'done', count }); };
+  const finish = async () => { try { await reader.cancel(); } catch {} controller.abort(); sendPartials(allGame); await done(count); };
 
   // One NDJSON line is one game. Returns true once nothing is left to find.
   const handle = (raw) => {
@@ -123,7 +127,7 @@ async function run({ username, userId, token, account }) {
   if (handle(buffer + decoder.decode())) { await finish(); return; }
 
   sendPartials(allGame);
-  post({ type: 'done', count });
+  await done(count);
 }
 
 // Emit per-member progress for any game achievement that exposes a `progress()`
